@@ -1,0 +1,192 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-07-17T14:38:00Z",
+  "title": "Design System: Guilda",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "Terracota",
+        "canonical": "oklch(0.52 0.18 32)",
+        "tonalRamp": [
+          "oklch(0.20 0.08 32)",
+          "oklch(0.30 0.12 32)",
+          "oklch(0.40 0.15 32)",
+          "oklch(0.52 0.18 32)",
+          "oklch(0.62 0.16 32)",
+          "oklch(0.72 0.13 32)",
+          "oklch(0.82 0.09 32)",
+          "oklch(0.92 0.04 32)"
+        ]
+      },
+      "neutral-bg": {
+        "role": "neutral",
+        "displayName": "Gallery White",
+        "canonical": "oklch(0.97 0.003 70)",
+        "tonalRamp": [
+          "oklch(0.15 0.001 70)",
+          "oklch(0.30 0.001 70)",
+          "oklch(0.50 0.002 70)",
+          "oklch(0.70 0.002 70)",
+          "oklch(0.85 0.003 70)",
+          "oklch(0.92 0.003 70)",
+          "oklch(0.95 0.003 70)",
+          "oklch(0.97 0.003 70)"
+        ]
+      },
+      "neutral-fg": {
+        "role": "neutral",
+        "displayName": "Charcoal",
+        "canonical": "oklch(0.20 0.01 250)",
+        "tonalRamp": [
+          "oklch(0.10 0.005 250)",
+          "oklch(0.20 0.01 250)",
+          "oklch(0.35 0.01 250)",
+          "oklch(0.50 0.01 250)",
+          "oklch(0.65 0.01 250)",
+          "oklch(0.80 0.01 250)",
+          "oklch(0.90 0.005 250)",
+          "oklch(0.95 0.002 250)"
+        ]
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "Subtle Stone Border",
+        "canonical": "oklch(0.92 0.002 70)",
+        "tonalRamp": [
+          "oklch(0.30 0.001 70)",
+          "oklch(0.50 0.001 70)",
+          "oklch(0.70 0.002 70)",
+          "oklch(0.80 0.002 70)",
+          "oklch(0.88 0.002 70)",
+          "oklch(0.92 0.002 70)",
+          "oklch(0.95 0.002 70)",
+          "oklch(0.98 0.001 70)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display/Headline",
+        "purpose": "Nomes de perfis e títulos principais de projetos. Usa Playfair Display ou Georgia."
+      },
+      "body": {
+        "displayName": "Interface & Body",
+        "purpose": "Textos gerais da interface, biografias, descrições de projetos e links."
+      }
+    },
+    "shadows": [
+      {
+        "name": "interactive-focus",
+        "value": "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+        "purpose": "Glow de hover muito sutil aplicado sobre cards de projetos."
+      },
+      {
+        "name": "overlay-drop",
+        "value": "0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)",
+        "purpose": "Sombra projetada para elementos sobrepostos, como dropdowns e modais."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-standard",
+        "value": "cubic-bezier(0.4, 0, 0.2, 1)",
+        "purpose": "Curva padrão de transição para estados de botões e links."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "lg",
+        "value": "1024px",
+        "purpose": "Ativação do layout de 3 colunas em desktop."
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Botão principal de ação, pesado e de alta prioridade.",
+      "html": "<button class=\"ds-btn-primary\">Publicar Projeto</button>",
+      "css": ".ds-btn-primary { background-color: #18181b; color: #ffffff; padding: 8px 16px; font-family: ui-sans-serif, system-ui, sans-serif; font-size: 14px; font-weight: 500; border-radius: 8px; border: none; cursor: pointer; transition: background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1); } .ds-btn-primary:hover { background-color: #27272a; } .ds-btn-primary:focus { outline: none; box-shadow: 0 0 0 2px #18181b; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Botão secundário de apoio, plano e discreto.",
+      "html": "<button class=\"ds-btn-secondary\">Voltar</button>",
+      "css": ".ds-btn-secondary { background-color: #ffffff; color: #18181b; padding: 8px 16px; font-family: ui-sans-serif, system-ui, sans-serif; font-size: 14px; font-weight: 500; border-radius: 8px; border: 1px solid #d6d6d4; cursor: pointer; transition: background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1); } .ds-btn-secondary:hover { background-color: #f7f7f5; }"
+    },
+    {
+      "name": "Terracotta Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Botão de ação com destaque artístico pontual, usado para ações como Seguir ou Contratar.",
+      "html": "<button class=\"ds-btn-terracotta\">Contatar Profissional</button>",
+      "css": ".ds-btn-terracotta { background-color: #c84a32; color: #ffffff; padding: 8px 16px; font-family: ui-sans-serif, system-ui, sans-serif; font-size: 14px; font-weight: 500; border-radius: 8px; border: none; cursor: pointer; transition: background-color 0.15s cubic-bezier(0.4, 0, 0.2, 1); } .ds-btn-terracotta:hover { background-color: #ad3c26; } .ds-btn-terracotta:focus { outline: none; box-shadow: 0 0 0 2px #c84a32; }"
+    },
+    {
+      "name": "Input Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Campo de entrada de texto padrão.",
+      "html": "<input type=\"text\" class=\"ds-input-field\" placeholder=\"Buscar por cidade ou estado...\" />",
+      "css": ".ds-input-field { width: 100%; border: 1px solid #d6d6d4; border-radius: 8px; padding: 8px 12px; font-family: ui-sans-serif, system-ui, sans-serif; font-size: 14px; background-color: #ffffff; color: #18181b; box-sizing: border-box; transition: border-color 0.15s, box-shadow 0.15s; } .ds-input-field:focus { outline: none; border-color: #18181b; box-shadow: 0 0 0 1px #18181b; } .ds-input-field::placeholder { color: #a1a1aa; }"
+    },
+    {
+      "name": "Category Chip",
+      "kind": "chip",
+      "refersTo": "chip",
+      "description": "Filtro ou tag de atuação do portfólio.",
+      "html": "<span class=\"ds-chip\">Expografia</span><span class=\"ds-chip ds-chip-selected\">Design</span>",
+      "css": ".ds-chip { display: inline-block; background-color: #f4f4f5; color: #18181b; font-family: ui-sans-serif, system-ui, sans-serif; font-size: 12px; font-weight: 500; border-radius: 9999px; padding: 2px 10px; margin-right: 6px; cursor: pointer; } .ds-chip-selected { background-color: #c84a32; color: #ffffff; }"
+    },
+    {
+      "name": "Navigation Bar",
+      "kind": "nav",
+      "refersTo": "nav",
+      "description": "Barra de navegação superior fixada.",
+      "html": "<nav class=\"ds-nav\"><div class=\"ds-nav-container\"><span class=\"ds-nav-logo\">Guilda</span><div class=\"ds-nav-links\"><a href=\"#\">Feed</a><a href=\"#\">Buscar</a></div></div></nav>",
+      "css": ".ds-nav { background-color: #ffffff; border-bottom: 1px solid #e7e7e4; position: fixed; top: 0; left: 0; right: 0; height: 56px; z-index: 50; font-family: ui-sans-serif, system-ui, sans-serif; } .ds-nav-container { display: flex; align-items: center; justify-content: space-between; max-width: 1200px; margin: 0 auto; padding: 0 20px; height: 100%; } .ds-nav-logo { font-size: 18px; font-weight: 700; color: #18181b; } .ds-nav-links a { font-size: 14px; font-weight: 500; color: #52525b; text-decoration: none; margin-left: 16px; transition: color 0.15s; } .ds-nav-links a:hover { color: #18181b; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "O Catálogo de Galeria",
+    "overview": "O design do Guilda é inspirado na sobriedade física de um catálogo de museu ou galeria de arte. As paredes de uma galeria são intencionalmente brancas para que as obras de arte sejam as protagonistas. Da mesma forma, a interface do Guilda recua completamente, apresentando uma estrutura limpa baseada em tipografia editorial rigorosa, espaçamento generoso e uma economia cromática absoluta.",
+    "keyCharacteristics": [
+      "Restrição Cromática: Tons de terracota usados apenas em até 5% da interface.",
+      "Estrutura de Grade Clássica: Layout de 3 colunas em desktop.",
+      "Tipografia Editorial: Contraste de serifa clássica em títulos e sem-serifa na interface.",
+      "Ausência de Artifícios: Sem gradientes ou sombras tridimensionais pesadas."
+    ],
+    "rules": [
+      {
+        "name": "The 5% Highlight Rule",
+        "body": "O tom Terracota (#c84a32) nunca deve ocupar mais do que 5% da área visual de qualquer tela. Sua força está na sua raridade.",
+        "section": "colors"
+      },
+      {
+        "name": "The Editorial Line Length Rule",
+        "body": "Textos de portfólio e biografia devem sempre respeitar a largura máxima de max-w-2xl (~65ch) para garantir legibilidade ideal.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat Gallery Rule",
+        "body": "Surfaces e cards são planos na tela. Divisão feita com bordas finas de 1px. Sombras aparecem apenas em estado ativo de hover ou dropdowns.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do usar o tom Terracota (#c84a32) de forma extremamente parcimoniosa (≤5% da tela).",
+      "Do priorizar linhas divisórias finas (border-stone-200) e variação de cor de fundo em vez de sombras.",
+      "Do manter o alinhamento e o espaçamento vertical consistentes em múltiplos de 4px ou 8px."
+    ],
+    "donts": [
+      "Don't criar layouts barulhentos ou saturados de cores que compitam com as imagens de portfólio.",
+      "Don't usar degradês coloridos em botões, textos ou fundos.",
+      "Don't utilizar glassmorphism como padrão visual."
+    ]
+  }
+}
