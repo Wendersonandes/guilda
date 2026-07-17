@@ -1,12 +1,12 @@
 <% if current_actor && current_actor != actor %>
   <div class="flex-shrink-0 self-start mt-2 sm:mt-0" id="<%= dom_id(actor, :connection) %>">
     <% if current_actor.connected_with?(actor) %>
-      <%= button_to contact_path(current_actor.contact_to(actor)), method: :delete, class: "flex items-center gap-1.5 text-xs bg-white text-red-650 hover:bg-red-650 hover:text-white font-semibold px-3.5 py-1.8 rounded-lg border border-stone-300 transition-all cursor-pointer shadow-sm" do %>
+      <%= button_to contact_path(current_actor.contact_to(actor)), method: :delete, class: "flex items-center gap-1.5 text-xs bg-white text-red-650 hover:bg-red-650 hover:text-white font-semibold px-3.5 py-1.5 rounded-md border border-stone-300 transition-all cursor-pointer shadow-sm" do %>
         <i data-lucide="user-minus" class="w-3.5 h-3.5"></i>
         <span>Remove Contact</span>
       <% end %>
     <% else %>
-      <%= button_to contacts_path(actor_id: actor.slug, as: :friend), method: :post, class: "flex items-center gap-1.5 text-xs bg-white text-brand hover:bg-brand hover:text-white font-semibold px-3.5 py-1.8 rounded-lg border border-stone-300 transition-all cursor-pointer shadow-sm" do %>
+      <%= button_to contacts_path(actor_id: actor.slug, as: :friend), method: :post, class: "flex items-center gap-1.5 text-xs bg-white text-brand hover:bg-brand hover:text-white font-semibold px-3.5 py-1.5 rounded-md border border-stone-300 transition-all cursor-pointer shadow-sm" do %>
         <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
         <span>Connect</span>
       <% end %>
