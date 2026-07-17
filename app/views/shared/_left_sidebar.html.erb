@@ -32,12 +32,18 @@
     <!-- Navigation List -->
     <div class="bg-white rounded-lg border border-stone-border p-3 space-y-1">
       <% is_home = controller_name == 'activities' && action_name == 'index' %>
+      <% is_profiles = controller_name == 'profiles' && action_name == 'index' %>
       <% is_contacts = controller_name == 'contacts' %>
       <% is_groups = (controller_name == 'groups' && action_name == 'index') || (controller_name == 'groups' && action_name == 'new') %>
       
       <%= link_to activities_path, class: "flex items-center gap-2.5 px-3 py-2 text-sm font-semibold rounded-lg transition-colors #{is_home ? 'bg-stone-100 text-charcoal' : 'text-zinc-600 hover:bg-stone-50'}" do %>
         <i data-lucide="home" class="w-4 h-4 <%= is_home ? 'text-brand' : 'text-zinc-400' %>"></i>
         <span>Home</span>
+      <% end %>
+
+      <%= link_to profiles_path, class: "flex items-center gap-2.5 px-3 py-2 text-sm font-semibold rounded-lg transition-colors #{is_profiles ? 'bg-stone-100 text-charcoal' : 'text-zinc-600 hover:bg-stone-50'}" do %>
+        <i data-lucide="search" class="w-4 h-4 <%= is_profiles ? 'text-brand' : 'text-zinc-400' %>"></i>
+        <span>Profiles</span>
       <% end %>
 
       <%= link_to contacts_path, class: "flex items-center gap-2.5 px-3 py-2 text-sm font-semibold rounded-lg transition-colors #{is_contacts ? 'bg-stone-100 text-charcoal' : 'text-zinc-600 hover:bg-stone-50'}" do %>

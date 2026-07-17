@@ -37,4 +37,26 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     }
     assert_redirected_to profile_path(@actor)
   end
+
+  test "should redirect index when not signed in" do
+    get profiles_path
+    assert_redirected_to new_user_session_path
+  end
+
+  test "should get index when signed in" do
+    sign_in @user
+    get profiles_path
+    assert_response :success
+    assert_select "h1", "Artists & Suppliers"
+  end
+
+  test "should filter profiles index by query" do
+    sign_in @user
+    other_user = users(:bob)
+    other_actor = create_profile_for(other_user, name: "Diego Rocha")
+    
+    get profiles_path, params: { q: "Diego" }
+    assert_response :success
+    assert_select "h2", text: /Diego Rocha/
+  end
 end

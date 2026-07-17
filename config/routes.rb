@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   # Core social — perfil e grupos
   resources :actors, only: [ :index, :show ]
   resource :my_profile, path: "my/profile", only: [ :show, :edit, :update ], controller: "profiles"
+  resources :profiles, only: [ :index ]
   resources :profiles, only: [ :show ], controller: "actors"
   resources :groups do
     resources :memberships, only: [ :index, :create, :update, :destroy ], controller: "group_memberships" do

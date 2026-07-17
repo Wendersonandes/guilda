@@ -6,6 +6,27 @@
 # @see ActorPolicy
 class ProfilesController < ApplicationController
   before_action :set_profile, only: [ :edit, :update ]
+  skip_after_action :verify_policy_scoped, only: [ :index ]
+
+  # GET /profiles
+  def index
+    authorize Actor, :index?
+    
+    @profiles = Profile.joins(:actor)
+                       .includes(actor: [avatar_attachment: :blob])
+                       .where.not(id: current_actor&.actorable_id)
+                       .order("actors.name ASC")
+
+    if params[:q].present?
+      query = "%#{params[:q].downcase}%"
+      @profiles = @profiles.where(
+        "LOWER(actors.name) LIKE :query OR LOWER(profiles.city) LIKE :query OR LOWER(profiles.state) LIKE :query OR LOWER(actors.description) LIKE :query",
+        query: query
+      )
+    end
+
+    @pagy, @profiles = pagy(@profiles, limit: 12)
+  end
 
   def show
     redirect_to public_path_for(current_actor)
