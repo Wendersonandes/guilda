@@ -13,7 +13,7 @@ class ProfilesController < ApplicationController
     authorize Actor, :index?
     
     @profiles = Profile.joins(:actor)
-                       .includes(actor: [avatar_attachment: :blob])
+                       .includes(actor: [avatar_attachment: :blob, cover_image_attachment: :blob])
                        .where.not(id: current_actor&.actorable_id)
                        .order("actors.name ASC")
 
