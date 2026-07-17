@@ -43,9 +43,11 @@
           <% end %>
         <% end %>
         <% if current_actor %>
-          <%= link_to notifications_path, class: "relative p-1.5 text-zinc-500 hover:text-brand transition-colors flex items-center gap-1 mr-1", title: "Notifications" do %>
-            <i data-lucide="bell" class="w-4.5 h-4.5"></i>
-            <%= render "shared/nav_notification_badge" %>
+          <%= link_to notifications_path, class: "p-1.5 text-zinc-500 hover:text-brand transition-colors flex items-center mr-1", title: "Notifications" do %>
+            <div class="relative">
+              <i data-lucide="bell" class="w-4.5 h-4.5"></i>
+              <%= render "shared/nav_notification_badge" %>
+            </div>
           <% end %>
         <% end %>
         <%= link_to account_path, class: "flex items-center gap-1 text-sm text-zinc-500 hover:text-charcoal transition-colors" do %>
