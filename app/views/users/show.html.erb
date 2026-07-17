@@ -1,20 +1,20 @@
 <%= content_for :title, "Account Settings" %>
 
-<h1 class="text-2xl font-bold text-gray-900 tracking-tight">Account Settings</h1>
+<h1 class="text-2xl font-serif font-bold text-charcoal tracking-tight mb-6">Account Settings</h1>
 
-<div class="bg-white rounded-xl border border-gray-200/80 shadow-sm divide-y divide-gray-100 overflow-hidden">
+<div class="bg-white rounded-lg border border-stone-border divide-y divide-stone-100 overflow-hidden shadow-sm">
   <!-- Email Setting -->
-  <div class="p-5 flex items-center justify-between hover:bg-gray-50/50 transition-colors">
+  <div class="p-5 flex items-center justify-between hover:bg-stone-50/50 transition-colors">
     <div class="flex items-center gap-3">
-      <div class="w-10 h-10 rounded-lg bg-gray-50 flex items-center justify-center text-gray-500 border border-gray-100">
+      <div class="w-10 h-10 rounded-lg bg-stone-50 flex items-center justify-center text-zinc-500 border border-stone-200">
         <i data-lucide="mail" class="w-5 h-5"></i>
       </div>
       <div>
-        <h3 class="text-sm font-semibold text-gray-900">Email Address</h3>
-        <p class="text-sm text-gray-500 mt-0.5"><%= current_user.email %></p>
+        <h3 class="text-sm font-semibold text-charcoal">Email Address</h3>
+        <p class="text-sm text-zinc-500 mt-0.5"><%= current_user.email %></p>
       </div>
     </div>
-    <%= link_to edit_account_path, class: "flex items-center gap-1 text-xs bg-white text-gray-700 hover:bg-gray-50 font-medium px-3 py-1.5 rounded-lg border border-gray-300 transition-colors shadow-sm cursor-pointer" do %>
+    <%= link_to edit_account_path, class: "flex items-center gap-1 text-xs bg-white text-zinc-700 hover:bg-stone-50 font-semibold px-3 py-1.5 rounded-lg border border-stone-300 transition-colors shadow-sm cursor-pointer" do %>
       <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
       <span>Edit</span>
     <% end %>
@@ -22,22 +22,22 @@
 
   <!-- Profile Setting -->
   <% if current_actor %>
-    <div class="p-5 flex items-center justify-between hover:bg-gray-50/50 transition-colors">
+    <div class="p-5 flex items-center justify-between hover:bg-stone-50/50 transition-colors">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-lg bg-gray-50 flex items-center justify-center text-gray-500 border border-gray-100">
+        <div class="w-10 h-10 rounded-lg bg-stone-50 flex items-center justify-center text-zinc-500 border border-stone-200">
           <i data-lucide="user" class="w-5 h-5"></i>
         </div>
         <div>
-          <h3 class="text-sm font-semibold text-gray-900">Public Profile</h3>
-          <p class="text-sm text-gray-500 mt-0.5"><%= current_actor.name %></p>
+          <h3 class="text-sm font-semibold text-charcoal">Public Profile</h3>
+          <p class="text-sm text-zinc-500 mt-0.5"><%= current_actor.name %></p>
         </div>
       </div>
       <div class="flex items-center gap-2">
-        <%= link_to public_path_for(current_actor), class: "flex items-center gap-1 text-xs bg-white text-gray-700 hover:bg-gray-50 font-medium px-3 py-1.5 rounded-lg border border-gray-300 transition-colors shadow-sm cursor-pointer" do %>
+        <%= link_to public_path_for(current_actor), class: "flex items-center gap-1 text-xs bg-white text-zinc-700 hover:bg-stone-50 font-semibold px-3 py-1.5 rounded-lg border border-stone-300 transition-colors shadow-sm cursor-pointer" do %>
           <i data-lucide="eye" class="w-3.5 h-3.5"></i>
           <span>View</span>
         <% end %>
-        <%= link_to edit_my_profile_path, class: "flex items-center gap-1 text-xs bg-white text-gray-700 hover:bg-gray-50 font-medium px-3 py-1.5 rounded-lg border border-gray-300 transition-colors shadow-sm cursor-pointer" do %>
+        <%= link_to edit_my_profile_path, class: "flex items-center gap-1 text-xs bg-white text-zinc-700 hover:bg-stone-50 font-semibold px-3 py-1.5 rounded-lg border border-stone-300 transition-colors shadow-sm cursor-pointer" do %>
           <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
           <span>Edit</span>
         <% end %>
@@ -45,26 +45,3 @@
     </div>
   <% end %>
 </div>
-
-<% content_for :right_sidebar do %>
-  <div class="bg-white rounded-xl border border-gray-200/80 p-5 shadow-sm sticky top-20 space-y-4">
-    <div>
-      <h3 class="text-sm font-semibold text-gray-900 flex items-center gap-1.5">
-        <i data-lucide="sparkles" class="w-4 h-4 text-blue-600"></i>
-        <span>Suggestions</span>
-      </h3>
-      <p class="text-xs text-gray-500 mt-0.5">People you might want to connect with</p>
-    </div>
-
-    <% if current_actor %>
-      <%= turbo_frame_tag "sidebar_suggestions",
-                          data: {
-                            controller: "turbo-frame-reload",
-                            action: "contact:changed@window->turbo-frame-reload#reload",
-                            turbo_frame_reload_url_value: suggestions_path
-                          } do %>
-        <%= render "shared/sidebar_suggestions" %>
-      <% end %>
-    <% end %>
-  </div>
-<% end %>

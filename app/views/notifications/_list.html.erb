@@ -1,15 +1,15 @@
-<div class="bg-white rounded-xl border border-gray-200/85 shadow-sm overflow-hidden divide-y divide-gray-100">
+<div class="bg-white rounded-lg border border-stone-border overflow-hidden divide-y divide-stone-100">
   <% if notifications.any? %>
     <% notifications.each do |notification| %>
       <%= render "notifications/notification", notification: notification %>
     <% end %>
   <% else %>
     <div class="flex flex-col items-center justify-center py-16 text-center px-4">
-      <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center text-blue-500 mb-3 border border-blue-100">
+      <div class="w-12 h-12 rounded-full bg-stone-100 flex items-center justify-center text-zinc-500 mb-3 border border-stone-200">
         <i data-lucide="bell-off" class="w-5 h-5"></i>
       </div>
-      <p class="text-sm font-semibold text-gray-900 mb-1">No notifications yet</p>
-      <p class="text-xs text-gray-500 max-w-[280px]">When you receive updates about your posts, comments, or likes, they'll show up here.</p>
+      <p class="text-sm font-semibold text-charcoal mb-1">No notifications yet</p>
+      <p class="text-xs text-zinc-500 max-w-[280px]">When you receive updates about your posts, comments, or likes, they'll show up here.</p>
     </div>
   <% end %>
 </div>

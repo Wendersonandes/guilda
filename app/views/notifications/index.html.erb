@@ -1,12 +1,12 @@
-<div class="container mx-auto max-w-3xl px-4 py-8 mt-14">
-  <div class="flex items-center justify-between mb-6">
+<div class="max-w-2xl mx-auto space-y-6">
+  <div class="flex items-center justify-between mb-2">
     <div class="flex items-center gap-2.5">
-      <i data-lucide="bell" class="w-6 h-6 text-blue-600"></i>
-      <h1 class="text-2xl font-extrabold text-gray-900 tracking-tight">Notifications</h1>
+      <i data-lucide="bell" class="w-6 h-6 text-brand"></i>
+      <h1 class="text-2xl font-serif font-bold text-charcoal tracking-tight">Notifications</h1>
     </div>
     
     <% if current_actor.notifications.unread.exists? %>
-      <%= button_to mark_all_as_read_notifications_path, method: :post, class: "flex items-center gap-1.5 text-xs font-semibold bg-gray-50 hover:bg-gray-100 text-gray-700 px-3.5 py-2 rounded-lg border border-gray-200/80 shadow-sm transition-all duration-150 cursor-pointer" do %>
+      <%= button_to mark_all_as_read_notifications_path, method: :post, class: "flex items-center gap-1.5 text-xs font-semibold bg-white hover:bg-stone-50 text-zinc-700 px-3.5 py-2 rounded-lg border border-stone-300 transition-colors cursor-pointer" do %>
         <i data-lucide="check-check" class="w-4 h-4"></i>
         <span>Mark all as read</span>
       <% end %>

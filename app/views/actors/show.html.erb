@@ -1,78 +1,84 @@
 <%= content_for :title, @actor.name %>
 
-<div class="bg-white rounded-xl border border-gray-200/80 shadow-sm overflow-hidden">
-  <% if @actor.cover_image.attached? %>
-    <%= image_tag @actor.cover_image.variant(:thumb), class: "w-full h-44 object-cover" %>
-  <% else %>
-    <div class="w-full h-32 bg-gray-50 border-b border-gray-200/60 flex items-center justify-center text-gray-300">
-      <i data-lucide="image" class="w-8 h-8"></i>
-    </div>
-  <% end %>
-  <div class="p-6 -mt-10 sm:-mt-12 relative flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-    <div class="flex flex-col sm:flex-row items-start sm:items-end gap-4">
-      <div class="w-20 h-20 rounded-full bg-white p-1 shadow flex-shrink-0 overflow-hidden border border-gray-100">
-        <% if @actor.avatar.attached? %>
-          <%= image_tag @actor.avatar.variant(:thumb), class: "w-full h-full rounded-full object-cover" %>
-        <% else %>
-          <div class="w-full h-full rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-2xl font-bold">
-            <%= @actor.name.first.upcase %>
-          </div>
-        <% end %>
+<div class="max-w-2xl mx-auto space-y-6">
+  <div class="bg-white rounded-lg border border-stone-border overflow-hidden">
+    <% if @actor.cover_image.attached? %>
+      <%= image_tag @actor.cover_image.variant(:thumb), class: "w-full h-44 object-cover" %>
+    <% else %>
+      <div class="w-full h-32 bg-stone-50 border-b border-stone-border flex items-center justify-center text-zinc-300">
+        <i data-lucide="image" class="w-8 h-8"></i>
       </div>
-      <div class="pt-2">
-        <h1 class="text-2xl font-bold text-gray-900 tracking-tight"><%= @actor.name %></h1>
-        <% if @actor.description.present? %>
-          <p class="text-sm text-gray-600 mt-1 leading-relaxed"><%= @actor.description %></p>
-        <% end %>
-        <div class="flex gap-4 mt-2 text-xs font-medium text-gray-400">
-          <span class="flex items-center gap-1"><i data-lucide="file-text" class="w-3.5 h-3.5"></i> <%= @actor.authored_activities.posts.count %> posts</span>
-          <% if @actor.sent_active_contact_ids.any? %>
-            <span class="flex items-center gap-1"><i data-lucide="users" class="w-3.5 h-3.5"></i> <%= @actor.sent_active_contact_ids.size %> connections</span>
+    <% end %>
+    <div class="p-6 -mt-10 sm:-mt-12 relative flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+      <div class="flex flex-col sm:flex-row items-start sm:items-end gap-4">
+        <div class="w-20 h-20 rounded-full bg-white p-1 flex-shrink-0 overflow-hidden border border-stone-border shadow-sm">
+          <% if @actor.avatar.attached? %>
+            <%= image_tag @actor.avatar.variant(:thumb), class: "w-full h-full rounded-full object-cover" %>
+          <% else %>
+            <%
+              is_group = @actor.actorable_type == "Group"
+              avatar_rounded = is_group ? "rounded-lg" : "rounded-full"
+              avatar_bg = is_group ? "bg-stone-200 text-charcoal border-stone-300" : "bg-stone-100 text-charcoal border-stone-border"
+            %>
+            <div class="w-full h-full <%= avatar_rounded %> <%= avatar_bg %> flex items-center justify-center text-2xl font-bold">
+              <%= @actor.name.first.upcase %>
+            </div>
           <% end %>
         </div>
+        <div class="pt-2">
+          <h1 class="text-2xl font-serif font-bold text-charcoal tracking-tight"><%= @actor.name %></h1>
+          <% if @actor.description.present? %>
+            <p class="text-sm text-zinc-600 mt-1 leading-relaxed"><%= @actor.description %></p>
+          <% end %>
+
+          <!-- Profile Specific Location / Website -->
+          <% if @actor.actorable.is_a?(Profile) %>
+            <% profile = @actor.actorable %>
+            <% if profile.city.present? || profile.state.present? || profile.website.present? %>
+              <div class="flex flex-wrap gap-x-4 gap-y-1.5 mt-2.5 text-xs font-medium text-zinc-500">
+                <% if profile.city.present? || profile.state.present? %>
+                  <span class="flex items-center gap-1.5">
+                    <i data-lucide="map-pin" class="w-3.5 h-3.5 text-zinc-400"></i>
+                    <%= [profile.city, profile.state].reject(&:blank?).join(", ") %>
+                  </span>
+                <% end %>
+                <% if profile.website.present? %>
+                  <span class="flex items-center gap-1.5">
+                    <i data-lucide="link" class="w-3.5 h-3.5 text-zinc-400"></i>
+                    <%= link_to profile.website, profile.website, target: "_blank", rel: "noopener", class: "text-brand hover:text-brand-hover hover:underline" %>
+                  </span>
+                <% end %>
+              </div>
+            <% end %>
+          <% end %>
+
+          <div class="flex gap-4 mt-3 text-xs font-medium text-zinc-400">
+            <span class="flex items-center gap-1"><i data-lucide="file-text" class="w-3.5 h-3.5"></i> <%= @actor.authored_activities.posts.count %> posts</span>
+            <% if @actor.sent_active_contact_ids.any? %>
+              <span class="flex items-center gap-1"><i data-lucide="users" class="w-3.5 h-3.5"></i> <%= @actor.sent_active_contact_ids.size %> connections</span>
+            <% end %>
+          </div>
+        </div>
       </div>
+      <%= render "shared/connection_button", actor: @actor %>
     </div>
-    <%= render "shared/connection_button", actor: @actor %>
   </div>
-</div>
 
-<div class="space-y-4">
-  <% if @activities.any? %>
-    <%= render partial: "shared/activity", collection: @activities, as: :activity %>
-  <% else %>
-    <div class="text-center text-gray-500 py-16 bg-white rounded-xl border border-gray-200/80 p-8 shadow-sm">
-      <div class="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-3 border border-gray-100">
-        <i data-lucide="message-square-off" class="w-6 h-6 text-gray-400"></i>
+  <div class="space-y-4">
+    <% if @activities.any? %>
+      <%= render partial: "shared/activity", collection: @activities, as: :activity %>
+    <% else %>
+      <div class="text-center text-zinc-500 py-16 bg-white rounded-lg border border-stone-border p-8 shadow-sm">
+        <div class="w-12 h-12 bg-stone-50 rounded-full flex items-center justify-center mx-auto mb-3 border border-stone-100">
+          <i data-lucide="message-square-off" class="w-6 h-6 text-zinc-400"></i>
+        </div>
+        <h3 class="text-base font-semibold text-charcoal">No posts yet</h3>
+        <p class="text-sm text-zinc-500 mt-1 max-w-sm mx-auto">This profile has not shared any updates or posts yet.</p>
       </div>
-      <h3 class="text-base font-semibold text-gray-900">No posts yet</h3>
-      <p class="text-sm text-gray-500 mt-1 max-w-sm mx-auto">This profile has not shared any updates or posts yet.</p>
-    </div>
-  <% end %>
-</div>
-
-<% if @pagy.pages > 1 %>
-  <div class="mt-6 flex justify-center"><%== pagy_nav(@pagy) %></div>
-<% end %>
-
-<% content_for :right_sidebar do %>
-  <div class="bg-white rounded-xl border border-gray-200/80 p-5 shadow-sm sticky top-20 space-y-4">
-    <div>
-      <h3 class="text-sm font-semibold text-gray-900 flex items-center gap-1.5">
-        <i data-lucide="sparkles" class="w-4 h-4 text-blue-600"></i>
-        <span>Suggestions</span>
-      </h3>
-      <p class="text-xs text-gray-500 mt-0.5">People you might want to connect with</p>
-    </div>
-
-    <% if current_actor %>
-      <%= turbo_frame_tag "sidebar_suggestions",
-                          data: {
-                            controller: "turbo-frame-reload",
-                            action: "contact:changed@window->turbo-frame-reload#reload",
-                            turbo_frame_reload_url_value: suggestions_path
-                          } do %>
-        <%= render "shared/sidebar_suggestions" %>
-      <% end %>
     <% end %>
   </div>
-<% end %>
+
+  <% if @pagy.pages > 1 %>
+    <div class="mt-6 flex justify-center"><%== pagy_nav(@pagy) %></div>
+  <% end %>
+</div>
