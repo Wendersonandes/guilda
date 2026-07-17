@@ -3,8 +3,8 @@
     <%= render partial: "shared/activity", collection: @activities, as: :activity %>
     <% if @pagy.next %>
       <%= turbo_frame_tag "activities_page_#{@pagy.next}", src: activities_path(page: @pagy.next), loading: :lazy, class: "space-y-4 block" do %>
-        <div class="flex justify-center items-center py-6 gap-2 text-gray-500">
-          <div class="animate-spin rounded-full h-5 w-5 border-2 border-gray-300 border-t-blue-600"></div>
+        <div class="flex justify-center items-center py-6 gap-2 text-zinc-500">
+          <div class="animate-spin rounded-full h-5 w-5 border-2 border-stone-200 border-t-brand"></div>
           <span class="text-sm font-medium">Loading more feed...</span>
         </div>
       <% end %>
@@ -24,43 +24,20 @@
       <%= render partial: "shared/activity", collection: @activities, as: :activity %>
       <% if @pagy.next %>
         <%= turbo_frame_tag "activities_page_#{@pagy.next}", src: activities_path(page: @pagy.next), loading: :lazy, class: "space-y-4 block" do %>
-          <div class="flex justify-center items-center py-6 gap-2 text-gray-500">
-            <div class="animate-spin rounded-full h-5 w-5 border-2 border-gray-300 border-t-blue-600"></div>
+          <div class="flex justify-center items-center py-6 gap-2 text-zinc-500">
+            <div class="animate-spin rounded-full h-5 w-5 border-2 border-stone-200 border-t-brand"></div>
             <span class="text-sm font-medium">Loading more feed...</span>
           </div>
         <% end %>
       <% end %>
     <% else %>
-      <div class="text-center text-gray-500 py-16 bg-white rounded-xl border border-gray-200/80 p-8 shadow-sm">
-        <div class="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-3 border border-gray-100">
-          <i data-lucide="message-square" class="w-6 h-6 text-gray-400"></i>
+      <div class="text-center text-zinc-500 py-16 bg-white rounded-lg border border-stone-border p-8 shadow-sm">
+        <div class="w-12 h-12 bg-stone-50 rounded-full flex items-center justify-center mx-auto mb-3 border border-stone-100">
+          <i data-lucide="message-square" class="w-6 h-6 text-zinc-400"></i>
         </div>
-        <h3 class="text-base font-semibold text-gray-900">No activities yet</h3>
-        <p class="text-sm text-gray-500 mt-1 max-w-sm mx-auto">Connect with others or join groups to see recent posts and updates here.</p>
+        <h3 class="text-base font-semibold text-charcoal">No activities yet</h3>
+        <p class="text-sm text-zinc-500 mt-1 max-w-sm mx-auto">Connect with others or join groups to see recent posts and updates here.</p>
       </div>
     <% end %>
   </div>
-
-  <% content_for :right_sidebar do %>
-    <div class="bg-white rounded-xl border border-gray-200/80 p-5 shadow-sm sticky top-20 space-y-4">
-      <div>
-        <h3 class="text-sm font-semibold text-gray-900 flex items-center gap-1.5">
-          <i data-lucide="sparkles" class="w-4 h-4 text-blue-600"></i>
-          <span>Suggestions</span>
-        </h3>
-        <p class="text-xs text-gray-500 mt-0.5">People you might want to connect with</p>
-      </div>
-
-      <% if current_actor %>
-        <%= turbo_frame_tag "sidebar_suggestions",
-                            data: {
-                              controller: "turbo-frame-reload",
-                              action: "contact:changed@window->turbo-frame-reload#reload",
-                              turbo_frame_reload_url_value: suggestions_path
-                            } do %>
-          <%= render "shared/sidebar_suggestions" %>
-        <% end %>
-      <% end %>
-    </div>
-  <% end %>
 <% end %>

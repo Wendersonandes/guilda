@@ -1,35 +1,35 @@
 <div class="max-w-sm mx-auto my-10 space-y-6">
   <div class="text-center">
-    <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-3 border border-blue-100 shadow-sm">
+    <div class="w-12 h-12 bg-stone-100 text-brand rounded-full flex items-center justify-center mx-auto mb-3 border border-stone-border shadow-sm">
       <i data-lucide="activity" class="w-6 h-6"></i>
     </div>
-    <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Welcome back</h1>
-    <p class="text-sm text-gray-500 mt-1">Sign in to your Social Stream account</p>
+    <h1 class="text-2xl font-serif font-bold text-charcoal tracking-tight">Welcome back</h1>
+    <p class="text-sm text-zinc-500 mt-1">Sign in to your Guilda account</p>
   </div>
 
-  <div class="bg-white rounded-xl border border-gray-200/80 p-6 shadow-sm">
+  <div class="bg-white rounded-lg border border-stone-border p-6">
     <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
       <div class="space-y-4">
         <div class="space-y-1">
-          <%= f.label :email, class: "block text-sm font-medium text-gray-700" %>
+          <%= f.label :email, class: "block text-sm font-medium text-zinc-700" %>
           <%= f.email_field :email, autofocus: true, autocomplete: "email", placeholder: "you@example.com",
-                class: "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" %>
+                class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal transition-shadow" %>
         </div>
 
         <div class="space-y-1">
-          <%= f.label :password, class: "block text-sm font-medium text-gray-700" %>
+          <%= f.label :password, class: "block text-sm font-medium text-zinc-700" %>
           <%= f.password_field :password, autocomplete: "current-password", placeholder: "••••••••",
-                class: "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" %>
+                class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal transition-shadow" %>
         </div>
 
         <% if devise_mapping.rememberable? %>
-          <label class="flex items-center gap-2 text-sm text-gray-600 cursor-pointer select-none">
-            <%= f.check_box :remember_me, class: "rounded border-gray-300 text-blue-600 focus:ring-blue-500" %>
+          <label class="flex items-center gap-2 text-sm text-zinc-600 cursor-pointer select-none">
+            <%= f.check_box :remember_me, class: "rounded border-stone-300 text-brand focus:ring-brand" %>
             <span class="font-medium text-xs">Keep me signed in</span>
           </label>
         <% end %>
 
-        <%= f.submit "Sign in", class: "w-full bg-blue-600 hover:bg-blue-700 text-white rounded-lg px-4 py-2.5 text-sm font-medium transition-all shadow-sm cursor-pointer mt-2" %>
+        <%= f.submit "Sign in", class: "w-full bg-charcoal hover:bg-zinc-800 text-white rounded-lg px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer mt-2" %>
       </div>
     <% end %>
 

@@ -1,67 +1,67 @@
 <%= content_for :title, "Edit Profile" %>
 
-<div class="flex items-center gap-2">
-  <%= link_to public_path_for(current_actor), class: "text-gray-400 hover:text-gray-650 transition-colors" do %>
+<div class="flex items-center gap-2 mb-4">
+  <%= link_to public_path_for(current_actor), class: "text-zinc-400 hover:text-charcoal transition-colors" do %>
     <i data-lucide="arrow-left" class="w-5 h-5"></i>
   <% end %>
-  <span class="text-sm font-medium text-gray-500">Back to Profile</span>
+  <span class="text-sm font-medium text-zinc-500">Back to Profile</span>
 </div>
 
-<h1 class="text-2xl font-bold text-gray-900 tracking-tight">Edit Profile</h1>
+<h1 class="text-2xl font-serif font-bold text-charcoal tracking-tight mb-6">Edit Profile</h1>
 
-<%= form_with model: @profile, url: my_profile_path, method: :patch, class: "bg-white rounded-xl border border-gray-200/80 p-6 shadow-sm space-y-6" do |f| %>
+<%= form_with model: @profile, url: my_profile_path, method: :patch, class: "bg-white rounded-lg border border-stone-border p-6 space-y-6" do |f| %>
   <%= f.fields_for :actor do |af| %>
     <%= af.hidden_field :id %>
     
     <div class="space-y-4">
-      <h3 class="text-sm font-semibold text-gray-900 border-b border-gray-100 pb-2">Basic Info</h3>
+      <h3 class="text-sm font-semibold text-charcoal border-b border-stone-100 pb-2">Basic Info</h3>
       
       <div class="space-y-1">
-        <%= af.label :name, class: "block text-sm font-medium text-gray-700" %>
-        <%= af.text_field :name, class: "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" %>
+        <%= af.label :name, class: "block text-sm font-medium text-zinc-700" %>
+        <%= af.text_field :name, class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal transition-shadow" %>
       </div>
 
       <div class="space-y-1">
-        <%= af.label :email, class: "block text-sm font-medium text-gray-700" %>
-        <%= af.email_field :email, class: "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" %>
+        <%= af.label :email, class: "block text-sm font-medium text-zinc-700" %>
+        <%= af.email_field :email, class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal transition-shadow" %>
       </div>
 
       <div class="space-y-1">
-        <%= af.label :description, "Bio", class: "block text-sm font-medium text-gray-700" %>
-        <%= af.text_area :description, rows: 3, placeholder: "Tell people about yourself...", class: "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" %>
+        <%= af.label :description, "Bio", class: "block text-sm font-medium text-zinc-700" %>
+        <%= af.text_area :description, rows: 3, placeholder: "Tell people about yourself...", class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal transition-shadow" %>
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
         <!-- Avatar Upload -->
         <div class="space-y-2">
-          <%= af.label :avatar, class: "block text-sm font-medium text-gray-700" %>
+          <%= af.label :avatar, class: "block text-sm font-medium text-zinc-700" %>
           <div class="flex items-center gap-3">
             <% if @profile.actor.avatar.attached? %>
-              <%= image_tag @profile.actor.avatar.variant(:thumb), class: "w-12 h-12 rounded-full object-cover border border-gray-200" %>
+              <%= image_tag @profile.actor.avatar.variant(:thumb), class: "w-12 h-12 rounded-full object-cover border border-stone-200" %>
             <% else %>
-              <div class="w-12 h-12 rounded-full bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center font-bold text-base">
+              <div class="w-12 h-12 rounded-full bg-stone-100 text-charcoal border border-stone-border flex items-center justify-center font-bold text-base">
                 <%= @profile.name.first.upcase %>
               </div>
             <% end %>
             <div class="flex-1 min-w-0">
-              <%= af.file_field :avatar, accept: "image/png,image/jpeg,image/webp", class: "w-full text-xs text-gray-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border file:border-gray-200 file:text-xs file:font-semibold file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100 cursor-pointer" %>
+              <%= af.file_field :avatar, accept: "image/png,image/jpeg,image/webp", class: "w-full text-xs text-zinc-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border file:border-stone-250 file:text-xs file:font-semibold file:bg-stone-50 file:text-zinc-700 hover:file:bg-stone-100 cursor-pointer" %>
             </div>
           </div>
         </div>
 
         <!-- Cover Image Upload -->
         <div class="space-y-2">
-          <%= af.label :cover_image, "Cover Image", class: "block text-sm font-medium text-gray-700" %>
+          <%= af.label :cover_image, "Cover Image", class: "block text-sm font-medium text-zinc-700" %>
           <div class="flex items-center gap-3">
             <% if @profile.actor.cover_image.attached? %>
-              <%= image_tag @profile.actor.cover_image.variant(:thumb), class: "w-12 h-8 rounded object-cover border border-gray-200" %>
+              <%= image_tag @profile.actor.cover_image.variant(:thumb), class: "w-12 h-8 rounded object-cover border border-stone-200" %>
             <% else %>
-              <div class="w-12 h-8 rounded bg-gray-50 border border-gray-200 flex items-center justify-center text-gray-300">
+              <div class="w-12 h-8 rounded bg-stone-50 border border-stone-200 flex items-center justify-center text-zinc-300">
                 <i data-lucide="image" class="w-4 h-4"></i>
               </div>
             <% end %>
             <div class="flex-1 min-w-0">
-              <%= af.file_field :cover_image, accept: "image/png,image/jpeg,image/webp", class: "w-full text-xs text-gray-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border file:border-gray-200 file:text-xs file:font-semibold file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100 cursor-pointer" %>
+              <%= af.file_field :cover_image, accept: "image/png,image/jpeg,image/webp", class: "w-full text-xs text-zinc-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border file:border-stone-250 file:text-xs file:font-semibold file:bg-stone-50 file:text-zinc-700 hover:file:bg-stone-100 cursor-pointer" %>
             </div>
           </div>
         </div>
@@ -69,94 +69,71 @@
     </div>
   <% end %>
 
-  <div class="border-t border-gray-100 pt-4 space-y-4">
-    <h3 class="text-sm font-semibold text-gray-900 flex items-center gap-1.5 pb-1">
-      <i data-lucide="map-pin" class="w-4 h-4 text-gray-400"></i>
+  <div class="border-t border-stone-100 pt-4 space-y-4">
+    <h3 class="text-sm font-semibold text-charcoal flex items-center gap-1.5 pb-1">
+      <i data-lucide="map-pin" class="w-4 h-4 text-zinc-400"></i>
       <span>Location</span>
     </h3>
     <div data-controller="location" class="grid grid-cols-2 gap-4">
       <div class="space-y-1">
-        <%= f.label :country, "Country", class: "block text-xs font-medium text-gray-500" %>
+        <%= f.label :country, "Country", class: "block text-xs font-medium text-zinc-500" %>
         <%= f.country_select :country, { only: ["BR"] }, {
           data: { location_target: "country", action: "change->location#countryChanged" },
-          class: "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal"
         } %>
       </div>
       <div class="space-y-1">
-        <%= f.label :state, "State", class: "block text-xs font-medium text-gray-500" %>
+        <%= f.label :state, "State", class: "block text-xs font-medium text-zinc-500" %>
         <%= f.select :state, @states || [], { include_blank: "Select" }, {
           data: { location_target: "state", action: "change->location#stateChanged" },
-          class: "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal"
         } %>
       </div>
       <div class="space-y-1">
-        <%= f.label :city, "City", class: "block text-xs font-medium text-gray-500" %>
+        <%= f.label :city, "City", class: "block text-xs font-medium text-zinc-500" %>
         <%= f.select :city, @cities || [], { include_blank: "Select" }, {
           data: { location_target: "city" },
-          class: "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal"
         } %>
       </div>
       <div class="space-y-1">
-        <%= f.label :zipcode, "Zip Code", class: "block text-xs font-medium text-gray-500" %>
-        <%= f.text_field :zipcode, class: "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+        <%= f.label :zipcode, "Zip Code", class: "block text-xs font-medium text-zinc-500" %>
+        <%= f.text_field :zipcode, class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal" %>
       </div>
       <div class="col-span-2 space-y-1">
-        <%= f.label :address, "Address", class: "block text-xs font-medium text-gray-500" %>
-        <%= f.text_field :address, class: "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+        <%= f.label :address, "Address", class: "block text-xs font-medium text-zinc-500" %>
+        <%= f.text_field :address, class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal" %>
       </div>
     </div>
   </div>
 
-  <div class="border-t border-gray-100 pt-4 space-y-4">
-    <h3 class="text-sm font-semibold text-gray-900 flex items-center gap-1.5 pb-1">
-      <i data-lucide="phone" class="w-4 h-4 text-gray-400"></i>
+  <div class="border-t border-stone-100 pt-4 space-y-4">
+    <h3 class="text-sm font-semibold text-charcoal flex items-center gap-1.5 pb-1">
+      <i data-lucide="phone" class="w-4 h-4 text-zinc-400"></i>
       <span>Contact Info</span>
     </h3>
     <div class="grid grid-cols-2 gap-4">
       <div class="space-y-1">
-        <%= f.label :phone, "Phone", class: "block text-xs font-medium text-gray-500" %>
-        <%= f.text_field :phone, class: "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+        <%= f.label :phone, "Phone", class: "block text-xs font-medium text-zinc-500" %>
+        <%= f.text_field :phone, class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal" %>
       </div>
       <div class="space-y-1">
-        <%= f.label :mobile, "Mobile", class: "block text-xs font-medium text-gray-500" %>
-        <%= f.text_field :mobile, class: "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+        <%= f.label :mobile, "Mobile", class: "block text-xs font-medium text-zinc-500" %>
+        <%= f.text_field :mobile, class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal" %>
       </div>
       <div class="col-span-2 space-y-1">
-        <%= f.label :website, "Website", class: "block text-xs font-medium text-gray-500" %>
-        <%= f.text_field :website, placeholder: "https://example.com", class: "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+        <%= f.label :website, "Website", class: "block text-xs font-medium text-zinc-500" %>
+        <%= f.text_field :website, placeholder: "https://example.com", class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal" %>
       </div>
       <div class="col-span-2 space-y-1">
-        <%= f.label :organization, "Organization", class: "block text-xs font-medium text-gray-500" %>
-        <%= f.text_field :organization, class: "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" %>
+        <%= f.label :organization, "Organization", class: "block text-xs font-medium text-zinc-500" %>
+        <%= f.text_field :organization, class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal" %>
       </div>
     </div>
   </div>
 
-  <div class="flex items-center justify-between border-t border-gray-100 pt-5">
-    <%= link_to "Cancel", public_path_for(current_actor), class: "text-sm font-medium text-gray-500 hover:text-gray-750 transition-colors" %>
-    <%= f.submit "Save changes", class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-sm cursor-pointer" %>
-  </div>
-<% end %>
-
-<% content_for :right_sidebar do %>
-  <div class="bg-white rounded-xl border border-gray-200/80 p-5 shadow-sm sticky top-20 space-y-4">
-    <div>
-      <h3 class="text-sm font-semibold text-gray-900 flex items-center gap-1.5">
-        <i data-lucide="sparkles" class="w-4 h-4 text-blue-600"></i>
-        <span>Suggestions</span>
-      </h3>
-      <p class="text-xs text-gray-500 mt-0.5">People you might want to connect with</p>
-    </div>
-
-    <% if current_actor %>
-      <%= turbo_frame_tag "sidebar_suggestions",
-                          data: {
-                            controller: "turbo-frame-reload",
-                            action: "contact:changed@window->turbo-frame-reload#reload",
-                            turbo_frame_reload_url_value: suggestions_path
-                          } do %>
-        <%= render "shared/sidebar_suggestions" %>
-      <% end %>
-    <% end %>
+  <div class="flex items-center justify-between border-t border-stone-100 pt-5">
+    <%= link_to "Cancel", public_path_for(current_actor), class: "text-sm font-medium text-zinc-500 hover:text-charcoal transition-colors" %>
+    <%= f.submit "Save changes", class: "bg-charcoal hover:bg-zinc-800 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer" %>
   </div>
 <% end %>

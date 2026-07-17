@@ -3,12 +3,12 @@
   body_value = local_assigns[:clear_inputs] ? "" : (activity.direct_object&.description || params.dig(:activity, :text, :body))
 %>
 
-<%= form_with model: activity, id: "activity_form_container", class: "bg-white rounded-xl border border-gray-200/80 p-6 shadow-sm space-y-5", data: { controller: "mention", action: "submit->mention#sync" } do |f| %>
+<%= form_with model: activity, id: "activity_form_container", class: "bg-white rounded-lg border border-stone-border p-6 space-y-5", data: { controller: "mention", action: "submit->mention#sync" } do |f| %>
   <%= f.hidden_field :verb %>
   <%= f.hidden_field :owner_id %>
 
   <% if activity.errors.any? %>
-    <div class="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg text-sm space-y-1">
+    <div class="bg-red-50 border border-red-100 text-red-700 p-4 rounded-lg text-sm space-y-1">
       <% activity.errors.full_messages.each do |msg| %>
         <div><%= msg %></div>
       <% end %>
@@ -16,28 +16,28 @@
   <% end %>
 
   <div class="space-y-1">
-    <%= f.label :title, class: "block text-sm font-medium text-gray-700" %>
+    <%= f.label :title, class: "block text-sm font-medium text-charcoal" %>
     <%= f.text_field :title, name: "activity[text][title]", value: title_value, placeholder: "Title of your post (optional)",
-          class: "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" %>
+          class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal transition-shadow bg-white text-charcoal" %>
   </div>
 
   <div class="space-y-1">
-    <%= f.label :body, class: "block text-sm font-medium text-gray-700" %>
+    <%= f.label :body, class: "block text-sm font-medium text-charcoal" %>
     <%= f.hidden_field :body, name: "activity[text][body]", value: body_value, data: { mention_target: "hiddenInput" } %>
     <div data-mention-target="editor"
          data-action="input->mention#sync blur->mention#sync"
          contenteditable="true"
          placeholder="What would you like to share?"
-         class="w-full min-h-[120px] rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow overflow-y-auto max-h-[300px] empty:before:content-[attr(placeholder)] empty:before:text-gray-400 empty:before:pointer-events-none empty:before:block">
+         class="w-full min-h-[120px] rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal transition-shadow overflow-y-auto max-h-[300px] empty:before:content-[attr(placeholder)] empty:before:text-zinc-400 empty:before:pointer-events-none empty:before:block">
     </div>
   </div>
 
   <div class="flex items-center justify-between pt-2">
     <% if local_assigns[:show_cancel] %>
-      <%= link_to "Cancel", activities_path, class: "text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors" %>
+      <%= link_to "Cancel", activities_path, class: "text-sm font-medium text-zinc-500 hover:text-charcoal transition-colors" %>
     <% else %>
       <div></div>
     <% end %>
-    <%= f.submit "Publish post", class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-sm cursor-pointer" %>
+    <%= f.submit "Publish post", class: "bg-charcoal hover:bg-zinc-800 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer" %>
   </div>
 <% end %>

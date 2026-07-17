@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="<%= I18n.locale %>" class="h-full">
   <head>
-    <title><%= content_for(:title) || "Social Stream" %></title>
+    <title><%= content_for(:title) || "Guilda" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Social Stream">
+    <meta name="application-name" content="Guilda">
     <meta name="mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -18,7 +18,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
 
     <!-- Styles and JS -->
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
@@ -44,7 +44,7 @@
     </script>
   </head>
 
-  <body id="body" class="h-full bg-gray-50/50 text-gray-900 font-sans antialiased">
+  <body id="body" class="h-full bg-gallery text-charcoal font-sans antialiased">
     <%= render "shared/nav" %>
     <main class="min-h-screen pt-20 pb-12">
       <div class="container mx-auto px-5">
@@ -53,22 +53,20 @@
         <% if current_actor && !devise_controller? && !content_for?(:no_sidebar) %>
           <div class="max-w-6xl mx-auto">
             <div class="grid grid-cols-12 gap-6">
-              <!-- Left Column -->
+              <!-- Left Column (Navigation) -->
               <div class="hidden lg:block lg:col-span-3">
                 <%= content_for?(:left_sidebar) ? yield(:left_sidebar) : render("shared/left_sidebar") %>
               </div>
 
-              <!-- Center Column -->
-              <div class="col-span-12 <%= content_for?(:right_sidebar) ? 'lg:col-span-6' : 'lg:col-span-9' %> space-y-6">
+              <!-- Center Column (Main Content - approx. 60% with sidebars) -->
+              <div class="col-span-12 lg:col-span-6 space-y-6">
                 <%= yield %>
               </div>
 
-              <!-- Right Column -->
-              <% if content_for?(:right_sidebar) %>
-                <div class="hidden lg:block lg:col-span-3">
-                  <%= yield :right_sidebar %>
-                </div>
-              <% end %>
+              <!-- Right Column (Suggestions / Info) -->
+              <div class="hidden lg:block lg:col-span-3">
+                <%= content_for?(:right_sidebar) ? yield(:right_sidebar) : render("shared/right_sidebar") %>
+              </div>
             </div>
           </div>
         <% else %>

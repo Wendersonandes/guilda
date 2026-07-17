@@ -1,0 +1,20 @@
+<div class="bg-white rounded-lg border border-stone-250 p-5 sticky top-20 space-y-4">
+  <div>
+    <h3 class="text-sm font-semibold text-charcoal flex items-center gap-1.5">
+      <i data-lucide="sparkles" class="w-4 h-4 text-brand"></i>
+      <span>Suggestions</span>
+    </h3>
+    <p class="text-xs text-zinc-500 mt-0.5">People you might want to connect with</p>
+  </div>
+
+  <% if current_actor %>
+    <%= turbo_frame_tag "sidebar_suggestions",
+                        data: {
+                          controller: "turbo-frame-reload",
+                          action: "contact:changed@window->turbo-frame-reload#reload",
+                          turbo_frame_reload_url_value: suggestions_path
+                        } do %>
+      <%= render "shared/sidebar_suggestions" %>
+    <% end %>
+  <% end %>
+</div>

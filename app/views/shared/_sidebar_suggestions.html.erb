@@ -1,17 +1,17 @@
-<div class="divide-y divide-gray-100" id="sidebar_suggestions">
+<div class="divide-y divide-stone-100" id="sidebar_suggestions">
   <% if current_actor %>
     <% current_actor.suggestions(3).each do |contact| %>
       <div class="flex items-center justify-between py-3 first:pt-0 last:pb-0" id="<%= dom_id(contact.receiver, :suggestion) %>">
         <div class="flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 text-xs font-bold border border-blue-100">
+          <div class="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center text-charcoal text-xs font-bold border border-stone-border">
             <%= contact.receiver.name.first.upcase %>
           </div>
           <div class="flex flex-col min-w-0">
-            <span class="text-sm font-medium text-gray-900 truncate"><%= contact.receiver.name %></span>
-            <span class="text-xs text-gray-400 truncate">Suggested contact</span>
+            <span class="text-sm font-semibold text-charcoal truncate"><%= contact.receiver.name %></span>
+            <span class="text-[10px] text-zinc-400 truncate uppercase tracking-wider">Suggested for you</span>
           </div>
         </div>
-        <%= button_to contacts_path(actor_id: contact.receiver.slug, as: :friend), method: :post, class: "flex items-center gap-1 text-xs bg-blue-50 text-blue-700 hover:bg-blue-100/80 font-medium px-2.5 py-1 rounded-md border border-blue-100 transition-colors cursor-pointer" do %>
+        <%= button_to contacts_path(actor_id: contact.receiver.slug, as: :friend), method: :post, class: "flex items-center gap-1 text-xs bg-white text-brand hover:bg-brand hover:text-white font-semibold px-2.5 py-1.5 rounded-lg border border-stone-border transition-all cursor-pointer" do %>
           <i data-lucide="user-plus" class="w-3.5 h-3.5"></i>
           <span>Connect</span>
         <% end %>

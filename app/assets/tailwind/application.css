@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+@theme {
+  --color-brand: #c84a32;
+  --color-brand-hover: #ad3c26;
+  --color-gallery: #f7f7f5;
+  --color-stone-border: #e7e7e4;
+  --color-charcoal: #18181b;
+}
+
 /* Threaded comments CSS styles */
 .comment_folder_button {
   display: none;
@@ -28,7 +36,7 @@ ol.comments {
   margin-left: 1.25rem;
   padding-left: 0.25rem;
   list-style: none;
-  border-left: 1px dashed rgb(229 231 235);
+  border-left: 1px dashed #e7e7e4;
 }
 
 /* Tribute.js Mentions Autocomplete Dropdown Styling */
@@ -43,9 +51,9 @@ ol.comments {
   display: block;
   z-index: 999999;
   background-color: #ffffff;
-  border: 1px solid #e5e7eb;
+  border: 1px solid #e7e7e4;
   border-radius: 0.75rem;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
 }
 
 .tribute-container ul {
@@ -62,6 +70,5 @@ ol.comments {
 }
 
 .tribute-container li.highlight {
-  background-color: #eff6ff;
+  background-color: #f4f4f5;
 }
-
