@@ -9,9 +9,9 @@
         <i data-lucide="image" class="w-8 h-8"></i>
       </div>
     <% end %>
-    <div class="p-6 -mt-10 sm:-mt-12 relative flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-      <div class="flex flex-col sm:flex-row items-start sm:items-end gap-4">
-        <div class="w-20 h-20 rounded-full bg-white p-1 flex-shrink-0 overflow-hidden border border-stone-border shadow-sm">
+    <div class="p-6 relative flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+      <div class="flex flex-col sm:flex-row items-start gap-4">
+        <div class="-mt-14 sm:-mt-16 w-20 h-20 rounded-full bg-white p-1 flex-shrink-0 overflow-hidden border border-stone-border shadow-sm">
           <% if @profile.actor.avatar.attached? %>
             <%= image_tag @profile.actor.avatar.variant(:thumb), class: "w-full h-full rounded-full object-cover" %>
           <% else %>
@@ -20,16 +20,16 @@
             </div>
           <% end %>
         </div>
-        <div class="pt-2">
-          <h1 class="text-2xl font-serif font-bold text-charcoal tracking-tight"><%= @profile.name %></h1>
+        <div class="space-y-1.5">
+          <h1 class="text-2xl font-serif font-bold text-charcoal tracking-tight leading-tight"><%= @profile.name %></h1>
           
           <% if @profile.description.present? %>
-            <p class="text-sm text-zinc-600 mt-1 leading-relaxed"><%= @profile.description %></p>
+            <p class="text-sm text-zinc-650 max-w-lg leading-relaxed"><%= @profile.description %></p>
           <% end %>
 
           <!-- Location & Website info -->
           <% if @profile.city.present? || @profile.state.present? || @profile.website.present? %>
-            <div class="flex flex-wrap gap-x-4 gap-y-1.5 mt-2.5 text-xs font-medium text-zinc-500">
+            <div class="flex flex-wrap gap-x-4 gap-y-1.5 pt-1 text-xs font-medium text-zinc-500">
               <% if @profile.city.present? || @profile.state.present? %>
                 <span class="flex items-center gap-1.5">
                   <i data-lucide="map-pin" class="w-3.5 h-3.5 text-zinc-400"></i>
@@ -45,7 +45,7 @@
             </div>
           <% end %>
 
-          <div class="flex gap-4 mt-3 text-xs font-medium text-zinc-400">
+          <div class="flex gap-4 pt-1.5 text-xs font-medium text-zinc-400">
             <span class="flex items-center gap-1"><i data-lucide="file-text" class="w-3.5 h-3.5"></i> <%= @profile.actor.authored_activities.posts.count %> posts</span>
             <% if @profile.actor.sent_active_contact_ids.any? %>
               <span class="flex items-center gap-1"><i data-lucide="users" class="w-3.5 h-3.5"></i> <%= @profile.actor.sent_active_contact_ids.size %> connections</span>

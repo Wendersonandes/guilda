@@ -9,9 +9,9 @@
         <i data-lucide="image" class="w-8 h-8"></i>
       </div>
     <% end %>
-    <div class="p-6 -mt-10 sm:-mt-12 relative flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-      <div class="flex flex-col sm:flex-row items-start sm:items-end gap-4">
-        <div class="w-20 h-20 rounded-full bg-white p-1 flex-shrink-0 overflow-hidden border border-stone-border shadow-sm">
+    <div class="p-6 relative flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+      <div class="flex flex-col sm:flex-row items-start gap-4">
+        <div class="-mt-14 sm:-mt-16 w-20 h-20 rounded-full bg-white p-1 flex-shrink-0 overflow-hidden border border-stone-border shadow-sm">
           <% if @actor.avatar.attached? %>
             <%= image_tag @actor.avatar.variant(:thumb), class: "w-full h-full rounded-full object-cover" %>
           <% else %>
@@ -25,8 +25,8 @@
             </div>
           <% end %>
         </div>
-        <div class="pt-2">
-          <h1 class="text-2xl font-serif font-bold text-charcoal tracking-tight"><%= @actor.name %></h1>
+        <div class="space-y-1.5">
+          <h1 class="text-2xl font-serif font-bold text-charcoal tracking-tight leading-tight"><%= @actor.name %></h1>
           <% if @actor.description.present? %>
             <p class="text-sm text-zinc-600 mt-1 leading-relaxed"><%= @actor.description %></p>
           <% end %>
