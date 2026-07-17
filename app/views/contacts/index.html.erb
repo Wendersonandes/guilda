@@ -50,9 +50,9 @@
             </div>
           </div>
         </div>
-        <%= button_to contact_path(contact), method: :delete, class: "flex items-center gap-1 text-xs text-zinc-400 hover:text-red-600 bg-transparent border-0 cursor-pointer transition-colors p-0 font-medium" do %>
-          <i data-lucide="user-minus" class="w-4 h-4"></i>
-          <span>Remove</span>
+        <%= button_to contact_path(contact), method: :delete, class: "flex items-center gap-1.5 text-xs bg-white text-red-600 hover:bg-red-600 hover:text-white font-semibold px-3.5 py-1.5 rounded-md border border-stone-300 transition-all cursor-pointer shadow-sm" do %>
+          <i data-lucide="user-minus" class="w-3.5 h-3.5"></i>
+          <span>Remove Connect</span>
         <% end %>
       </div>
     <% end %>
