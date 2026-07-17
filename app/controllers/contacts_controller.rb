@@ -11,6 +11,8 @@ class ContactsController < ApplicationController
     @contacts = policy_scope(Contact)
                   .joins(:ties)
                   .where(sender_id: current_actor.id)
+                  .joins(:receiver)
+                  .merge(Actor.where(actorable_type: "Profile"))
                   .includes(:receiver, :ties, :relations)
                   .distinct
     @pagy, @contacts = pagy(@contacts)
