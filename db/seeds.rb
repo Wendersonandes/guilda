@@ -1,4 +1,4 @@
-puts "Seeding Social Stream core..."
+puts "Seeding Guilda core..."
 
 # ── Permissions & System Relations ──────────────────────────────
 permissions = Permission.instances([
@@ -20,11 +20,46 @@ puts "  Relations: Public(#{public_rel.id}) Follow(#{follow_rel.id}) Reject(#{re
 puts "\nCreating users & profiles..."
 
 users_data = [
-  { email: "ana@example.com",   name: "Ana Silva" },
-  { email: "bruno@example.com", name: "Bruno Costa" },
-  { email: "carla@example.com", name: "Carla Mendes" },
-  { email: "diego@example.com", name: "Diego Rocha" },
-  { email: "elisa@example.com", name: "Elisa Torres" }
+  {
+    email: "ana@example.com",
+    name: "Ana Silva",
+    city: "São Paulo",
+    state: "SP",
+    website: "https://anasilva.art.br",
+    description: "Artista visual contemporânea focada em pintura a óleo de grande formato e instalações urbanas. Graduada em Belas Artes pela USP."
+  },
+  {
+    email: "bruno@example.com",
+    name: "Bruno Costa",
+    city: "Rio de Janeiro",
+    state: "RJ",
+    website: "https://brunocostaexpografia.com",
+    description: "Arquiteto e expógrafo com 10 anos de experiência desenhando fluxos e espaços expositivos para museus e galerias."
+  },
+  {
+    email: "carla@example.com",
+    name: "Carla Mendes",
+    city: "Belo Horizonte",
+    state: "MG",
+    website: "https://carlamendescultura.com",
+    description: "Especialista em redação de projetos culturais para leis de incentivo (Rouanet/ProAC) e editais públicos."
+  },
+  {
+    email: "diego@example.com",
+    name: "Diego Rocha",
+    city: "São Paulo",
+    state: "SP",
+    website: "https://diegorochafoto.myportfolio.com",
+    description: "Fotógrafo especializado em registrar exposições, montagens e catálogo de obras de arte com fidelidade de cor."
+  },
+  {
+    email: "elisa@example.com",
+    name: "Elisa Torres",
+    city: "Curitiba",
+    state: "PR",
+    website: "https://elisatorreslogistica.com.br",
+    description: "Logística especializada em artes visuais. Transporte seguro de acervo, embalagem climatizada e laudo de estado para obras."
+  }
 ]
 
 users = {}
@@ -35,8 +70,20 @@ users_data.each do |data|
     user.profile_name = data[:name]
     user.save!
   end
+  
+  # Update custom profile attributes
+  profile = user.current_profile.actorable
+  profile.update!(
+    city: data[:city],
+    state: data[:state],
+    website: data[:website]
+  )
+  profile.actor.update!(
+    description: data[:description]
+  )
+
   users[data[:name].split.first.downcase.to_sym] = user
-  puts "  #{data[:name]} (#{data[:email]}) — profile: #{user.current_profile&.name}"
+  puts "  #{data[:name]} (#{data[:email]}) — profile: #{user.current_profile&.name} (#{profile.city}/#{profile.state})"
 end
 
 actors = users.transform_values { |u| u.current_profile }
@@ -59,29 +106,29 @@ end
 
 groups = {}
 
-groups[:dev] = create_group(
-  name: "Dev Team",
-  description: "Engineering squad — code, deploy, review.",
+groups[:sp] = create_group(
+  name: "Artistas de São Paulo",
+  description: "Hub para cooperação, compartilhamento de editais e montagem de projetos na capital paulista.",
   creator: actors[:ana]
 )
-puts "  Dev Team (admin: Ana)"
+puts "  Artistas de São Paulo (admin: Ana)"
 
-groups[:design] = create_group(
-  name: "Design Circle",
-  description: "UI/UX discussions, design critiques, and inspiration.",
+groups[:montagem] = create_group(
+  name: "Montagem e Expografia",
+  description: "Círculo de discussão técnica sobre cenografia, expografia, iluminação e transporte de acervos.",
   creator: actors[:bruno],
   privacy: :private_group
 )
-puts "  Design Circle (admin: Bruno, private)"
+puts "  Montagem e Expografia (admin: Bruno, private)"
 
-groups[:mkt] = create_group(
-  name: "Marketing Hub",
-  description: "Campaigns, analytics, and growth strategies.",
+groups[:editais] = create_group(
+  name: "Editais e Projetos",
+  description: "Espaço para compartilhar editais abertos, tirar dúvidas sobre escrita de projetos e articular parcerias.",
   creator: actors[:carla]
 )
-puts "  Marketing Hub (admin: Carla)"
+puts "  Editais e Projetos (admin: Carla)"
 
-# ── Memberships — Dev Team ──────────────────────────────────────
+# ── Memberships ─────────────────────────────────────────────────
 puts "\nEstablishing memberships..."
 
 def add_member(group, user, role: "member")
@@ -89,26 +136,25 @@ def add_member(group, user, role: "member")
   user.connect_to(group.actor, as: "member")
 end
 
-# Dev Team: Ana(admin), Bruno(mod), Carla(mod), Diego(member), Elisa(member)
-add_member(groups[:dev], actors[:bruno], role: "moderator")
-add_member(groups[:dev], actors[:carla], role: "moderator")
-add_member(groups[:dev], actors[:diego])
-add_member(groups[:dev], actors[:elisa])
-puts "  Dev Team: +Bruno(mod) +Carla(mod) +Diego(member) +Elisa(member)"
+# Artistas de São Paulo: Ana (admin), Diego (mod), Bruno (member), Carla (member)
+add_member(groups[:sp], actors[:diego], role: "moderator")
+add_member(groups[:sp], actors[:bruno])
+add_member(groups[:sp], actors[:carla])
+puts "  Artistas de São Paulo: +Diego(mod) +Bruno(member) +Carla(member)"
 
-# Design Circle: Bruno(admin), Ana(member), Carla(member), Elisa(member)
-add_member(groups[:design], actors[:ana])
-add_member(groups[:design], actors[:carla])
-add_member(groups[:design], actors[:elisa])
-puts "  Design Circle: +Ana(member) +Carla(member) +Elisa(member)"
+# Montagem e Expografia: Bruno (admin), Ana (member), Diego (member), Elisa (member)
+add_member(groups[:montagem], actors[:ana])
+add_member(groups[:montagem], actors[:diego])
+add_member(groups[:montagem], actors[:elisa])
+puts "  Montagem e Expografia: +Ana(member) +Diego(member) +Elisa(member)"
 
-# Marketing Hub: Carla(admin), Diego(mod), Ana(member), Bruno(member)
-add_member(groups[:mkt], actors[:diego], role: "moderator")
-add_member(groups[:mkt], actors[:ana])
-add_member(groups[:mkt], actors[:bruno])
-puts "  Marketing Hub: +Diego(mod) +Ana(member) +Bruno(member)"
+# Editais e Projetos: Carla (admin), Ana (member), Bruno (member), Elisa (member)
+add_member(groups[:editais], actors[:ana])
+add_member(groups[:editais], actors[:bruno])
+add_member(groups[:editais], actors[:elisa])
+puts "  Editais e Projetos: +Ana(member) +Bruno(member) +Elisa(member)"
 
-# ── Contacts (profile-to-profile follows) ───────────────────────
+# ── Contacts (follows) ──────────────────────────────────────────
 puts "\nCreating contacts..."
 actors[:ana].connect_to(actors[:bruno], as: "friend")
 actors[:ana].connect_to(actors[:carla], as: "friend")
@@ -132,70 +178,72 @@ def create_post(author:, owner:, title:, body: "")
   ).call
 end
 
-# Dev Team posts
+# Ana Silva posts
 create_post(
-  author: actors[:ana],   owner: groups[:dev].actor,
-  title: "Boas-vindas!",
-  body: "Primeiro post do time! Bem-vindos ao Dev Team. Vamos usar este espaço pra compartilhar novidades e discutir PRs."
-)
-create_post(
-  author: actors[:bruno], owner: groups[:dev].actor,
-  title: "Turbo 8 — alguém testou?",
-  body: "Alguém já testou o novo Turbo 8? Parece que o morphing está muito mais rápido agora."
-)
-create_post(
-  author: actors[:carla], owner: groups[:dev].actor,
-  title: "PR aberto — pipeline de CI",
-  body: "Acabei de abrir um PR com a refatoração do pipeline de CI. Reviews são bem-vindos!"
-)
-create_post(
-  author: actors[:diego], owner: groups[:dev].actor,
-  title: "Bug no worker de emails",
-  body: "Bug encontrado no worker de emails. Já estou trabalhando na correção, abro PR em 1h."
+  author: actors[:ana], owner: groups[:sp].actor,
+  title: "Procura-se Expógrafo em SP!",
+  body: "Olá pessoal! Acabo de ser selecionada no Edital do Centro Cultural SP e preciso de um expógrafo com urgência para desenhar o fluxo da exposição em Outubro. Quem tiver portfólio por aqui, por favor me envie!"
 )
 
-# Design Circle posts
-create_post(
-  author: actors[:bruno], owner: groups[:design].actor,
-  title: "Critique rounds — toda sexta",
-  body: "Postem aqui os designs que vocês estão trabalhando esta semana. Vamos fazer critique rounds toda sexta."
-)
-create_post(
-  author: actors[:carla], owner: groups[:design].actor,
-  title: "Referência: grid de 8px",
-  body: "Referência interessante no Dribbble — composição com grid de 8px que ficou muito limpa."
-)
-create_post(
-  author: actors[:elisa], owner: groups[:design].actor,
-  title: "Design system quase pronto",
-  body: "Novo design system está quase pronto. Componentes de formulário e data table já estão no Figma."
-)
-
-# Marketing Hub posts
-create_post(
-  author: actors[:carla], owner: groups[:mkt].actor,
-  title: "Resultados da campanha de Junho",
-  body: "Resultados da campanha de Junho: 12% crescimento orgânico. Vamos discutir na reunião de amanhã."
-)
-create_post(
-  author: actors[:diego], owner: groups[:mkt].actor,
-  title: "Dashboard no Metabase",
-  body: "Configurei o dashboard de analytics no Metabase. Quem quiser acesso, me avisa."
-)
-
-# Personal wall posts
 create_post(
   author: actors[:ana], owner: actors[:ana],
-  title: "Animada!",
-  body: "Acabei de entrar em 3 grupos! Animada pra colaborar com o time 😊"
-)
-create_post(
-  author: actors[:bruno], owner: actors[:bruno],
-  title: "Design Circle",
-  body: "Design Circle está crescendo. Se você curte UI/UX, cola lá!"
+  title: "Nova série de Pinturas finalizada",
+  body: "Terminei hoje a última tela da série 'Cores da Cidade'. São trabalhos em grande formato explorando texturas de asfalto e pigmentos minerais. Animada para expor!"
 )
 
-puts "  11 posts created"
+# Bruno Costa posts
+create_post(
+  author: actors[:bruno], owner: groups[:montagem].actor,
+  title: "Dica de Expografia: Circulação",
+  body: "Em espaços pequenos, evite criar barreiras visuais no centro da sala. Use painéis suspensos ou divisórias leves para orientar o olhar sem sufocar o visitante."
+)
+
+create_post(
+  author: actors[:bruno], owner: actors[:bruno],
+  title: "Renderização 3D de Projeto Expositivo",
+  body: "Compartilhando os renders 3D que criei para a próxima exposição coletiva de fotógrafos. O foco foi a iluminação direcionada para destacar o contraste das fotos."
+)
+
+# Carla Mendes posts
+create_post(
+  author: actors[:carla], owner: groups[:editais].actor,
+  title: "Edital Funarte Aberto!",
+  body: "Saiu o novo edital de fomento às artes visuais. Vou fazer uma live explicando os critérios de pontuação da planilha financeira nesta quarta às 19h."
+)
+
+create_post(
+  author: actors[:carla], owner: groups[:editais].actor,
+  title: "Guia Rápido: Carta de Anuência",
+  body: "Amigos, lembrem-se: a Carta de Anuência para editais públicos deve detalhar a função exata do profissional e estar assinada digitalmente. Não deixem para a última hora!"
+)
+
+# Diego Rocha posts
+create_post(
+  author: actors[:diego], owner: groups[:montagem].actor,
+  title: "Importância do Registro de Montagem",
+  body: "Registrar o processo de montagem (o 'por trás das câmeras') agrega muito valor ao portfólio do artista e da galeria. Mostra o trabalho invisível que acontece antes da abertura."
+)
+
+create_post(
+  author: actors[:diego], owner: groups[:sp].actor,
+  title: "Equipamento pronto para amanhã",
+  body: "Lentes limpas, flashes carregados e cartão formatado. Amanhã é dia de registrar o acervo completo da nova galeria no Jardins."
+)
+
+# Elisa Torres posts
+create_post(
+  author: actors[:elisa], owner: groups[:montagem].actor,
+  title: "Embalagem para Obras de Grande Formato",
+  body: "Trabalho recente: embalagem em caixa de madeira tratada com revestimento de espuma de alta densidade para transporte terrestre intermunicipal seguro."
+)
+
+create_post(
+  author: actors[:elisa], owner: groups[:editais].actor,
+  title: "Planejamento Logístico para Editais",
+  body: "Na escrita de projetos, nunca subestimem o custo do transporte. Caixas de madeira e caminhão climatizado têm valores específicos que precisam estar previstos na planilha orçamentária."
+)
+
+puts "  10 posts created"
 
 # ── Comments ────────────────────────────────────────────────────
 puts "\nCreating comments..."
@@ -212,106 +260,108 @@ end
 
 # Find posts by their titles
 posts = Activity.where(verb: :post).to_a
-welcome_post      = posts.find { |p| p.direct_object&.title&.include?("Boas-vindas") }
-turbo_post        = posts.find { |p| p.direct_object&.title&.include?("Turbo 8") }
-ci_pr_post        = posts.find { |p| p.direct_object&.title&.include?("PR aberto") }
-campaign_post     = posts.find { |p| p.direct_object&.title&.include?("Resultados") }
-animada_post      = posts.find { |p| p.direct_object&.title&.include?("Animada") }
+welcome_post      = posts.find { |p| p.direct_object&.title&.include?("Procura-se Expógrafo") }
+turbo_post        = posts.find { |p| p.direct_object&.title&.include?("Dica de Expografia") }
+ci_pr_post        = posts.find { |p| p.direct_object&.title&.include?("Edital Funarte") }
+campaign_post     = posts.find { |p| p.direct_object&.title&.include?("Guia Rápido") }
+animada_post      = posts.find { |p| p.direct_object&.title&.include?("Nova série") }
 
 initial_activity_count = Activity.count
 
-# ── Dev Team: Boas-vindas! ──
+# ── Comment threads ──
+
+# Post 1: Procura-se Expógrafo em SP! (welcome_post)
 c1 = create_comment(
   author: actors[:bruno],
   parent_activity: welcome_post,
-  text: "Bem-vinda, @[Ana Silva](ana-silva)! Ótimo termos esse espaço. Vai facilitar muito a comunicação do time."
+  text: "Parabéns pelo edital, @[Ana Silva](ana-silva)! Tenho muito interesse. Acabo de subir no meu portfólio alguns renders em 3D de projetos expositivos parecidos. Se quiser, podemos conversar!"
 )
 
 c2 = create_comment(
   author: actors[:carla],
   parent_activity: welcome_post,
-  text: "Isso mesmo! Finalmente um lugar organizado pra gente discutir código sem poluir o chat."
+  text: "Que notícia maravilhosa, Ana! Se você precisar de ajuda com a prestação de contas do edital depois, me avisa. Já fiz a gestão de dois projetos nesse mesmo espaço."
 )
 
 # Reply to Bruno's comment (depth 1 → 2)
 c3 = create_comment(
   author: actors[:ana],
   parent_activity: c1,
-  text: "Obrigada, Bruno! A ideia é manter tudo aqui mesmo — decisões, PRs, discussões técnicas."
+  text: "Obrigada, Bruno! Adorei o seu portfólio. Vou te mandar uma mensagem privada para combinarmos uma reunião esta semana para te mostrar a planta do espaço."
 )
 
 c4 = create_comment(
   author: actors[:diego],
   parent_activity: c1,
-  text: "Apoiado! Já vou migrar as discussões técnicas do WhatsApp pra cá."
+  text: "Se precisarem de documentação fotográfica da montagem e da exposição final, estou disponível! Tenho bastante experiência com iluminação de obras de arte."
 )
 
 # Reply to Diego's reply (depth 2 → 3)
 create_comment(
   author: actors[:bruno],
   parent_activity: c4,
-  text: "Boa, Diego! WhatsApp é um buraco negro de informação. Aquilo some em 2 dias."
+  text: "Excelente, Diego! Com certeza vamos precisar. Um bom registro faz toda a diferença para o portfólio de expografia também."
 )
 
-# ── Dev Team: Turbo 8 ──
+# Post 2: Dica de Expografia: Circulação (turbo_post)
 create_comment(
   author: actors[:ana],
   parent_activity: turbo_post,
-  text: "Testei sim! O morphing realmente deu um salto. O cache de página inteira ficou muito mais esperto."
+  text: "Dica de ouro, Bruno! Na minha última exposição, erramos um pouco na circulação perto da entrada e gerou um gargalo nos dias de abertura mais cheios."
 )
 
 c5 = create_comment(
   author: actors[:elisa],
   parent_activity: turbo_post,
-  text: "Ainda não testei, mas li o changelog. A parte de stream updates paralelos me chamou atenção."
+  text: "E complementando pelo lado da logística: pensem sempre se a largura das portas e passagens condiz com o tamanho da maior obra a ser transportada para dentro da sala."
 )
 
 # Reply to Elisa's comment
 create_comment(
   author: actors[:bruno],
   parent_activity: c5,
-  text: "Sim! Dá pra fazer broadcast de Turbo Stream de múltiplas origens agora. Vou preparar uma demo."
+  text: "Exatamente, Elisa! O laudo de acessibilidade física e a logística de montagem devem ser pensados em conjunto com a expografia."
 )
 
-# ── Dev Team: PR aberto ──
+# Post 3: Edital Funarte Aberto! (ci_pr_post)
 c6 = create_comment(
   author: actors[:diego],
   parent_activity: ci_pr_post,
-  text: "Bacana, @[Carla Mendes](carla-mendes)! Dei uma olhada no PR. A separação dos stages ficou muito mais clara."
+  text: "Muito obrigado por compartilhar, @[Carla Mendes](carla-mendes)! Essa live vai ser fundamental, pois a planilha orçamentária da Funarte sempre gera muitas dúvidas."
 )
 
 # Reply to Diego
 create_comment(
   author: actors[:carla],
   parent_activity: c6,
-  text: "Valeu! Ainda quero adicionar cache dos estágios que não mudaram. Mas já está funcional."
+  text: "Com certeza, Diego! Vou focar bastante na parte de contratação de fornecedores (como expógrafos, transportadoras e fotógrafos) para não faltar verba na execução."
 )
 
-# ── Marketing Hub: Resultados ──
+# Post 4: Guia Rápido: Carta de Anuência (campaign_post)
 c7 = create_comment(
   author: actors[:diego],
   parent_activity: campaign_post,
-  text: "12% orgânico é um número excelente! Qual canal teve melhor performance?"
+  text: "Excelente lembrete. Muitos artistas esquecem de me pedir a anuência e acabam correndo no último dia de inscrição do edital."
 )
 
 # Reply to Diego
 create_comment(
   author: actors[:carla],
   parent_activity: c7,
-  text: "LinkedIn surpreendeu — 8% dos 12% vieram de orgânico lá. Vamos dobrar a frequência de posts."
+  text: "Sim! E sem a assinatura correta de todos os membros da equipe técnica, a proposta é desclassificada na fase de habilitação documental. É um erro bobo mas super comum."
 )
 
-# ── Personal: Animada! ──
+# Post 5: Nova série de Pinturas finalizada (animada_post)
 create_comment(
   author: actors[:bruno],
   parent_activity: animada_post,
-  text: "Que bom te ver engajada, Ana! A plataforma fica muito melhor com todo mundo participando."
+  text: "As texturas ficaram incríveis, Ana! A iluminação para essas telas vai precisar ser bem rasante para destacar o relevo da tinta."
 )
 
 create_comment(
   author: actors[:carla],
   parent_activity: animada_post,
-  text: "Verdade! E os grupos estão bem ativos. Design Circle já tem discussões muito boas."
+  text: "Uau, trabalho magnífico! Parabéns, Ana. Certamente trará um impacto visual fortíssimo no espaço expositivo."
 )
 
 comment_count = Activity.count - initial_activity_count
@@ -324,10 +374,10 @@ puts "#{'='*60}"
 puts "  Users:     #{User.count} (#{Profile.count} profiles)"
 puts "  Groups:    #{Group.count}"
 puts "  Actors:    #{Actor.count}"
-puts "  Contacts:  #{Contact.count}"
-puts "  Ties:      #{Tie.count}"
-puts "  Activities: #{Activity.count}"
-puts "  Relations: #{Relation::Custom.count} custom"
-puts "#{'='*60}"
-puts "\nLogin with any email above, password: password123"
-puts "Try: http://localhost:3000/groups/#{groups[:dev].actor.slug}"
+  puts "  Contacts:  #{Contact.count}"
+  puts "  Ties:      #{Tie.count}"
+  puts "  Activities: #{Activity.count}"
+  puts "  Relations: #{Relation::Custom.count} custom"
+  puts "#{'='*60}"
+  puts "\nLogin with any email above, password: password123"
+  puts "Try: http://localhost:3000/groups/#{groups[:sp].actor.slug}"
