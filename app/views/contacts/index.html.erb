@@ -1,28 +1,28 @@
 <%= content_for :title, "Contacts" %>
 
-<h1 class="text-2xl font-bold text-gray-900 tracking-tight">Contacts</h1>
+<h1 class="text-2xl font-serif font-bold text-charcoal tracking-tight mb-6">Contacts</h1>
 
 <% if @pending.any? %>
-  <div class="bg-yellow-50/60 border border-yellow-200/80 rounded-xl p-5 shadow-sm space-y-4">
-    <h2 class="text-sm font-semibold text-yellow-800 flex items-center gap-1.5">
-      <i data-lucide="bell-ring" class="w-4 h-4 text-yellow-600"></i>
+  <div class="bg-stone-50 border border-stone-border rounded-lg p-5 mb-6 space-y-4 shadow-sm">
+    <h2 class="text-sm font-semibold text-brand flex items-center gap-1.5">
+      <i data-lucide="bell-ring" class="w-4 h-4 text-brand"></i>
       <span>Pending Requests</span>
     </h2>
-    <div class="divide-y divide-yellow-100/50">
+    <div class="divide-y divide-stone-150">
       <% @pending.each do |contact| %>
         <div class="flex items-center justify-between py-2.5 first:pt-0 last:pb-0">
           <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-full bg-yellow-100 text-yellow-800 flex items-center justify-center font-bold text-xs border border-yellow-200">
+            <div class="w-8 h-8 rounded-full bg-stone-200 text-charcoal flex items-center justify-center font-bold text-xs border border-stone-300">
               <%= contact.sender.name.first.upcase %>
             </div>
-            <span class="text-sm font-medium text-gray-800"><%= link_to contact.sender.name, public_path_for(contact.sender), class: "hover:text-blue-600 transition-colors" %></span>
+            <span class="text-sm font-semibold text-charcoal"><%= link_to contact.sender.name, public_path_for(contact.sender), class: "hover:text-brand transition-colors" %></span>
           </div>
           <div class="flex gap-2">
-            <%= button_to contacts_path(actor_id: contact.sender.slug, as: :friend), params: { actor_id: contact.sender.slug }, class: "inline-flex items-center gap-1 text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-3 py-1.5 rounded-lg transition-colors shadow-sm cursor-pointer border-0" do %>
+            <%= button_to contacts_path(actor_id: contact.sender.slug, as: :friend), params: { actor_id: contact.sender.slug }, class: "inline-flex items-center gap-1 text-xs bg-charcoal hover:bg-zinc-800 text-white font-medium px-3 py-1.5 rounded-lg transition-colors cursor-pointer border-0 shadow-sm" do %>
               <i data-lucide="user-check" class="w-3.5 h-3.5"></i>
               <span>Accept</span>
             <% end %>
-            <%= button_to contact_path(contact), method: :delete, class: "inline-flex items-center gap-1 text-xs bg-white hover:bg-red-50 text-red-600 hover:text-red-700 border border-red-200 px-3 py-1.5 rounded-lg font-medium transition-colors cursor-pointer" do %>
+            <%= button_to contact_path(contact), method: :delete, class: "inline-flex items-center gap-1 text-xs bg-white hover:bg-stone-50 text-red-600 hover:text-red-700 border border-stone-300 px-3 py-1.5 rounded-lg font-medium transition-colors cursor-pointer" do %>
               <i data-lucide="user-x" class="w-3.5 h-3.5"></i>
               <span>Decline</span>
             <% end %>
@@ -34,23 +34,23 @@
 <% end %>
 
 <% if @contacts.any? %>
-  <div class="bg-white rounded-xl border border-gray-200/80 shadow-sm divide-y divide-gray-100 overflow-hidden">
+  <div class="bg-white rounded-lg border border-stone-border divide-y divide-stone-100 overflow-hidden">
     <% @contacts.each do |contact| %>
-      <div class="flex items-center justify-between p-4 hover:bg-gray-50/50 transition-colors">
+      <div class="flex items-center justify-between p-4 hover:bg-stone-50/50 transition-colors">
         <div class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-xs border border-blue-100">
+          <div class="w-9 h-9 rounded-full bg-stone-100 text-charcoal flex items-center justify-center font-bold text-xs border border-stone-border">
             <%= contact.receiver.name.first.upcase %>
           </div>
           <div class="flex flex-col min-w-0">
-            <span class="font-semibold text-gray-900 text-sm"><%= link_to contact.receiver.name, public_path_for(contact.receiver), class: "hover:text-blue-600 transition-colors" %></span>
+            <span class="font-semibold text-charcoal text-sm"><%= link_to contact.receiver.name, public_path_for(contact.receiver), class: "hover:text-brand transition-colors" %></span>
             <div class="flex flex-wrap gap-1 mt-0.5">
               <% contact.relations.each do |rel| %>
-                <span class="text-[10px] font-medium bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded-md"><%= rel.name %></span>
+                <span class="text-[10px] font-semibold bg-stone-100 text-zinc-700 border border-stone-200 px-1.5 py-0.5 rounded-md"><%= rel.name %></span>
               <% end %>
             </div>
           </div>
         </div>
-        <%= button_to contact_path(contact), method: :delete, class: "flex items-center gap-1 text-xs text-gray-400 hover:text-red-600 bg-transparent border-0 cursor-pointer transition-colors p-0 font-medium" do %>
+        <%= button_to contact_path(contact), method: :delete, class: "flex items-center gap-1 text-xs text-zinc-400 hover:text-red-600 bg-transparent border-0 cursor-pointer transition-colors p-0 font-medium" do %>
           <i data-lucide="user-minus" class="w-4 h-4"></i>
           <span>Remove</span>
         <% end %>
@@ -58,38 +58,15 @@
     <% end %>
   </div>
 <% else %>
-  <div class="text-center text-gray-500 py-16 bg-white rounded-xl border border-gray-200/80 p-8 shadow-sm">
-    <div class="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-3 border border-gray-100">
-      <i data-lucide="users-2" class="w-6 h-6 text-gray-400"></i>
+  <div class="text-center text-zinc-500 py-16 bg-white rounded-lg border border-stone-border p-8 shadow-sm">
+    <div class="w-12 h-12 bg-stone-50 rounded-full flex items-center justify-center mx-auto mb-3 border border-stone-100">
+      <i data-lucide="users-2" class="w-6 h-6 text-zinc-400"></i>
     </div>
-    <h3 class="text-base font-semibold text-gray-900">No contacts yet</h3>
-    <p class="text-sm text-gray-500 mt-1 max-w-sm mx-auto">Visit a profile or group page to connect and build your network.</p>
+    <h3 class="text-base font-semibold text-charcoal">No contacts yet</h3>
+    <p class="text-sm text-zinc-500 mt-1 max-w-sm mx-auto">Visit a profile or group page to connect and build your network.</p>
   </div>
 <% end %>
 
 <% if @pagy.pages > 1 %>
   <div class="mt-6 flex justify-center"><%== pagy_nav(@pagy) %></div>
-<% end %>
-
-<% content_for :right_sidebar do %>
-  <div class="bg-white rounded-xl border border-gray-200/80 p-5 shadow-sm sticky top-20 space-y-4">
-    <div>
-      <h3 class="text-sm font-semibold text-gray-900 flex items-center gap-1.5">
-        <i data-lucide="sparkles" class="w-4 h-4 text-blue-600"></i>
-        <span>Suggestions</span>
-      </h3>
-      <p class="text-xs text-gray-500 mt-0.5">People you might want to connect with</p>
-    </div>
-
-    <% if current_actor %>
-      <%= turbo_frame_tag "sidebar_suggestions",
-                          data: {
-                            controller: "turbo-frame-reload",
-                            action: "contact:changed@window->turbo-frame-reload#reload",
-                            turbo_frame_reload_url_value: suggestions_path
-                          } do %>
-        <%= render "shared/sidebar_suggestions" %>
-      <% end %>
-    <% end %>
-  </div>
 <% end %>
