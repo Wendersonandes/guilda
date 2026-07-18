@@ -14,6 +14,7 @@ module ActiveSupport
 
     def create_profile_for(user, name: nil)
       actor = ProfileCreation.new(user, name: name || user.email.split("@").first).call
+      actor.actorable.update!(wizard_complete: true, country: "BR", state: "SP", city: "São Paulo", occupation_list: ["Developer"])
       user.update!(current_profile: actor)
       actor
     end

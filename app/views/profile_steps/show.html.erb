@@ -1,0 +1,42 @@
+<% content_for :no_sidebar, true %>
+<%= content_for :title, "Completar Perfil" %>
+
+<div class="max-w-2xl mx-auto py-8">
+  <%= turbo_frame_tag "wizard_frame", data: { turbo_action: "advance" } do %>
+    <div class="space-y-6">
+      <div>
+        <h1 class="text-2xl font-serif font-bold text-charcoal tracking-tight mb-1">Completar Perfil</h1>
+        <p class="text-sm text-zinc-500">
+          <% if step == :location %>
+            Preencha sua localização para que outros usuários possam encontrar você facilmente.
+          <% else %>
+            Defina seu campo de atuação. Selecione pelo menos 1 categoria profissional.
+          <% end %>
+        </p>
+      </div>
+
+      <div class="bg-white rounded-lg border border-stone-border p-6">
+        <%= form_with(
+          model: @profile,
+          url: wizard_path,
+          method: :put,
+          class: "space-y-6",
+          data: step == Profile::FORM_STEPS.keys.last ? { turbo_frame: "_top" } : {}
+        ) do |f| %>
+          
+          <%= render partial: "profile_steps/#{step}", locals: { f: f } %>
+          
+          <div class="flex items-center justify-between border-t border-stone-100 pt-5 mt-6">
+            <% if step == Profile::FORM_STEPS.keys.first %>
+              <div></div>
+            <% else %>
+              <%= link_to "Voltar", previous_wizard_path, class: "text-sm font-medium text-zinc-500 hover:text-charcoal transition-colors" %>
+            <% end %>
+            
+            <%= f.submit step == Profile::FORM_STEPS.keys.last ? "Finalizar" : "Continuar", class: "bg-charcoal hover:bg-zinc-800 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ml-auto" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>

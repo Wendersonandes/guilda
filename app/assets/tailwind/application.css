@@ -13,7 +13,7 @@
   display: none;
 }
 
-.comment_folder_button:checked ~ .comment_content {
+.comment_folder_button:checked ~ .comment_content .comment_collapsible {
   display: none;
 }
 

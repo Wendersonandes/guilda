@@ -50,6 +50,17 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_select "h1", "Artists & Suppliers"
   end
 
+  test "should not include incomplete profiles in index" do
+    sign_in @user
+    other_user = users(:bob)
+    other_actor = create_profile_for(other_user, name: "Bob Incomplete")
+    other_actor.actorable.update_columns(wizard_complete: false)
+    
+    get profiles_path
+    assert_response :success
+    assert_select "h2", text: /Bob Incomplete/, count: 0
+  end
+
   test "should filter profiles index by query" do
     sign_in @user
     other_user = users(:bob)

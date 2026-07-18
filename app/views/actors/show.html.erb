@@ -31,6 +31,16 @@
             <p class="text-sm text-zinc-600 mt-1 leading-relaxed"><%= @actor.description %></p>
           <% end %>
 
+          <% if @actor.actorable.is_a?(Profile) && @actor.actorable.occupations.any? %>
+            <div class="flex flex-wrap gap-1.5 mt-2.5">
+              <% @actor.actorable.occupations.each do |occupation| %>
+                <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-stone-100 text-zinc-600 border border-stone-200">
+                  <%= occupation.name %>
+                </span>
+              <% end %>
+            </div>
+          <% end %>
+
           <!-- Profile Specific Location / Website -->
           <% if @actor.actorable.is_a?(Profile) %>
             <% profile = @actor.actorable %>

@@ -10,6 +10,16 @@
 <h1 class="text-2xl font-serif font-bold text-charcoal tracking-tight mb-6">Edit Profile</h1>
 
 <%= form_with model: @profile, url: my_profile_path, method: :patch, class: "bg-white rounded-lg border border-stone-border p-6 space-y-6" do |f| %>
+  <% if @profile.errors.any? %>
+    <div class="rounded-lg bg-red-50 p-4 text-sm text-red-600 border border-red-100 mb-6">
+      <ul class="list-disc pl-5">
+        <% @profile.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
   <%= f.fields_for :actor do |af| %>
     <%= af.hidden_field :id %>
     
@@ -104,6 +114,39 @@
         <%= f.label :address, "Address", class: "block text-xs font-medium text-zinc-500" %>
         <%= f.text_field :address, class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal" %>
       </div>
+    </div>
+  </div>
+
+  <div class="border-t border-stone-100 pt-4 space-y-4" data-controller="occupations">
+    <div class="flex items-center justify-between pb-1">
+      <h3 class="text-sm font-semibold text-charcoal flex items-center gap-1.5">
+        <i data-lucide="briefcase" class="w-4 h-4 text-zinc-400"></i>
+        <span>Categorias Profissionais</span>
+      </h3>
+      <span class="text-xs text-zinc-500">Selecione até 3 áreas de atuação</span>
+    </div>
+    
+    <div data-occupations-target="warning" class="hidden rounded-lg bg-red-50 p-3 text-sm text-red-600 border border-red-100 transition-all">
+      Você já selecionou o limite máximo de 3 categorias.
+    </div>
+
+    <div class="flex flex-wrap gap-2">
+      <% Profile::OCCUPATIONS.each do |occupation| %>
+        <% name = occupation["name"] %>
+        <% description = occupation["description"] %>
+        <label class="relative inline-flex items-center cursor-pointer group" title="<%= description %>">
+          <%= f.check_box :occupation_list, 
+                { multiple: true, 
+                  class: "peer sr-only",
+                  data: { occupations_target: "checkbox", action: "change->occupations#toggle" }
+                }, 
+                name, nil %>
+          
+          <div class="px-3 py-1.5 text-sm font-medium rounded-full border border-stone-200 bg-white text-zinc-600 hover:bg-stone-50 peer-checked:bg-charcoal peer-checked:text-white peer-checked:border-charcoal peer-checked:hover:bg-zinc-800 transition-all whitespace-nowrap">
+            <%= name %>
+          </div>
+        </label>
+      <% end %>
     </div>
   </div>
 

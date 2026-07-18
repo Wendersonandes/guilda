@@ -26,7 +26,8 @@ users_data = [
     city: "São Paulo",
     state: "SP",
     website: "https://anasilva.art.br",
-    description: "Artista visual contemporânea focada em pintura a óleo de grande formato e instalações urbanas. Graduada em Belas Artes pela USP."
+    description: "Artista visual contemporânea focada em pintura a óleo de grande formato e instalações urbanas. Graduada em Belas Artes pela USP.",
+    occupations: ["Design de Portfólio"]
   },
   {
     email: "bruno@example.com",
@@ -34,7 +35,8 @@ users_data = [
     city: "Rio de Janeiro",
     state: "RJ",
     website: "https://brunocostaexpografia.com",
-    description: "Arquiteto e expógrafo com 10 anos de experiência desenhando fluxos e espaços expositivos para museus e galerias."
+    description: "Arquiteto e expógrafo com 10 anos de experiência desenhando fluxos e espaços expositivos para museus e galerias.",
+    occupations: ["Expografia", "Montador de Exposições"]
   },
   {
     email: "carla@example.com",
@@ -42,7 +44,8 @@ users_data = [
     city: "Belo Horizonte",
     state: "MG",
     website: "https://carlamendescultura.com",
-    description: "Especialista em redação de projetos culturais para leis de incentivo (Rouanet/ProAC) e editais públicos."
+    description: "Especialista em redação de projetos culturais para leis de incentivo (Rouanet/ProAC) e editais públicos.",
+    occupations: ["Escrita de Projetos", "Prestação de Contas", "Produtora Cultural"]
   },
   {
     email: "diego@example.com",
@@ -50,7 +53,8 @@ users_data = [
     city: "São Paulo",
     state: "SP",
     website: "https://diegorochafoto.myportfolio.com",
-    description: "Fotógrafo especializado em registrar exposições, montagens e catálogo de obras de arte com fidelidade de cor."
+    description: "Fotógrafo especializado em registrar exposições, montagens e catálogo de obras de arte com fidelidade de cor.",
+    occupations: ["Assessoria de Comunicação"]
   },
   {
     email: "elisa@example.com",
@@ -58,7 +62,8 @@ users_data = [
     city: "Curitiba",
     state: "PR",
     website: "https://elisatorreslogistica.com.br",
-    description: "Logística especializada em artes visuais. Transporte seguro de acervo, embalagem climatizada e laudo de estado para obras."
+    description: "Logística especializada em artes visuais. Transporte seguro de acervo, embalagem climatizada e laudo de estado para obras.",
+    occupations: ["Transporte de Obras", "Produção de Exposições"]
   }
 ]
 
@@ -76,7 +81,8 @@ users_data.each do |data|
   profile.update!(
     city: data[:city],
     state: data[:state],
-    website: data[:website]
+    website: data[:website],
+    occupation_list: data[:occupations]
   )
   profile.actor.update!(
     description: data[:description]

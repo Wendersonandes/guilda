@@ -85,3 +85,7 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+
+gem "acts-as-taggable-on"
+
+gem "wicked", "~> 2.0"

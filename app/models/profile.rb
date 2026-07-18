@@ -2,20 +2,21 @@
 #
 # Table name: profiles
 #
-#  id           :bigint           not null, primary key
-#  address      :string
-#  birthday     :date
-#  city         :string
-#  country      :string
-#  mobile       :string
-#  organization :string
-#  phone        :string
-#  state        :string
-#  website      :string
-#  zipcode      :string
-#  created_at   :datetime         not null
-#  updated_at   :datetime         not null
-#  user_id      :bigint           not null
+#  id              :bigint           not null, primary key
+#  address         :string
+#  birthday        :date
+#  city            :string
+#  country         :string
+#  mobile          :string
+#  organization    :string
+#  phone           :string
+#  state           :string
+#  website         :string
+#  wizard_complete :boolean          default(FALSE), not null
+#  zipcode         :string
+#  created_at      :datetime         not null
+#  updated_at      :datetime         not null
+#  user_id         :bigint           not null
 #
 # Indexes
 #
@@ -46,6 +47,63 @@ class Profile < ApplicationRecord
            to: :actor, allow_nil: true
 
   accepts_nested_attributes_for :actor, update_only: true
+  attr_accessor :form_step
 
   validates :user, presence: true
+
+  FORM_STEPS = {
+    location: [:country, :state, :city],
+    occupation: [:occupation_list]
+  }.freeze
+
+  validates :country, :state, :city, presence: true, if: -> { required_for_step?(:location) }
+  validate :occupations_limit
+  validate :occupations_presence, if: -> { required_for_step?(:occupation) }
+
+  acts_as_taggable_on :occupations
+
+  OCCUPATIONS = YAML.load_file(Rails.root.join('config', 'occupations.yml'))['occupations'].freeze
+
+  def required_for_step?(step)
+    # Full-model validation when form_step is nil (e.g. after wizard is complete)
+    # Note: we use wizard_complete? to determine if we should validate everything
+    return true if wizard_complete?
+    return false if form_step.nil? # allows ProfileCreation to make a blank profile
+
+    step_keys = self.class::FORM_STEPS.keys
+    step_keys.index(form_step.to_sym) >= step_keys.index(step.to_sym)
+  end
+
+  def current_step
+    if country.blank? || state.blank? || city.blank?
+      :location
+    else
+      :occupation
+    end
+  end
+
+  def allowed_step?(step_name)
+    return true if step_name.to_sym == :location
+    if step_name.to_sym == :occupation
+      country.present? && state.present? && city.present?
+    else
+      false
+    end
+  end
+
+  private
+
+  def occupations_limit
+    if occupation_list.size > 3
+      errors.add(:occupation_list, "não pode ter mais do que 3 categorias")
+    end
+  end
+
+  def occupations_presence
+    if occupation_list.empty?
+      errors.add(:occupation_list, "selecione pelo menos 1 categoria")
+    end
+  end
+
+
 end

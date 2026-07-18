@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   devise_for :users
 
   # Core social — perfil e grupos
+  resources :profile_steps, only: [:show, :update]
   resources :actors, only: [ :index, :show ]
   resource :my_profile, path: "my/profile", only: [ :show, :edit, :update ], controller: "profiles"
   resources :profiles, only: [ :index ]

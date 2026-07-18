@@ -1,0 +1,33 @@
+<% if @profile.errors.any? %>
+  <div class="rounded-lg bg-red-50 p-4 text-sm text-red-600 border border-red-100 mb-6">
+    <ul class="list-disc pl-5">
+      <% @profile.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<div data-controller="location" class="grid grid-cols-2 gap-4">
+  <div class="space-y-1">
+    <%= f.label :country, "Country", class: "block text-xs font-medium text-zinc-500" %>
+    <%= f.country_select :country, { only: ["BR"] }, {
+      data: { location_target: "country", action: "change->location#countryChanged" },
+      class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal"
+    } %>
+  </div>
+  <div class="space-y-1">
+    <%= f.label :state, "State", class: "block text-xs font-medium text-zinc-500" %>
+    <%= f.select :state, @states || [], { include_blank: "Select" }, {
+      data: { location_target: "state", action: "change->location#stateChanged" },
+      class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal"
+    } %>
+  </div>
+  <div class="space-y-1">
+    <%= f.label :city, "City", class: "block text-xs font-medium text-zinc-500" %>
+    <%= f.select :city, @cities || [], { include_blank: "Select" }, {
+      data: { location_target: "city" },
+      class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal"
+    } %>
+  </div>
+</div>

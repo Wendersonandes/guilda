@@ -1,0 +1,42 @@
+<% if @profile.errors.any? %>
+  <div class="rounded-lg bg-red-50 p-4 text-sm text-red-600 border border-red-100 mb-6">
+    <ul class="list-disc pl-5">
+      <% @profile.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<div data-controller="occupations">
+  <div class="flex items-center justify-between pb-4">
+    <h3 class="text-sm font-semibold text-charcoal flex items-center gap-1.5">
+      <i data-lucide="briefcase" class="w-4 h-4 text-zinc-400"></i>
+      <span>Categorias Profissionais</span>
+    </h3>
+    <span class="text-xs text-zinc-500">Selecione entre 1 e 3 áreas de atuação</span>
+  </div>
+  
+  <div data-occupations-target="warning" class="hidden rounded-lg bg-red-50 p-3 text-sm text-red-600 border border-red-100 transition-all mb-4">
+    Você já selecionou o limite máximo de 3 categorias.
+  </div>
+
+  <div class="flex flex-wrap gap-2">
+    <% Profile::OCCUPATIONS.each do |occupation| %>
+      <% name = occupation["name"] %>
+      <% description = occupation["description"] %>
+      <label class="relative inline-flex items-center cursor-pointer group" title="<%= description %>">
+        <%= f.check_box :occupation_list, 
+              { multiple: true, 
+                class: "peer sr-only",
+                data: { occupations_target: "checkbox", action: "change->occupations#toggle" }
+              }, 
+              name, nil %>
+        
+        <div class="px-3 py-1.5 text-sm font-medium rounded-full border border-stone-200 bg-white text-zinc-600 hover:bg-stone-50 peer-checked:bg-charcoal peer-checked:text-white peer-checked:border-charcoal peer-checked:hover:bg-zinc-800 transition-all whitespace-nowrap">
+          <%= name %>
+        </div>
+      </label>
+    <% end %>
+  </div>
+</div>

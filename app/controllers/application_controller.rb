@@ -22,6 +22,7 @@ class ApplicationController < ActionController::Base
   stale_when_importmap_changes
 
   before_action :authenticate_user!
+  before_action :ensure_wizard_complete!
   before_action :configure_permitted_parameters, if: :devise_controller?
   after_action :verify_authorized, unless: :devise_controller?
   after_action :verify_policy_scoped, if: -> { action_name == "index" }, unless: :devise_controller?
@@ -29,6 +30,15 @@ class ApplicationController < ActionController::Base
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
   private
+
+  def ensure_wizard_complete!
+    return if devise_controller? || controller_name == "profile_steps" || controller_name == "locations"
+    return unless current_user && current_actor
+
+    if current_actor.actorable_type == "Profile" && !current_actor.actorable.wizard_complete?
+      redirect_to profile_step_path(current_actor.actorable.current_step)
+    end
+  end
 
   # The {Actor} the signed-in {User} is currently acting as. This is the entity handed to
   # Pundit policies and used throughout the domain layer.

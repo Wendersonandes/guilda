@@ -57,6 +57,16 @@
                     <p class="text-xs text-zinc-400 italic min-h-[2rem] leading-relaxed">No biography provided.</p>
                   <% end %>
 
+                  <% if profile.occupations.any? %>
+                    <div class="flex flex-wrap gap-1.5 mt-2">
+                      <% profile.occupations.each do |occupation| %>
+                        <span class="inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-medium bg-stone-100 text-zinc-600 border border-stone-200">
+                          <%= occupation.name %>
+                        </span>
+                      <% end %>
+                    </div>
+                  <% end %>
+
                   <!-- Location & Website -->
                   <% if profile.city.present? || profile.state.present? || profile.website.present? %>
                     <div class="flex flex-wrap gap-x-3 gap-y-1 pt-1.5 text-[11px] font-medium text-zinc-500">
