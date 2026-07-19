@@ -40,7 +40,9 @@ class GroupMembershipService
   def remove(role: nil)
     if role
       @group.disconnect_from(@member, role)
-      @member.disconnect_from(@group, role)
+      if @group.ties_to(@member).empty?
+        @member.disconnect_from(@group, "follow")
+      end
       [@group, @member].each do |actor|
         other = actor == @group ? @member : @group
         contact = actor.contact_to(other)

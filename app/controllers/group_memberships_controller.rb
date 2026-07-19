@@ -65,7 +65,7 @@ class GroupMembershipsController < ApplicationController
 
       ActiveRecord::Base.transaction do
         existing&.destroy
-        @member.connect_to(@group_actor, as: "member")
+        @member.connect_to(@group_actor, as: "follow")
         if @group.public_group?
           @group_actor.connect_to(@member, as: "member")
         end
@@ -85,7 +85,7 @@ class GroupMembershipsController < ApplicationController
     authorize @group_actor, :join?, policy_class: GroupPolicy
     invite = current_actor.received_contacts.pending.find_by(sender: @group_actor)
     if invite
-      current_actor.connect_to(@group_actor, as: "member")
+      current_actor.connect_to(@group_actor, as: "follow")
       redirect_to group_memberships_path(@group), notice: "Invite accepted."
     else
       redirect_to group_memberships_path(@group), alert: "No pending invite found."

@@ -19,7 +19,7 @@ class ActivityPolicyTest < ActiveSupport::TestCase
     @group_actor = @group.actor
 
     # Bob joins the group as member
-    @bob_actor.connect_to(@group_actor, as: "member")
+    @bob_actor.connect_to(@group_actor, as: "follow")
     @group_actor.connect_to(@bob_actor, as: "member")
 
     # Private group: Alice is admin, Bob is member, Charlie is not
@@ -28,7 +28,7 @@ class ActivityPolicyTest < ActiveSupport::TestCase
     GroupCreation.new(@alice_actor, @private_group).call
     @private_group_actor = @private_group.actor
 
-    @bob_actor.connect_to(@private_group_actor, as: "member")
+    @bob_actor.connect_to(@private_group_actor, as: "follow")
     @private_group_actor.connect_to(@bob_actor, as: "member")
   end
 

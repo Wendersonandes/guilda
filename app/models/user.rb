@@ -48,6 +48,23 @@ class User < ApplicationRecord
 
   attr_accessor :profile_name
 
+  # Role and permission delegators to the current profile actor
+  def add_role(role, other)
+    current_profile&.add_role(role, other)
+  end
+
+  def remove_role(role, other)
+    current_profile&.remove_role(role, other)
+  end
+
+  def has_role?(role, other)
+    current_profile ? current_profile.has_role?(role, other) : false
+  end
+
+  def has_permission?(action, object, context = Site.instance)
+    current_profile ? current_profile.has_permission?(action, object, context) : false
+  end
+
   validates :email, presence: true, uniqueness: true
   validates :profile_name, presence: true, on: :create
 

@@ -283,11 +283,13 @@ class Actor < ApplicationRecord
   # creating the {Contact} and {Tie} when needed.
   #
   # @param other_actor [Actor] the actor to connect to.
-  # @param as [String, Symbol] the name of the custom relation to use.
+  # @param as [String, Symbol] the name of the custom relation to use (or "follow" for the system follow relation).
   # @return [Tie] the resulting tie.
   # @raise [ArgumentError] when no custom relation matches +as+.
   def connect_to(other_actor, as:)
-    relation = relation_custom(as) || raise(ArgumentError, "Unknown relation: #{as}")
+    relation = relation_custom(as) ||
+               (as.to_s == "follow" ? Relation::Follow.instance : nil) ||
+               raise(ArgumentError, "Unknown relation: #{as}")
 
     contact = sent_contacts.find_or_create_by!(receiver: other_actor)
     contact.sender = self
@@ -300,10 +302,11 @@ class Actor < ApplicationRecord
   # Removes the {Tie Ties} of a given relation from this actor to +actor+.
   #
   # @param actor [Actor] the connected actor.
-  # @param relation_name [String, Symbol] the custom relation name.
+  # @param relation_name [String, Symbol] the custom relation name (or "follow" for the system follow relation).
   # @return [void]
   def disconnect_from(actor, relation_name)
-    relation = relation_custom(relation_name)
+    relation = relation_custom(relation_name) ||
+               (relation_name.to_s == "follow" ? Relation::Follow.instance : nil)
     return unless relation
     ties_to(actor).where(relation: relation).destroy_all
   end
@@ -332,7 +335,7 @@ class Actor < ApplicationRecord
   # @param relation_name [String, Symbol]
   # @return [Boolean]
   def has_relation_with?(actor, relation_name)
-    ties_to(actor).joins(:relation).where(relations: { name: relation_name.to_s.capitalize }).exists?
+    ties_to(actor).joins(:relation).where("LOWER(relations.name) = ?", relation_name.to_s.downcase).exists?
   end
 
   # The role names this actor holds within +group_actor+, derived from the tie relations.
@@ -399,6 +402,48 @@ class Actor < ApplicationRecord
                        .order(Arel.sql("RANDOM()"))
                        .limit(size)
     candidates.map { |a| Contact.new(sender: self, receiver: a) }
+  end
+
+  # Establishes a bidirectional group membership role or site administration role.
+  #
+  # @param role [String, Symbol] the role name (e.g. :admin, :member).
+  # @param other [Actor, Group, Site] the group or site granting the role.
+  # @return [void]
+  def add_role(role, other)
+    other_actor = other.is_a?(Actor) ? other : other.actor
+    other_actor.connect_to(self, as: role)
+    self.connect_to(other_actor, as: "follow")
+  end
+
+  # Removes a specific role and disconnects the reciprocal follow if no roles remain.
+  #
+  # @param role [String, Symbol] the role name to remove.
+  # @param other [Actor, Group, Site] the group or site.
+  # @return [void]
+  def remove_role(role, other)
+    other_actor = other.is_a?(Actor) ? other : other.actor
+    GroupMembershipService.new(other_actor, self).remove(role: role.to_s)
+  end
+
+  # Whether this actor has a specific role in a group or site.
+  #
+  # @param role [String, Symbol] the role name.
+  # @param other [Actor, Group, Site] the group or site.
+  # @return [Boolean]
+  def has_role?(role, other)
+    other_actor = other.is_a?(Actor) ? other : other.actor
+    other_actor.has_relation_with?(self, role)
+  end
+
+  # Whether this actor has permission to perform +action+ on +object+ in a given context.
+  #
+  # @param action [Symbol, String] the action (e.g. :create, :read).
+  # @param object [Symbol, String] the object (e.g. :post, :comment).
+  # @param context [Actor, Group, Site] the context (defaults to the Site).
+  # @return [Boolean]
+  def has_permission?(action, object, context = Site.instance)
+    context_actor = context.is_a?(Actor) ? context : context.actor
+    context_actor.allow?(self, action, object)
   end
 
   # Uses the friendly {#slug} as the URL parameter.

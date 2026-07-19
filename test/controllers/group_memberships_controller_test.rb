@@ -119,7 +119,7 @@ class GroupMembershipsControllerTest < ActionDispatch::IntegrationTest
     end
     assert_redirected_to group_memberships_path(@group)
     assert @group.actor.has_relation_with?(@bob_actor, "Member")
-    assert @bob_actor.has_relation_with?(@group.actor, "Member")
+    assert @bob_actor.has_relation_with?(@group.actor, "follow")
   end
 
   test "self-join private group creates pending request" do
@@ -131,7 +131,7 @@ class GroupMembershipsControllerTest < ActionDispatch::IntegrationTest
     end
     assert_redirected_to group_memberships_path(@group)
     assert_not @group.actor.has_relation_with?(@bob_actor, "Member")
-    assert @bob_actor.has_relation_with?(@group.actor, "Member")
+    assert @bob_actor.has_relation_with?(@group.actor, "follow")
   end
 
   test "admin can approve pending request" do
@@ -181,7 +181,7 @@ class GroupMembershipsControllerTest < ActionDispatch::IntegrationTest
     sign_in @bob
     post accept_invite_group_memberships_path(@group)
     assert_redirected_to group_memberships_path(@group)
-    assert @bob_actor.has_relation_with?(@group.actor, "Member")
+    assert @bob_actor.has_relation_with?(@group.actor, "follow")
   end
 
   test "user can decline invite" do
@@ -192,7 +192,7 @@ class GroupMembershipsControllerTest < ActionDispatch::IntegrationTest
     sign_in @bob
     post decline_invite_group_memberships_path(@group), params: { contact_id: invite_contact.id }
     assert_redirected_to group_memberships_path(@group)
-    assert_not @bob_actor.has_relation_with?(@group.actor, "Member")
+    assert_not @bob_actor.has_relation_with?(@group.actor, "follow")
   end
 
   test "accept_invite without pending invite redirects with alert" do
@@ -213,7 +213,7 @@ class GroupMembershipsControllerTest < ActionDispatch::IntegrationTest
   test "duplicate private request shows already pending notice" do
     @group.update!(privacy: :private_group)
     sign_in @bob
-    @bob_actor.connect_to(@group.actor, as: "member")
+    @bob_actor.connect_to(@group.actor, as: "follow")
     post group_memberships_path(@group), params: { actor_id: @bob_actor.id }
     assert_redirected_to group_memberships_path(@group)
     assert_equal "Your request is already pending.", flash[:notice]

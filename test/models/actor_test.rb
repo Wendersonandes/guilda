@@ -85,6 +85,31 @@ class ActorTest < ActiveSupport::TestCase
     assert_includes roles, "moderator"
   end
 
+  test "Actor role and permission helpers work correctly" do
+    # 1. Test has_permission? (Bob shouldn't have update on group by default)
+    assert_not @bob_actor.has_permission?(:update, :activity, @group)
+
+    # 2. Test add_role
+    assert_difference "Tie.count", 2 do # 1 from group -> bob (member), 1 from bob -> group (follow)
+      @bob_actor.add_role(:member, @group)
+    end
+
+    assert @bob_actor.has_role?(:member, @group)
+    assert @bob_actor.has_relation_with?(@group.actor, "follow")
+
+    # 3. Test has_permission? (Bob should now be able to read activity/post/comment in the group)
+    assert @bob_actor.has_permission?(:read, :activity, @group)
+    assert @bob_actor.has_permission?(:create, :post, @group)
+
+    # 4. Test remove_role
+    assert_difference "Tie.count", -2 do # Removes both the group -> bob tie and bob -> group follow tie
+      @bob_actor.remove_role(:member, @group)
+    end
+
+    assert_not @bob_actor.has_role?(:member, @group)
+    assert_not @bob_actor.has_relation_with?(@group.actor, "follow")
+  end
+
   private
 
   def create_group_with_admin(admin_actor)

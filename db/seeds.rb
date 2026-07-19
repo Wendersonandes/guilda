@@ -22,7 +22,15 @@ permissions = Permission.instances([
   [ :update, :activity ],
   [ :destroy, :activity ],
   [ :follow, nil ],
-  [ :represent, nil ]
+  [ :represent, nil ],
+  [ :create, :post ],
+  [ :read,   :post ],
+  [ :update, :post ],
+  [ :destroy, :post ],
+  [ :create, :comment ],
+  [ :read,   :comment ],
+  [ :update, :comment ],
+  [ :destroy, :comment ]
 ])
 puts "  Permissions: #{permissions.size} created"
 
@@ -156,7 +164,7 @@ puts "\nEstablishing memberships..."
 
 def add_member(group, user, role: "member")
   group.actor.connect_to(user, as: role)
-  user.connect_to(group.actor, as: "member")
+  user.connect_to(group.actor, as: "follow")
 end
 
 # Artistas de São Paulo: Ana (admin), Diego (mod), Bruno (member), Carla (member)

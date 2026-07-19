@@ -53,7 +53,7 @@ class GroupAccessTest < ActionDispatch::IntegrationTest
     sign_in @bob
 
     # Bob requests to join, Alice approves
-    @bob_actor.connect_to(@private_group.actor, as: "member")
+    @bob_actor.connect_to(@private_group.actor, as: "follow")
     @private_group.actor.connect_to(@bob_actor, as: "member")
 
     get group_path(@private_group)

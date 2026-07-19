@@ -30,7 +30,39 @@ require "test_helper"
 #  fk_rails_...  (current_profile_id => actors.id) ON DELETE => nullify
 #
 class UserTest < ActiveSupport::TestCase
-  # test "the truth" do
-  #   assert true
-  # end
+  setup do
+    seed_permissions_and_relations
+    @bob = users(:bob)
+    @alice = users(:alice)
+    @bob_actor = create_profile_for(@bob, name: "Bob")
+    @alice_actor = create_profile_for(@alice, name: "Alice")
+    
+    # Create a group
+    @group = Group.new(privacy: :public_group)
+    @group.build_actor(name: "Test Group User")
+    GroupCreation.new(@alice_actor, @group).call
+  end
+
+  test "User model delegates role and permission helpers to current_profile" do
+    # 1. Test has_permission?
+    assert_not @bob.has_permission?(:update, :activity, @group)
+
+    # 2. Test add_role
+    assert_difference "Tie.count", 2 do
+      @bob.add_role(:member, @group)
+    end
+
+    assert @bob.has_role?(:member, @group)
+
+    # 3. Test has_permission? after adding role
+    assert @bob.has_permission?(:read, :activity, @group)
+    assert @bob.has_permission?(:create, :post, @group)
+
+    # 4. Test remove_role
+    assert_difference "Tie.count", -2 do
+      @bob.remove_role(:member, @group)
+    end
+
+    assert_not @bob.has_role?(:member, @group)
+  end
 end

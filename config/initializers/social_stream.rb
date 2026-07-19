@@ -6,7 +6,15 @@ module SocialStream
       [ "create", "activity" ],
       [ "read",   "activity" ],
       [ "follow", nil ],
-      [ "represent", nil ]
+      [ "represent", nil ],
+      [ "create", "post" ],
+      [ "read",   "post" ],
+      [ "update", "post" ],
+      [ "destroy", "post" ],
+      [ "create", "comment" ],
+      [ "read",   "comment" ],
+      [ "update", "comment" ],
+      [ "destroy", "comment" ]
     ],
     "group" => [
       [ "create", "activity" ],
@@ -14,7 +22,15 @@ module SocialStream
       [ "update", "activity" ],
       [ "destroy", "activity" ],
       [ "follow", nil ],
-      [ "represent", nil ]
+      [ "represent", nil ],
+      [ "create", "post" ],
+      [ "read",   "post" ],
+      [ "update", "post" ],
+      [ "destroy", "post" ],
+      [ "create", "comment" ],
+      [ "read",   "comment" ],
+      [ "update", "comment" ],
+      [ "destroy", "comment" ]
     ],
     "site" => [
       [ "create", "activity" ],
@@ -22,16 +38,23 @@ module SocialStream
       [ "update", "activity" ],
       [ "destroy", "activity" ],
       [ "follow", nil ],
-      [ "represent", nil ]
+      [ "represent", nil ],
+      [ "create", "post" ],
+      [ "read",   "post" ],
+      [ "update", "post" ],
+      [ "destroy", "post" ],
+      [ "create", "comment" ],
+      [ "read",   "comment" ],
+      [ "update", "comment" ],
+      [ "destroy", "comment" ]
     ]
   }.freeze
 
   self.custom_relations = {
     "profile" => {
-      "member" =>     { name: "Member",     permissions: [ [ "read", "activity" ] ],                                                                     receiver_type: "Group" },
-      "friend" =>     { name: "Friend",     permissions: [ [ "create", "activity" ], [ "read", "activity" ], [ "follow", nil ] ],                       receiver_type: "Profile" },
-      "colleague" =>  { name: "Colleague",  permissions: [ [ "read", "activity" ] ],                                                                     receiver_type: "Profile" },
-      "acquaintance" => { name: "Acquaintance", permissions: [ [ "read", "activity" ] ],                                                                 receiver_type: "Profile" }
+      "friend" =>     { name: "Friend",     permissions: [ [ "create", "activity" ], [ "read",   "activity" ], [ "follow", nil ], [ "create", "post" ], [ "read", "post" ], [ "create", "comment" ], [ "read", "comment" ] ], receiver_type: "Profile" },
+      "colleague" =>  { name: "Colleague",  permissions: [ [ "read",   "activity" ], [ "read",   "post" ],     [ "read",   "comment" ] ],                                                                     receiver_type: "Profile" },
+      "acquaintance" => { name: "Acquaintance", permissions: [ [ "read",   "activity" ], [ "read",   "post" ],     [ "read",   "comment" ] ],                                                                 receiver_type: "Profile" }
     },
     "group" => {
       "admin" => {
@@ -41,7 +64,15 @@ module SocialStream
           [ "read",   "activity" ],
           [ "update",  "activity" ],
           [ "destroy", "activity" ],
-          [ "represent", nil ]
+          [ "represent", nil ],
+          [ "create", "post" ],
+          [ "read",   "post" ],
+          [ "update",  "post" ],
+          [ "destroy", "post" ],
+          [ "create", "comment" ],
+          [ "read",   "comment" ],
+          [ "update",  "comment" ],
+          [ "destroy", "comment" ]
         ],
         receiver_type: "Profile"
       },
@@ -50,7 +81,13 @@ module SocialStream
         permissions: [
           [ "create", "activity" ],
           [ "read",   "activity" ],
-          [ "update", "activity" ]
+          [ "update", "activity" ],
+          [ "create", "post" ],
+          [ "read",   "post" ],
+          [ "update", "post" ],
+          [ "create", "comment" ],
+          [ "read",   "comment" ],
+          [ "update", "comment" ]
         ],
         receiver_type: "Profile"
       },
@@ -58,7 +95,11 @@ module SocialStream
         name: "Member",
         permissions: [
           [ "read", "activity" ],
-          [ "create", "activity" ]
+          [ "create", "activity" ],
+          [ "read", "post" ],
+          [ "create", "post" ],
+          [ "read", "comment" ],
+          [ "create", "comment" ]
         ],
         receiver_type: "Profile"
       }
@@ -71,7 +112,15 @@ module SocialStream
           [ "read",   "activity" ],
           [ "update",  "activity" ],
           [ "destroy", "activity" ],
-          [ "represent", nil ]
+          [ "represent", nil ],
+          [ "create", "post" ],
+          [ "read",   "post" ],
+          [ "update",  "post" ],
+          [ "destroy", "post" ],
+          [ "create", "comment" ],
+          [ "read",   "comment" ],
+          [ "update",  "comment" ],
+          [ "destroy", "comment" ]
         ],
         receiver_type: "Profile"
       },
@@ -80,7 +129,13 @@ module SocialStream
         permissions: [
           [ "create", "activity" ],
           [ "read",   "activity" ],
-          [ "update", "activity" ]
+          [ "update", "activity" ],
+          [ "create", "post" ],
+          [ "read",   "post" ],
+          [ "update", "post" ],
+          [ "create", "comment" ],
+          [ "read",   "comment" ],
+          [ "update", "comment" ]
         ],
         receiver_type: "Profile"
       },
@@ -88,7 +143,11 @@ module SocialStream
         name: "Moderator",
         permissions: [
           [ "read",   "activity" ],
-          [ "destroy", "activity" ]
+          [ "destroy", "activity" ],
+          [ "read",   "post" ],
+          [ "destroy", "post" ],
+          [ "read",   "comment" ],
+          [ "destroy", "comment" ]
         ],
         receiver_type: "Profile"
       },
@@ -96,14 +155,20 @@ module SocialStream
         name: "Member",
         permissions: [
           [ "read",   "activity" ],
-          [ "create", "activity" ]
+          [ "create", "activity" ],
+          [ "read",   "post" ],
+          [ "create", "post" ],
+          [ "read",   "comment" ],
+          [ "create", "comment" ]
         ],
         receiver_type: "Profile"
       },
       "silenced" => {
         name: "Silenced",
         permissions: [
-          [ "read", "activity" ]
+          [ "read", "activity" ],
+          [ "read", "post" ],
+          [ "read", "comment" ]
         ],
         receiver_type: "Profile"
       },
