@@ -91,6 +91,14 @@ class Profile < ApplicationRecord
     end
   end
 
+  def self.ransackable_attributes(auth_object = nil)
+    ["city", "state"]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    ["actor"]
+  end
+
   private
 
   def occupations_limit

@@ -77,6 +77,8 @@ class Activity < ApplicationRecord
   after_create_commit :notify_followers_of_new_post, if: -> { verb_post? && root? && direct_object&.objectable_type == "Post" }
   after_create_commit :notify_owner_of_new_like, if: -> { verb_like? && parent.present? && parent.author != author }
   after_create_commit :notify_owner_of_new_comment, if: -> { verb_post? && parent.present? && direct_object&.objectable_type == "Comment" && parent.author != author }
+  after_create_commit :notify_owner_of_new_follower, if: -> { (verb_follow? || verb_make_friend?) && owner.present? && owner != author && !author.subject.is_a?(Site) }
+
 
   # Activities authored by +actor+. Returns all activities when +actor+ is blank.
   #
@@ -343,5 +345,10 @@ class Activity < ApplicationRecord
   def notify_owner_of_new_comment
     return unless parent&.author
     ObjectCommentedNotifier.with(activity: self, record: self).deliver_later(parent.author, wait: 5.seconds)
+  end
+
+  def notify_owner_of_new_follower
+    return unless owner
+    NewFollowerNotifier.with(activity: self, record: self).deliver_later(owner, wait: 5.seconds)
   end
 end

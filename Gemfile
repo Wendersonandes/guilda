@@ -48,6 +48,7 @@ gem "pundit", "~> 2.4"
 
 # Notifications
 gem "noticed"
+gem "ransack"
 
 # Location — country/city selects
 gem "country_select", "~> 9.0"

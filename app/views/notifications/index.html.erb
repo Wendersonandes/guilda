@@ -13,7 +13,55 @@
     <% end %>
   </div>
 
-  <div id="notifications_list_container">
-    <%= render "notifications/list", notifications: @notifications, pagy: @pagy %>
-  </div>
+  <%= turbo_frame_tag "notifications_frame" do %>
+    <%= search_form_for @q, url: notifications_path, method: :get,
+                  html: {
+                    class: "bg-white p-4 rounded-lg border border-stone-border space-y-4 md:space-y-0 md:flex md:items-center md:gap-4 mb-4",
+                    data: {
+                      controller: "filter-form",
+                      turbo_action: "advance"
+                    }
+                  } do |f| %>
+      <div class="flex-1">
+        <%= f.label :by_date, "Data", class: "block text-xs font-semibold text-zinc-500 mb-1" %>
+        <%= f.select :by_date,
+                     [["Todas as datas", ""], ["Hoje", "hoje"], ["Últimos 7 dias", "7_days"], ["Últimos 15 dias", "15_days"]],
+                     {},
+                     { class: "w-full text-xs rounded-lg border border-stone-300 bg-white px-3.5 py-2 text-zinc-700 focus:border-brand focus:ring-brand font-medium",
+                       data: { action: "change->filter-form#submit" } } %>
+      </div>
+
+      <div class="flex-1">
+        <%= f.label :by_author, "Autor", class: "block text-xs font-semibold text-zinc-500 mb-1" %>
+        <%= f.select :by_author,
+                     [["Todos os autores", ""]] + @authors.map { |a| [a.name, a.id] },
+                     {},
+                     { class: "w-full text-xs rounded-lg border border-stone-300 bg-white px-3.5 py-2 text-zinc-700 focus:border-brand focus:ring-brand font-medium",
+                       data: { action: "change->filter-form#submit" } } %>
+      </div>
+
+      <div class="flex-1">
+        <%= f.label :by_type, "Tipo de notificação", class: "block text-xs font-semibold text-zinc-500 mb-1" %>
+        <%= f.select :by_type,
+                     [["Todos os tipos", ""], ["Novo seguidor", "new_follower"], ["Like", "like"], ["Comentário em publicação", "comment"], ["Publicação em grupo", "group_post"]],
+                     {},
+                     { class: "w-full text-xs rounded-lg border border-stone-300 bg-white px-3.5 py-2 text-zinc-700 focus:border-brand focus:ring-brand font-medium",
+                       data: { action: "change->filter-form#submit" } } %>
+      </div>
+
+      <% if params[:q].present? && (params[:q][:by_date].present? || params[:q][:by_author].present? || params[:q][:by_type].present?) %>
+        <div class="pt-4 md:pt-0 self-end">
+          <%= link_to notifications_path,
+                      class: "flex items-center justify-center gap-1.5 text-xs font-semibold bg-stone-100 hover:bg-stone-200 text-zinc-700 px-3.5 py-2 rounded-lg border border-stone-300 transition-colors cursor-pointer h-[38px] box-border" do %>
+            <i data-lucide="x" class="w-4 h-4"></i>
+            <span>Limpar filtros</span>
+          <% end %>
+        </div>
+      <% end %>
+    <% end %>
+
+    <div id="notifications_list_container">
+      <%= render "notifications/list", notifications: @notifications, pagy: @pagy %>
+    </div>
+  <% end %>
 </div>

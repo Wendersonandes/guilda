@@ -408,6 +408,14 @@ class Actor < ApplicationRecord
     slug
   end
 
+  def self.ransackable_attributes(auth_object = nil)
+    ["name", "description"]
+  end
+
+  def self.ransackable_associations(auth_object = nil)
+    []
+  end
+
   private
 
   # +after_create+ callback: seeds this actor's default {Relation::Custom custom relations}.

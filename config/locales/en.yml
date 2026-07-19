@@ -43,6 +43,9 @@ en:
       post_message: "%{author} mencionou você em uma publicação."
       comment_message: "%{author} mencionou você em um comentário."
       default_message: "Alguém mencionou você."
+    new_follower:
+      message: "%{author} começou a seguir você."
+      default_message: "Alguém começou a seguir você."
   activity:
     description:
       follow: "%{author} started following %{owner}"

@@ -1,5 +1,20 @@
 puts "Seeding Guilda core..."
 
+# Clear database and reset cached singletons
+puts "  Cleaning database..."
+[Relation::Public, Relation::Follow, Relation::Reject, Relation::Owner, Relation::LocalAdmin].each do |klass|
+  klass.instance_variable_set(:@instance, nil)
+end
+
+tables = %w[
+  active_storage_attachments active_storage_blobs active_storage_variant_records
+  activities activity_actions activity_object_activities activity_object_audiences
+  activity_objects actors audiences comments contacts flags friendly_id_slugs
+  groups mentions noticed_events noticed_notifications permissions posts profiles
+  relation_permissions relations sites taggings tags ties users
+]
+ActiveRecord::Base.connection.execute("TRUNCATE TABLE #{tables.join(', ')} RESTART IDENTITY CASCADE")
+
 # ── Permissions & System Relations ──────────────────────────────
 permissions = Permission.instances([
   [ :create, :activity ],
@@ -79,10 +94,12 @@ users_data.each do |data|
   # Update custom profile attributes
   profile = user.current_profile.actorable
   profile.update!(
+    country: "BR",
     city: data[:city],
     state: data[:state],
     website: data[:website],
-    occupation_list: data[:occupations]
+    occupation_list: data[:occupations],
+    wizard_complete: true
   )
   profile.actor.update!(
     description: data[:description]

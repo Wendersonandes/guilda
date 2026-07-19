@@ -18,13 +18,12 @@ class ProfilesController < ApplicationController
                        .where.not(id: current_actor&.actorable_id)
                        .order("actors.name ASC")
 
-    if params[:q].present?
-      query = "%#{params[:q].downcase}%"
-      @profiles = @profiles.where(
-        "LOWER(actors.name) LIKE :query OR LOWER(profiles.city) LIKE :query OR LOWER(profiles.state) LIKE :query OR LOWER(actors.description) LIKE :query",
-        query: query
-      )
+    if params[:q].present? && params[:q].is_a?(String)
+      params[:q] = { actor_name_or_city_or_state_or_actor_description_cont: params[:q] }
     end
+
+    @q = @profiles.ransack(params[:q])
+    @profiles = @q.result
 
     @pagy, @profiles = pagy(@profiles, limit: 12)
   end

@@ -6,6 +6,16 @@ class NotificationsController < ApplicationController
   def index
     authorize Noticed::Notification, policy_class: Noticed::NotificationPolicy
     @notifications = policy_scope(Noticed::Notification).includes(:event).order(created_at: :desc)
+
+    @authors = Actor.where(id: policy_scope(Noticed::Notification)
+                                 .joins(:event)
+                                 .joins("INNER JOIN activities ON activities.id = (SUBSTRING(noticed_events.params -> 'activity' ->> '_aj_globalid' FROM 'gid://.*/Activity/([0-9]+)')::bigint)")
+                                 .select("activities.author_id")
+                                 .distinct)
+
+    prepare_ransack_params
+    @q = @notifications.ransack(params[:q])
+    @notifications = @q.result(distinct: true)
     @pagy, @notifications = pagy(@notifications, limit: 15)
   end
 
@@ -28,11 +38,15 @@ class NotificationsController < ApplicationController
   # POST /notifications/mark_all_as_read
   def mark_all_as_read
     authorize Noticed::Notification, :mark_all_as_read?, policy_class: Noticed::NotificationPolicy
-    policy_scope(Noticed::Notification).unread.mark_as_read
+    base_notifications = policy_scope(Noticed::Notification)
+    base_notifications.unread.mark_as_read
 
     respond_to do |format|
       format.turbo_stream do
-        @notifications = policy_scope(Noticed::Notification).includes(:event).order(created_at: :desc)
+        @notifications = base_notifications.includes(:event).order(created_at: :desc)
+        prepare_ransack_params
+        @q = @notifications.ransack(params[:q])
+        @notifications = @q.result(distinct: true)
         @pagy, @notifications = pagy(@notifications, limit: 15)
         render turbo_stream: [
           turbo_stream.replace("notifications_list_container", partial: "notifications/list", locals: { notifications: @notifications, pagy: @pagy }),
@@ -47,5 +61,14 @@ class NotificationsController < ApplicationController
 
   def set_notification
     @notification = Noticed::Notification.find(params[:id])
+  end
+
+  def prepare_ransack_params
+    if params[:q].blank?
+      params[:q] = {}
+      params[:q][:by_date] = params[:date] if params[:date].present?
+      params[:q][:by_author] = params[:author_id] if params[:author_id].present?
+      params[:q][:by_type] = params[:notification_type] if params[:notification_type].present?
+    end
   end
 end

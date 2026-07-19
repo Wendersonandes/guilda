@@ -192,6 +192,9 @@ class ActivityTest < ActiveSupport::TestCase
   end
 
   test "deleting activity before job runs prevents notification delivery" do
+    # Run any setup-related queued jobs first so they are processed and cleared
+    perform_enqueued_jobs
+
     ActiveRecord::Base.connection.execute("DELETE FROM noticed_notifications")
     ActiveRecord::Base.connection.execute("DELETE FROM noticed_events")
 
@@ -208,5 +211,57 @@ class ActivityTest < ActiveSupport::TestCase
     # Validation should prevent the creation of the event and notification
     assert_equal 0, Noticed::Event.count
     assert_equal 0, Noticed::Notification.count
+  end
+
+  test "new follower notification is delivered on follow and make_friend but not Site follow" do
+    # Run any setup-related queued jobs first so they are processed and cleared
+    perform_enqueued_jobs
+    
+    ActiveRecord::Base.connection.execute("DELETE FROM noticed_notifications")
+    ActiveRecord::Base.connection.execute("DELETE FROM noticed_events")
+
+    # 1. Platform follow (Site connection)
+    assert_no_difference -> { @author.notifications.count } do
+      perform_enqueued_jobs do
+        Activity.create!(
+          verb: :follow,
+          author: Site.instance.actor,
+          owner: @author,
+          relation_ids: [ Relation::Public.instance.id ]
+        )
+      end
+    end
+
+    # 2. Regular follow
+    assert_difference -> { @author.notifications.count } => 1 do
+      perform_enqueued_jobs do
+        Activity.create!(
+          verb: :follow,
+          author: @owner,
+          owner: @author,
+          relation_ids: [ Relation::Public.instance.id ]
+        )
+      end
+    end
+
+    # Clear notifications
+    @author.notifications.destroy_all
+
+    # 3. Reciprocal follow (make_friend)
+    assert_difference -> { @author.notifications.count } => 1 do
+      perform_enqueued_jobs do
+        Activity.create!(
+          verb: :make_friend,
+          author: @owner,
+          owner: @author,
+          relation_ids: [ Relation::Public.instance.id ]
+        )
+      end
+    end
+    
+    # Assert the notification has the right content
+    notification = @author.notifications.reload.last
+    assert_equal "NewFollowerNotifier::Notification", notification.type
+    assert_equal "bob começou a seguir você.", notification.message
   end
 end
