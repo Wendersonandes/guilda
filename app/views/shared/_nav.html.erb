@@ -27,6 +27,12 @@
             <i data-lucide="layers" class="w-4 h-4"></i>
             <span>Groups</span>
           <% end %>
+          <% if current_actor.has_role?(:admin, Site.instance) %>
+            <%= link_to admin_roles_path, class: "flex items-center gap-1.5 text-sm font-medium text-rose-600 hover:text-rose-700 transition-colors" do %>
+              <i data-lucide="shield-alert" class="w-4 h-4"></i>
+              <span>Admin</span>
+            <% end %>
+          <% end %>
         </div>
       <% end %>
     </div>
@@ -97,6 +103,12 @@
       <%= link_to groups_path, class: "flex items-center gap-2 text-sm font-medium text-zinc-700 hover:text-brand py-1 transition-colors" do %>
         <i data-lucide="layers" class="w-4 h-4"></i>
         <span>Groups</span>
+      <% end %>
+      <% if current_actor.has_role?(:admin, Site.instance) %>
+        <%= link_to admin_roles_path, class: "flex items-center gap-2 text-sm font-medium text-rose-600 hover:text-rose-700 py-1 transition-colors" do %>
+          <i data-lucide="shield-alert" class="w-4 h-4"></i>
+          <span>Admin Area</span>
+        <% end %>
       <% end %>
       <%= link_to notifications_path, class: "flex items-center justify-between text-sm font-medium text-zinc-700 hover:text-brand py-1 transition-colors" do %>
         <div class="flex items-center gap-2">
