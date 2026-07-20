@@ -12,18 +12,26 @@ class ProfilesController < ApplicationController
   def index
     authorize Actor, :index?
     
+    @cities = Profile.where(wizard_complete: true).where.not(city: [nil, ""]).order(:city).pluck(:city).uniq
+    @occupations = Profile::OCCUPATIONS.map { |o| o["name"] }
+
     @profiles = Profile.joins(:actor)
                        .includes(:occupations, actor: [avatar_attachment: :blob, cover_image_attachment: :blob])
                        .where(wizard_complete: true)
                        .where.not(id: current_actor&.actorable_id)
                        .order("actors.name ASC")
 
-    if params[:q].present? && params[:q].is_a?(String)
-      params[:q] = { actor_name_or_city_or_state_or_actor_description_cont: params[:q] }
+    if params[:name_query].present?
+      @profiles = @profiles.where("actors.name ILIKE :q OR actors.description ILIKE :q", q: "%#{params[:name_query]}%")
     end
 
-    @q = @profiles.ransack(params[:q])
-    @profiles = @q.result
+    if params[:city].present?
+      @profiles = @profiles.where(city: params[:city])
+    end
+
+    if params[:occupation].present?
+      @profiles = @profiles.tagged_with(params[:occupation], on: :occupations)
+    end
 
     @pagy, @profiles = pagy(@profiles, limit: 12)
   end

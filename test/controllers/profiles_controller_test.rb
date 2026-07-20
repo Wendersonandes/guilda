@@ -61,13 +61,43 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_select "h2", text: /Bob Incomplete/, count: 0
   end
 
-  test "should filter profiles index by query" do
+  test "should filter profiles index by name query" do
     sign_in @user
     other_user = users(:bob)
     other_actor = create_profile_for(other_user, name: "Diego Rocha")
     
-    get profiles_path, params: { q: "Diego" }
+    get profiles_path, params: { name_query: "Diego" }
     assert_response :success
     assert_select "h2", text: /Diego Rocha/
+  end
+
+  test "should filter profiles index by city" do
+    sign_in @user
+    other_user = users(:bob)
+    other_actor = create_profile_for(other_user, name: "Diego Rocha")
+    other_actor.actorable.update!(city: "Belo Horizonte")
+
+    get profiles_path, params: { city: "Belo Horizonte" }
+    assert_response :success
+    assert_select "h2", text: /Diego Rocha/
+
+    get profiles_path, params: { city: "Curitiba" }
+    assert_response :success
+    assert_select "h2", text: /Diego Rocha/, count: 0
+  end
+
+  test "should filter profiles index by occupation" do
+    sign_in @user
+    other_user = users(:bob)
+    other_actor = create_profile_for(other_user, name: "Diego Rocha")
+    other_actor.actorable.update!(occupation_list: ["Escrita de Projetos"])
+
+    get profiles_path, params: { occupation: "Escrita de Projetos" }
+    assert_response :success
+    assert_select "h2", text: /Diego Rocha/
+
+    get profiles_path, params: { occupation: "Expografia" }
+    assert_response :success
+    assert_select "h2", text: /Diego Rocha/, count: 0
   end
 end

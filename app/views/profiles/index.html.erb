@@ -8,12 +8,53 @@
     <p class="text-sm text-zinc-500">Discover curatorship, expography, design, project writing, and artistic production professionals to build your team.</p>
   </div>
 
-  <!-- Search Bar -->
-  <div class="max-w-md mx-auto">
-    <%= search_form_for @q, url: profiles_path, method: :get, html: { class: "flex gap-2", data: { turbo_frame: "profiles_grid", turbo_action: "advance" } } do |f| %>
-      <%= f.search_field :actor_name_or_city_or_state_or_actor_description_cont, placeholder: "Search by name, location, keyword...", 
-            class: "w-full rounded-lg border border-stone-300 px-3.5 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal transition-shadow shadow-sm" %>
-      <%= f.submit "Search", class: "bg-charcoal hover:bg-zinc-800 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors cursor-pointer shadow-sm" %>
+  <!-- Search & Filter Panel -->
+  <div class="max-w-4xl mx-auto">
+    <%= form_with url: profiles_path, method: :get,
+                  html: {
+                    class: "bg-white p-5 rounded-lg border border-stone-border space-y-4 md:space-y-0 md:flex md:items-end md:gap-4 shadow-sm",
+                    data: {
+                      controller: "filter-form",
+                      turbo_frame: "profiles_grid",
+                      turbo_action: "advance"
+                    }
+                  } do |f| %>
+      <div class="flex-1 w-full space-y-1.5">
+        <%= f.label :name_query, class: "block text-xs font-bold text-zinc-500 uppercase tracking-wider" do %>
+          <span class="flex items-center gap-1.5"><i data-lucide="search" class="w-3.5 h-3.5 text-zinc-400"></i> Buscar por nome</span>
+        <% end %>
+        <%= f.text_field :name_query, value: params[:name_query], placeholder: "Buscar por nome ou biografia...",
+                         class: "w-full text-sm rounded-lg border border-stone-300 bg-white px-3.5 py-2 text-charcoal placeholder-zinc-400 focus:border-brand focus:ring-brand font-medium outline-none transition-shadow shadow-sm" %>
+      </div>
+
+      <div class="flex-1 w-full space-y-1.5">
+        <%= f.label :city, class: "block text-xs font-bold text-zinc-500 uppercase tracking-wider" do %>
+          <span class="flex items-center gap-1.5"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-zinc-400"></i> Cidade</span>
+        <% end %>
+        <%= f.select :city, options_for_select([["Todas as cidades", ""]] + @cities, params[:city]), {},
+                     class: "w-full text-sm rounded-lg border border-stone-300 bg-white px-3.5 py-2 text-charcoal focus:border-brand focus:ring-brand font-medium outline-none transition-shadow shadow-sm",
+                     data: { action: "change->filter-form#submit" } %>
+      </div>
+
+      <div class="flex-1 w-full space-y-1.5">
+        <%= f.label :occupation, class: "block text-xs font-bold text-zinc-500 uppercase tracking-wider" do %>
+          <span class="flex items-center gap-1.5"><i data-lucide="briefcase" class="w-3.5 h-3.5 text-zinc-400"></i> Categoria Profissional</span>
+        <% end %>
+        <%= f.select :occupation, options_for_select([["Todas as categorias", ""]] + @occupations, params[:occupation]), {},
+                     class: "w-full text-sm rounded-lg border border-stone-300 bg-white px-3.5 py-2 text-charcoal focus:border-brand focus:ring-brand font-medium outline-none transition-shadow shadow-sm",
+                     data: { action: "change->filter-form#submit" } %>
+      </div>
+
+      <% if params[:name_query].present? || params[:city].present? || params[:occupation].present? %>
+        <div class="w-full md:w-auto">
+          <%= link_to profiles_path,
+                      class: "flex items-center justify-center gap-1.5 text-xs font-semibold bg-stone-100 hover:bg-stone-200 text-zinc-700 px-4 py-2.5 rounded-lg border border-stone-300 transition-colors cursor-pointer h-[38px] box-border w-full",
+                      data: { turbo_frame: "profiles_grid" } do %>
+            <i data-lucide="x" class="w-4 h-4"></i>
+            <span>Limpar</span>
+          <% end %>
+        </div>
+      <% end %>
     <% end %>
   </div>
 
