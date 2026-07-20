@@ -52,7 +52,11 @@ Rails.application.routes.draw do
   end
 
   # Contacts — gerenciamento de conexoes
-  resources :contacts, only: [ :index, :create, :destroy ]
+  resources :contacts, only: [ :index, :create, :destroy ] do
+    collection do
+      get :pending
+    end
+  end
   resources :suggestions, only: [ :index ]
 
   # Account — configuracoes do usuario (singular route -> UsersController)

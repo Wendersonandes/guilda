@@ -1,0 +1,37 @@
+<% if pending.any? %>
+  <div class="space-y-4 pb-4 border-b border-stone-100" id="sidebar_pending_contacts">
+    <div>
+      <h3 class="text-sm font-semibold text-charcoal flex items-center gap-1.5">
+        <i data-lucide="bell-ring" class="w-4 h-4 text-brand"></i>
+        <span>Pending Requests</span>
+      </h3>
+      <p class="text-xs text-zinc-500 mt-0.5">People who want to connect with you</p>
+    </div>
+
+    <div class="divide-y divide-stone-100">
+      <% pending.each do |contact| %>
+        <div class="flex items-center justify-between py-2.5 first:pt-0 last:pb-0 gap-2">
+          <div class="flex items-center gap-2 min-w-0 flex-1">
+            <div class="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center text-charcoal text-xs font-bold border border-stone-border flex-shrink-0">
+              <%= contact.sender.name.first.upcase %>
+            </div>
+            <div class="flex flex-col min-w-0">
+              <%= link_to contact.sender.name, public_path_for(contact.sender), data: { turbo_frame: "_top" }, class: "text-xs font-semibold text-charcoal hover:text-brand hover:underline truncate leading-tight transition-colors" %>
+              <span class="text-[9px] text-zinc-400 truncate uppercase tracking-wider mt-0.5">wants to connect</span>
+            </div>
+          </div>
+          <div class="flex gap-1.5 flex-shrink-0">
+            <%= button_to contacts_path(actor_id: contact.sender.slug, as: :friend), method: :post, params: { actor_id: contact.sender.slug }, class: "inline-flex items-center justify-center text-[10px] bg-charcoal hover:bg-zinc-800 text-white font-medium p-1.5 rounded-md transition-colors cursor-pointer border-0 shadow-sm", title: "Accept" do %>
+              <i data-lucide="user-check" class="w-3.5 h-3.5"></i>
+            <% end %>
+            <%= button_to contact_path(contact), method: :delete, class: "inline-flex items-center justify-center text-[10px] bg-white hover:bg-stone-50 text-red-600 hover:text-red-700 border border-stone-300 p-1.5 rounded-md font-medium transition-colors cursor-pointer", title: "Decline" do %>
+              <i data-lucide="user-x" class="w-3.5 h-3.5"></i>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% else %>
+  <div id="sidebar_pending_contacts" class="hidden"></div>
+<% end %>

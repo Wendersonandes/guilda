@@ -87,4 +87,42 @@ class ContactsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_no_match /Test Group/, response.body
   end
+
+  test "should get pending action" do
+    @bob.connect_to(@alice, as: :friend)
+    get pending_contacts_path
+    assert_response :success
+    assert_match /Pending Requests/, response.body
+    assert_match /#{@bob.name}/, response.body
+  end
+
+  test "should filter contacts by city" do
+    @alice.connect_to(@bob, as: :friend)
+    @bob.connect_to(@alice, as: :friend)
+
+    @bob.actorable.update!(city: "Belo Horizonte")
+
+    get contacts_path(city: "Belo Horizonte")
+    assert_response :success
+    assert_match /#{@bob.name}/, response.body
+
+    get contacts_path(city: "Rio de Janeiro")
+    assert_response :success
+    assert_no_match /#{@bob.name}/, response.body
+  end
+
+  test "should filter contacts by occupation" do
+    @alice.connect_to(@bob, as: :friend)
+    @bob.connect_to(@alice, as: :friend)
+
+    @bob.actorable.update!(occupation_list: ["Escrita de Projetos"])
+
+    get contacts_path(occupation: "Escrita de Projetos")
+    assert_response :success
+    assert_match /#{@bob.name}/, response.body
+
+    get contacts_path(occupation: "Expografia")
+    assert_response :success
+    assert_no_match /#{@bob.name}/, response.body
+  end
 end

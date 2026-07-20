@@ -2,71 +2,97 @@
 
 <h1 class="text-2xl font-serif font-bold text-charcoal tracking-tight mb-6">Contacts</h1>
 
-<% if @pending.any? %>
-  <div class="bg-stone-50 border border-stone-border rounded-lg p-5 mb-6 space-y-4 shadow-sm">
-    <h2 class="text-sm font-semibold text-brand flex items-center gap-1.5">
-      <i data-lucide="bell-ring" class="w-4 h-4 text-brand"></i>
-      <span>Pending Requests</span>
-    </h2>
-    <div class="divide-y divide-stone-150">
-      <% @pending.each do |contact| %>
-        <div class="flex items-center justify-between py-2.5 first:pt-0 last:pb-0">
-          <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-full bg-stone-200 text-charcoal flex items-center justify-center font-bold text-xs border border-stone-300">
-              <%= contact.sender.name.first.upcase %>
+<%= turbo_frame_tag "contacts_frame" do %>
+  <!-- Search Filter Box -->
+  <div class="bg-white rounded-lg border border-stone-border p-5 mb-6 shadow-sm">
+    <%= form_with url: contacts_path, method: :get,
+                  html: {
+                    class: "flex flex-col sm:flex-row items-end gap-4",
+                    data: {
+                      controller: "filter-form",
+                      turbo_action: "advance"
+                    }
+                  } do |f| %>
+      <div class="flex-1 w-full space-y-1.5">
+        <%= f.label :city, class: "block text-xs font-bold text-zinc-500 uppercase tracking-wider" do %>
+          <span class="flex items-center gap-1.5"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-zinc-400"></i> Cidade</span>
+        <% end %>
+        <%= f.select :city, options_for_select([["Todas as cidades", ""]] + @cities, params[:city]), {},
+                     class: "w-full text-sm rounded-lg border border-stone-300 bg-white px-3.5 py-2 text-charcoal focus:border-brand focus:ring-brand font-medium outline-none transition-shadow shadow-sm",
+                     data: { action: "change->filter-form#submit" } %>
+      </div>
+
+      <div class="flex-1 w-full space-y-1.5">
+        <%= f.label :occupation, class: "block text-xs font-bold text-zinc-500 uppercase tracking-wider" do %>
+          <span class="flex items-center gap-1.5"><i data-lucide="briefcase" class="w-3.5 h-3.5 text-zinc-400"></i> Categoria Profissional</span>
+        <% end %>
+        <%= f.select :occupation, options_for_select([["Todas as categorias", ""]] + @occupations, params[:occupation]), {},
+                     class: "w-full text-sm rounded-lg border border-stone-300 bg-white px-3.5 py-2 text-charcoal focus:border-brand focus:ring-brand font-medium outline-none transition-shadow shadow-sm",
+                     data: { action: "change->filter-form#submit" } %>
+      </div>
+
+      <% if params[:city].present? || params[:occupation].present? %>
+        <div class="w-full sm:w-auto">
+          <%= link_to contacts_path,
+                      class: "flex items-center justify-center gap-1.5 text-xs font-semibold bg-stone-100 hover:bg-stone-200 text-zinc-700 px-4 py-2.5 rounded-lg border border-stone-300 transition-colors cursor-pointer h-[38px] box-border w-full",
+                      data: { turbo_frame: "contacts_frame" } do %>
+            <i data-lucide="x" class="w-4 h-4"></i>
+            <span>Limpar</span>
+          <% end %>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+
+  <!-- Contacts List -->
+  <% if @contacts.any? %>
+    <div class="bg-white rounded-lg border border-stone-border divide-y divide-stone-100 overflow-hidden">
+      <% @contacts.each do |contact| %>
+        <div class="flex items-center justify-between p-4 hover:bg-stone-50/50 transition-colors">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full bg-stone-100 text-charcoal flex items-center justify-center font-bold text-xs border border-stone-border">
+              <%= contact.receiver.name.first.upcase %>
             </div>
-            <span class="text-sm font-semibold text-charcoal"><%= link_to contact.sender.name, public_path_for(contact.sender), class: "hover:text-brand transition-colors" %></span>
+            <div class="flex flex-col min-w-0">
+              <span class="font-semibold text-charcoal text-sm">
+                <%= link_to contact.receiver.name, public_path_for(contact.receiver), class: "hover:text-brand transition-colors", data: { turbo_frame: "_top" } %>
+              </span>
+              <div class="flex flex-wrap items-center gap-2 mt-0.5">
+                <% if contact.receiver.actorable.is_a?(Profile) %>
+                  <% profile = contact.receiver.actorable %>
+                  <% if profile.city.present? %>
+                    <span class="flex items-center gap-1 text-[11px] font-medium text-zinc-500 mr-1">
+                      <i data-lucide="map-pin" class="w-3.5 h-3.5 text-zinc-400"></i>
+                      <%= profile.city %>
+                    </span>
+                  <% end %>
+                  <% if profile.occupations.any? %>
+                    <% profile.occupations.each do |occupation| %>
+                      <span class="text-[10px] font-semibold bg-stone-100 text-zinc-700 border border-stone-200 px-1.5 py-0.5 rounded-md"><%= occupation.name %></span>
+                    <% end %>
+                  <% end %>
+                <% end %>
+              </div>
+            </div>
           </div>
-          <div class="flex gap-2">
-            <%= button_to contacts_path(actor_id: contact.sender.slug, as: :friend), params: { actor_id: contact.sender.slug }, class: "inline-flex items-center gap-1 text-xs bg-charcoal hover:bg-zinc-800 text-white font-medium px-3 py-1.5 rounded-lg transition-colors cursor-pointer border-0 shadow-sm" do %>
-              <i data-lucide="user-check" class="w-3.5 h-3.5"></i>
-              <span>Accept</span>
-            <% end %>
-            <%= button_to contact_path(contact), method: :delete, class: "inline-flex items-center gap-1 text-xs bg-white hover:bg-stone-50 text-red-600 hover:text-red-700 border border-stone-300 px-3 py-1.5 rounded-lg font-medium transition-colors cursor-pointer" do %>
-              <i data-lucide="user-x" class="w-3.5 h-3.5"></i>
-              <span>Decline</span>
-            <% end %>
-          </div>
+          <%= button_to contact_path(contact), method: :delete, class: "flex items-center gap-1.5 text-xs bg-white text-red-600 hover:bg-red-600 hover:text-white font-semibold px-3.5 py-1.5 rounded-md border border-stone-300 transition-all cursor-pointer shadow-sm" do %>
+            <i data-lucide="user-minus" class="w-3.5 h-3.5"></i>
+            <span>Remove Connect</span>
+          <% end %>
         </div>
       <% end %>
     </div>
-  </div>
-<% end %>
-
-<% if @contacts.any? %>
-  <div class="bg-white rounded-lg border border-stone-border divide-y divide-stone-100 overflow-hidden">
-    <% @contacts.each do |contact| %>
-      <div class="flex items-center justify-between p-4 hover:bg-stone-50/50 transition-colors">
-        <div class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-full bg-stone-100 text-charcoal flex items-center justify-center font-bold text-xs border border-stone-border">
-            <%= contact.receiver.name.first.upcase %>
-          </div>
-          <div class="flex flex-col min-w-0">
-            <span class="font-semibold text-charcoal text-sm"><%= link_to contact.receiver.name, public_path_for(contact.receiver), class: "hover:text-brand transition-colors" %></span>
-            <div class="flex flex-wrap gap-1 mt-0.5">
-              <% contact.relations.each do |rel| %>
-                <span class="text-[10px] font-semibold bg-stone-100 text-zinc-700 border border-stone-200 px-1.5 py-0.5 rounded-md"><%= rel.name %></span>
-              <% end %>
-            </div>
-          </div>
-        </div>
-        <%= button_to contact_path(contact), method: :delete, class: "flex items-center gap-1.5 text-xs bg-white text-red-600 hover:bg-red-600 hover:text-white font-semibold px-3.5 py-1.5 rounded-md border border-stone-300 transition-all cursor-pointer shadow-sm" do %>
-          <i data-lucide="user-minus" class="w-3.5 h-3.5"></i>
-          <span>Remove Connect</span>
-        <% end %>
+  <% else %>
+    <div class="text-center text-zinc-500 py-16 bg-white rounded-lg border border-stone-border p-8 shadow-sm">
+      <div class="w-12 h-12 bg-stone-50 rounded-full flex items-center justify-center mx-auto mb-3 border border-stone-100">
+        <i data-lucide="users-2" class="w-6 h-6 text-zinc-400"></i>
       </div>
-    <% end %>
-  </div>
-<% else %>
-  <div class="text-center text-zinc-500 py-16 bg-white rounded-lg border border-stone-border p-8 shadow-sm">
-    <div class="w-12 h-12 bg-stone-50 rounded-full flex items-center justify-center mx-auto mb-3 border border-stone-100">
-      <i data-lucide="users-2" class="w-6 h-6 text-zinc-400"></i>
+      <h3 class="text-base font-semibold text-charcoal">Nenhum contato encontrado</h3>
+      <p class="text-sm text-zinc-500 mt-1 max-w-sm mx-auto">Tente refinar seus filtros ou visite um perfil/grupo para se conectar.</p>
     </div>
-    <h3 class="text-base font-semibold text-charcoal">No contacts yet</h3>
-    <p class="text-sm text-zinc-500 mt-1 max-w-sm mx-auto">Visit a profile or group page to connect and build your network.</p>
-  </div>
-<% end %>
+  <% end %>
 
-<% if @pagy.pages > 1 %>
-  <div class="mt-6 flex justify-center"><%== pagy_nav(@pagy) %></div>
+  <% if @pagy.pages > 1 %>
+    <div class="mt-6 flex justify-center"><%== pagy_nav(@pagy) %></div>
+  <% end %>
 <% end %>

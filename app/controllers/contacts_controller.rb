@@ -8,20 +8,42 @@ class ContactsController < ApplicationController
   # pending incoming requests from other profiles.
   def index
     authorize Contact
-    @contacts = policy_scope(Contact)
-                  .joins(:ties)
-                  .where(sender_id: current_actor.id)
-                  .joins(:receiver)
-                  .merge(Actor.where(actorable_type: "Profile"))
-                  .includes(:receiver, :ties, :relations)
-                  .distinct
-    @pagy, @contacts = pagy(@contacts)
+    @contacts_base = policy_scope(Contact)
+                       .joins(:ties)
+                       .where(sender_id: current_actor.id)
+                       .joins(:receiver)
+                       .merge(Actor.where(actorable_type: "Profile"))
+                       .joins("INNER JOIN profiles ON profiles.id = actors.actorable_id AND actors.actorable_type = 'Profile'")
+                       .includes(:receiver, :ties, :relations)
+                       .distinct
 
+    @cities = @contacts_base.pluck("profiles.city").uniq.compact.sort
+    @occupations = Profile::OCCUPATIONS.map { |o| o["name"] }
+
+    @contacts = @contacts_base
+
+    if params[:city].present?
+      @contacts = @contacts.where(profiles: { city: params[:city] })
+    end
+
+    if params[:occupation].present?
+      @contacts = @contacts.joins("INNER JOIN taggings ON taggings.taggable_id = profiles.id AND taggings.taggable_type = 'Profile' AND taggings.context = 'occupations'")
+                           .joins("INNER JOIN tags ON tags.id = taggings.tag_id")
+                           .where(tags: { name: params[:occupation] })
+    end
+
+    @pagy, @contacts = pagy(@contacts)
+  end
+
+  # Returns the pending incoming contact requests to be rendered inside the right sidebar.
+  def pending
+    authorize Contact, :index?
     @pending = Contact.pending
                       .where(receiver_id: current_actor.id)
                       .joins(:sender)
                       .merge(Actor.where(actorable_type: "Profile"))
                       .includes(:sender)
+    render layout: false
   end
 
   # Connects the current actor to another actor using the relation named by +params[:as]+
