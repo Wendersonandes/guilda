@@ -14,7 +14,7 @@ class ContactsController < ApplicationController
                        .joins(:receiver)
                        .merge(Actor.where(actorable_type: "Profile"))
                        .joins("INNER JOIN profiles ON profiles.id = actors.actorable_id AND actors.actorable_type = 'Profile'")
-                       .preload(receiver: { actorable: :occupations }, ties: {}, relations: {})
+                       .preload(receiver: { actorable: :occupations })
                        .distinct
 
     @cities = @contacts_base.pluck("profiles.city").uniq.compact.sort
