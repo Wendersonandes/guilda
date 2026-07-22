@@ -18,7 +18,7 @@
   </div>
   <div class="space-y-1">
     <%= f.label :state, "State", class: "block text-xs font-medium text-zinc-500" %>
-    <%= f.select :state, @states || [], { include_blank: "Select" }, {
+    <%= f.select :state, @states || [], { include_blank: "Select", selected: state_code_for(@profile.state) }, {
       data: { location_target: "state", action: "change->location#stateChanged" },
       class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal"
     } %>

@@ -32,13 +32,15 @@ class ProfileStepsController < ApplicationController
 
   private
 
-  def setup_location_variables
-    states_hash = CS.states(:BR)
-    @states = states_hash
+  include ApplicationHelper
 
-    if @profile.state.present?
-      code = states_hash.key(@profile.state) || @profile.state
-      @cities = CS.cities(code.to_sym, :BR) || []
+  def setup_location_variables
+    states_hash = CS.states(:BR) || {}
+    @states = states_hash.map { |code, name| [name, code.to_s] }
+
+    state_code = state_code_for(@profile.state)
+    if state_code.present?
+      @cities = CS.cities(state_code.to_sym, :BR) || []
     else
       @cities = []
     end

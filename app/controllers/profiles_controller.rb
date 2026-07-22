@@ -40,19 +40,13 @@ class ProfilesController < ApplicationController
     redirect_to public_path_for(current_actor)
   end
 
+  include ApplicationHelper
+
   # Renders the profile form, preloading the state list and (when a state is set) its cities
   # from the CS gem. Authorized via +ActorPolicy#edit?+ on the profile's actor.
   def edit
     authorize @profile.actor
-    states_hash = CS.states(:BR)
-    @states = states_hash
-
-    if @profile.state.present?
-      code = states_hash.key(@profile.state) || @profile.state
-      @cities = CS.cities(code.to_sym, :BR) || []
-    else
-      @cities = []
-    end
+    setup_location_variables
   end
 
   # Updates the profile and its nested actor attributes (authorized via +ActorPolicy#update?+).
@@ -61,11 +55,24 @@ class ProfilesController < ApplicationController
     if @profile.update(profile_params)
       redirect_to public_path_for(current_actor), notice: "Profile updated."
     else
+      setup_location_variables
       render :edit, status: :unprocessable_entity
     end
   end
 
   private
+
+  def setup_location_variables
+    states_hash = CS.states(:BR) || {}
+    @states = states_hash.map { |code, name| [name, code.to_s] }
+
+    state_code = state_code_for(@profile.state)
+    if state_code.present?
+      @cities = CS.cities(state_code.to_sym, :BR) || []
+    else
+      @cities = []
+    end
+  end
 
   def set_profile
     @profile = current_user.profiles.first!
@@ -77,7 +84,7 @@ class ProfilesController < ApplicationController
     params.require(:profile).permit(
       :birthday, :phone, :mobile,
       :address, :city, :state, :country, :zipcode,
-      :website, :organization,
+      :website, :organization, :availability,
       actor_attributes: [ :id, :name, :description, :email, :avatar, :cover_image ],
       occupation_list: []
     )

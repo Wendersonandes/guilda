@@ -4,6 +4,7 @@
 #
 #  id              :bigint           not null, primary key
 #  address         :string
+#  availability    :integer
 #  birthday        :date
 #  city            :string
 #  country         :string
@@ -41,6 +42,17 @@ class Profile < ApplicationRecord
   has_one :actor, as: :actorable, dependent: :destroy, autosave: true
   has_one :activity_object, as: :objectable, dependent: :destroy, autosave: true
   belongs_to :user
+
+  enum :availability, { full_time: 0, freelance: 1 }
+
+  AVAILABILITY_OPTIONS = {
+    "full_time" => "Tempo integral",
+    "freelance" => "Freelance"
+  }.freeze
+
+  def availability_label
+    AVAILABILITY_OPTIONS[availability]
+  end
 
   delegate :name, :name=, :email, :email=, :slug, :description, :description=,
            :notification_settings, :activity_object_id,

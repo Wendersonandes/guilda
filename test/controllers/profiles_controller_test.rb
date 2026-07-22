@@ -32,10 +32,12 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     patch my_profile_path, params: {
       profile: {
         phone: "555-0100",
+        availability: "freelance",
         actor_attributes: { id: @actor.id, name: "Alice Updated", description: "New bio" }
       }
     }
     assert_redirected_to profile_path(@actor)
+    assert_equal "freelance", @actor.profile.reload.availability
   end
 
   test "should redirect index when not signed in" do

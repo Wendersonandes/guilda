@@ -98,8 +98,14 @@
                     <p class="text-xs text-zinc-400 italic min-h-[2rem] leading-relaxed">No biography provided.</p>
                   <% end %>
 
-                  <% if profile.occupations.any? %>
-                    <div class="flex flex-wrap gap-1.5 mt-2">
+                  <% if profile.occupations.any? || profile.availability.present? %>
+                    <div class="flex flex-wrap items-center gap-1.5 mt-2">
+                      <% if profile.availability.present? %>
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          <i data-lucide="clock" class="w-3 h-3 text-emerald-600"></i>
+                          <%= profile.availability_label %>
+                        </span>
+                      <% end %>
                       <% profile.occupations.each do |occupation| %>
                         <span class="inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-medium bg-stone-100 text-zinc-600 border border-stone-200">
                           <%= occupation.name %>

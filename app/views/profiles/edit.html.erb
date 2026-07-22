@@ -94,7 +94,7 @@
       </div>
       <div class="space-y-1">
         <%= f.label :state, "State", class: "block text-xs font-medium text-zinc-500" %>
-        <%= f.select :state, @states || [], { include_blank: "Select" }, {
+        <%= f.select :state, @states || [], { include_blank: "Select", selected: state_code_for(@profile.state) }, {
           data: { location_target: "state", action: "change->location#stateChanged" },
           class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal"
         } %>
@@ -147,6 +147,23 @@
           </div>
         </label>
       <% end %>
+    </div>
+  </div>
+
+  <div class="border-t border-stone-100 pt-4 space-y-4">
+    <h3 class="text-sm font-semibold text-charcoal flex items-center gap-1.5 pb-1">
+      <i data-lucide="clock" class="w-4 h-4 text-zinc-400"></i>
+      <span>Disponibilidade</span>
+    </h3>
+    <div class="space-y-1">
+      <%= f.label :availability, "Disponibilidade para contratação", class: "block text-xs font-medium text-zinc-500" %>
+      <%= f.select :availability,
+            options_for_select([
+              ["Tempo integral (full_time)", "full_time"],
+              ["Freelance (freelance)", "freelance"]
+            ], @profile.availability),
+            { include_blank: "Selecione a disponibilidade" },
+            { class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal" } %>
     </div>
   </div>
 

@@ -6,6 +6,7 @@ require "test_helper"
 #
 #  id              :bigint           not null, primary key
 #  address         :string
+#  availability    :integer
 #  birthday        :date
 #  city            :string
 #  country         :string
@@ -88,5 +89,15 @@ class ProfileTest < ActiveSupport::TestCase
     profile.valid?
     assert_includes profile.errors[:country], "can't be blank"
     assert_includes profile.errors[:occupation_list], "selecione pelo menos 1 categoria"
+  end
+
+  test "defines availability enum and returns correct label" do
+    profile = Profile.new(availability: :full_time)
+    assert profile.full_time?
+    assert_equal "Tempo integral", profile.availability_label
+
+    profile.availability = :freelance
+    assert profile.freelance?
+    assert_equal "Freelance", profile.availability_label
   end
 end
