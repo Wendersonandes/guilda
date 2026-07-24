@@ -19,7 +19,7 @@
     <%= render "comments/tree", commentable_activity: @activity, comments: @comments %>
   </div>
 
-  <% if current_actor %>
+  <% if policy(Comment.new(activity_object: ActivityObject.new(owner: @activity.owner))).create? %>
     <div class="mt-6 pt-6 border-t border-gray-200">
       <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2 px-1">Add a comment</h3>
       <div id="<%= dom_id(@activity, :reply_form) %>">

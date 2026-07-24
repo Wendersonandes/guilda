@@ -5,7 +5,7 @@
 %>
 
 <div data-controller="member-search"
-     data-member-exclude="<%= (@admins + @moderators + @members).map(&:id).join(",") %>"
+     data-member-exclude="<%= (@owners + @admins + @moderators + @members + @silenced).map(&:id).join(",") %>"
      class="space-y-6">
   
   <%= render "groups/header", group: @group, is_member: is_member %>
@@ -72,6 +72,32 @@
     </div>
   <% end %>
 
+  <!-- Owner List -->
+  <% if @owners.any? %>
+    <div class="space-y-3">
+      <h3 class="text-xs font-bold text-zinc-400 uppercase tracking-wider px-1">Owner (<%= @owners.count %>)</h3>
+      <div class="space-y-2">
+        <% @owners.each do |owner_actor| %>
+          <div class="flex items-center justify-between bg-white border border-stone-border rounded-lg p-4 hover:shadow-sm transition-all duration-200">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 overflow-hidden border border-stone-border">
+                <% if owner_actor.avatar.attached? %>
+                  <%= image_tag owner_actor.avatar.variant(:thumb), class: "w-10 h-10 rounded-full object-cover" %>
+                <% else %>
+                  <span class="bg-stone-200 w-full h-full flex items-center justify-center text-charcoal border-stone-300"><%= owner_actor.name[0].upcase %></span>
+                <% end %>
+              </div>
+              <div>
+                <p class="text-sm font-semibold text-charcoal"><%= link_to owner_actor.name, public_path_for(owner_actor), class: "hover:text-brand transition-colors" %></p>
+                <p class="text-xs text-brand font-semibold">Owner</p>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
   <!-- Admins List -->
   <div class="space-y-3">
     <h3 class="text-xs font-bold text-zinc-400 uppercase tracking-wider px-1">Administrators (<%= @admins.count %>)</h3>
@@ -95,7 +121,7 @@
             <div class="flex items-center gap-2">
               <%= form_with url: group_membership_path(@group, admin_actor), method: :patch, class: "flex items-center gap-1.5" do |f| %>
                 <%= f.hidden_field :from_role, value: "admin" %>
-                <%= f.select :to_role, [["Admin", "admin"], ["Moderator", "moderator"], ["Member", "member"]], { selected: "admin" }, { class: "text-xs border border-stone-300 rounded-lg px-2.5 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-charcoal" } %>
+                <%= f.select :to_role, [["Admin", "admin"], ["Moderator", "moderator"], ["Member", "member"], ["Silenced", "silenced"]], { selected: "admin" }, { class: "text-xs border border-stone-300 rounded-lg px-2.5 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-charcoal" } %>
                 <%= f.submit "Save", class: "text-xs bg-charcoal hover:bg-zinc-800 text-white px-2.5 py-1.5 rounded-lg font-semibold cursor-pointer border-0 shadow-sm transition-colors" %>
               <% end %>
               <%= button_to group_membership_path(@group, admin_actor, role: "admin"), method: :delete, data: { turbo_confirm: "Are you sure you want to remove #{admin_actor.name} from the group?" }, class: "text-xs text-zinc-400 hover:text-red-600 font-medium bg-transparent border-0 cursor-pointer transition-colors p-1" do %>
@@ -132,7 +158,7 @@
               <div class="flex items-center gap-2">
                 <%= form_with url: group_membership_path(@group, mod_actor), method: :patch, class: "flex items-center gap-1.5" do |f| %>
                   <%= f.hidden_field :from_role, value: "moderator" %>
-                  <%= f.select :to_role, [["Admin", "admin"], ["Moderator", "moderator"], ["Member", "member"]], { selected: "moderator" }, { class: "text-xs border border-stone-300 rounded-lg px-2.5 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-charcoal" } %>
+                  <%= f.select :to_role, [["Admin", "admin"], ["Moderator", "moderator"], ["Member", "member"], ["Silenced", "silenced"]], { selected: "moderator" }, { class: "text-xs border border-stone-300 rounded-lg px-2.5 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-charcoal" } %>
                   <%= f.submit "Save", class: "text-xs bg-charcoal hover:bg-zinc-800 text-white px-2.5 py-1.5 rounded-lg font-semibold cursor-pointer border-0 shadow-sm transition-colors" %>
                 <% end %>
                 <%= button_to group_membership_path(@group, mod_actor, role: "moderator"), method: :delete, data: { turbo_confirm: "Are you sure you want to remove #{mod_actor.name} from the group?" }, class: "text-xs text-zinc-400 hover:text-red-600 font-medium bg-transparent border-0 cursor-pointer transition-colors p-1" do %>
@@ -174,7 +200,7 @@
               <div class="flex items-center gap-2">
                 <%= form_with url: group_membership_path(@group, member_actor), method: :patch, class: "flex items-center gap-1.5" do |f| %>
                   <%= f.hidden_field :from_role, value: "member" %>
-                  <%= f.select :to_role, [["Admin", "admin"], ["Moderator", "moderator"], ["Member", "member"]], { selected: "member" }, { class: "text-xs border border-stone-300 rounded-lg px-2.5 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-charcoal" } %>
+                  <%= f.select :to_role, [["Admin", "admin"], ["Moderator", "moderator"], ["Member", "member"], ["Silenced", "silenced"]], { selected: "member" }, { class: "text-xs border border-stone-300 rounded-lg px-2.5 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-charcoal" } %>
                   <%= f.submit "Save", class: "text-xs bg-charcoal hover:bg-zinc-800 text-white px-2.5 py-1.5 rounded-lg font-semibold cursor-pointer border-0 shadow-sm transition-colors" %>
                 <% end %>
                 <%= button_to group_membership_path(@group, member_actor, role: "member"), method: :delete, data: { turbo_confirm: "Are you sure you want to remove #{member_actor.name} from the group?" }, class: "text-xs text-zinc-400 hover:text-red-650 font-medium bg-transparent border-0 cursor-pointer transition-colors p-1" do %>
@@ -191,6 +217,48 @@
       </div>
     <% end %>
   </div>
+
+  <% if @is_admin %>
+    <!-- Silenced List -->
+    <div class="space-y-3 pt-2">
+      <h3 class="text-xs font-bold text-zinc-400 uppercase tracking-wider px-1">Silenced (<%= @silenced.count %>)</h3>
+      <% if @silenced.any? %>
+        <div class="space-y-2">
+          <% @silenced.each do |silenced_actor| %>
+            <div class="flex items-center justify-between bg-white border border-stone-border rounded-lg p-4 hover:shadow-sm transition-all duration-200">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 overflow-hidden border border-stone-border">
+                  <% if silenced_actor.avatar.attached? %>
+                    <%= image_tag silenced_actor.avatar.variant(:thumb), class: "w-10 h-10 rounded-full object-cover" %>
+                  <% else %>
+                    <span class="bg-stone-100 w-full h-full flex items-center justify-center text-zinc-500 border border-stone-200"><%= silenced_actor.name[0].upcase %></span>
+                  <% end %>
+                </div>
+                <div>
+                  <p class="text-sm font-semibold text-charcoal"><%= link_to silenced_actor.name, public_path_for(silenced_actor), class: "hover:text-brand transition-colors" %></p>
+                  <p class="text-xs text-red-650 font-semibold">Silenced</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <%= form_with url: group_membership_path(@group, silenced_actor), method: :patch, class: "flex items-center gap-1.5" do |f| %>
+                  <%= f.hidden_field :from_role, value: "silenced" %>
+                  <%= f.select :to_role, [["Admin", "admin"], ["Moderator", "moderator"], ["Member", "member"], ["Silenced", "silenced"]], { selected: "silenced" }, { class: "text-xs border border-stone-300 rounded-lg px-2.5 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-charcoal" } %>
+                  <%= f.submit "Save", class: "text-xs bg-charcoal hover:bg-zinc-800 text-white px-2.5 py-1.5 rounded-lg font-semibold cursor-pointer border-0 shadow-sm transition-colors" %>
+                <% end %>
+                <%= button_to group_membership_path(@group, silenced_actor, role: "silenced"), method: :delete, data: { turbo_confirm: "Are you sure you want to remove #{silenced_actor.name} from the group?" }, class: "text-xs text-zinc-400 hover:text-red-650 font-medium bg-transparent border-0 cursor-pointer transition-colors p-1" do %>
+                  <i data-lucide="user-minus" class="w-4 h-4"></i>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div class="text-center py-8 bg-white border border-stone-border rounded-lg shadow-sm">
+          <p class="text-sm text-zinc-400 font-medium">No silenced members in this group.</p>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
 </div>
 
 <% if is_member %>
@@ -198,8 +266,27 @@
     <div class="bg-white rounded-lg border border-stone-border p-5 sticky top-20 space-y-4">
       <h3 class="text-sm font-semibold text-charcoal flex items-center justify-between pb-2 border-b border-stone-100">
         <span>Members</span>
-        <span class="text-zinc-400 font-normal text-xs">(<%= @admins.size + @moderators.size + @members.size %>)</span>
+        <span class="text-zinc-400 font-normal text-xs">(<%= @owners.size + @admins.size + @moderators.size + @members.size + (@is_admin ? @silenced.size : 0) %>)</span>
       </h3>
+
+      <% if @owners.any? %>
+        <div class="space-y-1.5">
+          <span class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 block px-2">Owner</span>
+          <% @owners.each do |actor| %>
+            <%= link_to public_path_for(actor), class: "flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-stone-50 transition-colors" do %>
+              <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 overflow-hidden border border-stone-border">
+                <% if actor.avatar.attached? %>
+                  <%= image_tag actor.avatar.variant(:thumb), class: "w-7 h-7 rounded-full object-cover" %>
+                <% else %>
+                  <span class="bg-stone-200 w-full h-full flex items-center justify-center text-charcoal border-stone-300"><%= actor.name[0].upcase %></span>
+                <% end %>
+              </div>
+              <span class="flex-1 text-sm text-charcoal truncate font-medium"><%= actor.name %></span>
+              <span class="text-[9px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-semibold border border-brand/20 flex-shrink-0">Owner</span>
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
 
       <% if @admins.any? %>
         <div class="space-y-1.5">
@@ -256,6 +343,24 @@
           <% end %>
           <% if @members.size > 12 %>
             <p class="text-[10px] text-zinc-400 px-2 pt-1 font-medium">+<%= @members.size - 12 %> more members</p>
+          <% end %>
+        </div>
+      <% end %>
+
+      <% if @is_admin && @silenced.any? %>
+        <div class="space-y-1.5">
+          <span class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 block px-2">Silenced</span>
+          <% @silenced.each do |actor| %>
+            <%= link_to public_path_for(actor), class: "flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-stone-50 transition-colors" do %>
+              <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 overflow-hidden border border-stone-border">
+                <% if actor.avatar.attached? %>
+                  <%= image_tag actor.avatar.variant(:thumb), class: "w-7 h-7 rounded-full object-cover" %>
+                <% else %>
+                  <span class="bg-stone-100 w-full h-full flex items-center justify-center text-zinc-550 border border-stone-200"><%= actor.name[0].upcase %></span>
+                <% end %>
+              </div>
+              <span class="flex-1 text-sm text-charcoal truncate font-medium"><%= actor.name %></span>
+            <% end %>
           <% end %>
         </div>
       <% end %>

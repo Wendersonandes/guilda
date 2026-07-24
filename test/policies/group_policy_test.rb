@@ -30,40 +30,40 @@ class GroupPolicyTest < ActiveSupport::TestCase
     assert_not GroupPolicy.new(nil, Actor.new(actorable_type: "Group")).create?
   end
 
-  test "update? only for admin" do
+  test "owner is connected upon group creation" do
+    group = Group.new
+    group.build_actor(name: "New Group")
+    GroupCreation.new(@bob_actor, group).call
+    assert group.actor.has_relation_with?(@bob_actor, "Owner")
+    assert_not group.actor.has_relation_with?(@bob_actor, "Admin")
+  end
+
+  test "owner has admin permissions" do
+    # @alice is the owner of @group (creator)
     assert GroupPolicy.new(@alice, @group_actor).update?
-    assert_not GroupPolicy.new(@bob, @group_actor).update?
-  end
-
-  test "destroy? only for admin" do
     assert GroupPolicy.new(@alice, @group_actor).destroy?
-    assert_not GroupPolicy.new(@bob, @group_actor).destroy?
-  end
-
-  test "manage_members? only for admin" do
-    @group_actor.connect_to(@bob_actor, as: "member")
     assert GroupPolicy.new(@alice, @group_actor).manage_members?
-    assert_not GroupPolicy.new(@bob, @group_actor).manage_members?
-  end
-
-  test "add_member? only for admin" do
     assert GroupPolicy.new(@alice, @group_actor).add_member?
-    assert_not GroupPolicy.new(@bob, @group_actor).add_member?
-  end
-
-  test "remove_member? only for admin" do
     assert GroupPolicy.new(@alice, @group_actor).remove_member?
-    assert_not GroupPolicy.new(@bob, @group_actor).remove_member?
-  end
-
-  test "change_role? only for admin" do
     assert GroupPolicy.new(@alice, @group_actor).change_role?
-    assert_not GroupPolicy.new(@bob, @group_actor).change_role?
+    assert_not GroupPolicy.new(@alice, @group_actor).leave?
   end
 
-  test "leave? is true for any member" do
+  test "admin has admin permissions" do
+    # bob is connected as admin custom relation
+    @group_actor.connect_to(@bob_actor, as: "admin")
+    assert GroupPolicy.new(@bob, @group_actor).update?
+    assert GroupPolicy.new(@bob, @group_actor).destroy?
+    assert GroupPolicy.new(@bob, @group_actor).manage_members?
+    assert GroupPolicy.new(@bob, @group_actor).add_member?
+    assert GroupPolicy.new(@bob, @group_actor).remove_member?
+    assert GroupPolicy.new(@bob, @group_actor).change_role?
+    assert GroupPolicy.new(@bob, @group_actor).leave?
+  end
+
+  test "leave? is true for any member except owner" do
     @group_actor.connect_to(@bob_actor, as: "member")
-    assert GroupPolicy.new(@alice, @group_actor).leave?
+    assert_not GroupPolicy.new(@alice, @group_actor).leave?
     assert GroupPolicy.new(@bob, @group_actor).leave?
     assert_not GroupPolicy.new(@carol_user, @group_actor).leave?
   end

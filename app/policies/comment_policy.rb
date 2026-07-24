@@ -4,7 +4,17 @@
 # The author or the wall owner (owner of the comment object) may delete/destroy it.
 class CommentPolicy < ApplicationPolicy
   def create?
-    user.present? && actor.present?
+    return false unless user.present? && actor.present?
+    
+    owner = record.activity_object&.owner
+    return true if owner.nil?
+    return true if owner == actor
+    
+    if owner.actorable_type == "Group"
+      owner.allow?(actor, :create, :comment)
+    else
+      true
+    end
   end
 
   def reply?

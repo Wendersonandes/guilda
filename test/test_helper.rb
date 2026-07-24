@@ -30,17 +30,27 @@ module ActiveSupport
         [ :update, :activity ],
         [ :destroy, :activity ],
         [ :follow, nil ],
-        [ :represent, nil ]
+        [ :represent, nil ],
+        [ :create, :post ],
+        [ :read,   :post ],
+        [ :update, :post ],
+        [ :destroy, :post ],
+        [ :create, :comment ],
+        [ :read,   :comment ],
+        [ :update, :comment ],
+        [ :destroy, :comment ]
       ])
 
       # Clear singleton caches for fresh records per test
-      [ Relation::Public, Relation::Follow, Relation::Reject ].each do |klass|
+      [ Relation::Public, Relation::Follow, Relation::Reject, Relation::Owner, Relation::LocalAdmin ].each do |klass|
         klass.instance_variable_set(:@instance, nil)
       end
 
       Relation::Public.instance
       Relation::Follow.instance
       Relation::Reject.instance
+      Relation::Owner.instance
+      Relation::LocalAdmin.instance
     end
   end
 end

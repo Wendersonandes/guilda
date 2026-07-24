@@ -215,7 +215,11 @@ class Actor < ApplicationRecord
   #
   # @return [ActiveRecord::Relation<Relation>]
   def activity_relations
-    relations.allowing(:read, :activity)
+    rels = relations.allowing(:read, :activity)
+    if actorable_type == "Group"
+      rels = Relation.where(id: rels.pluck(:id) + [Relation::Owner.instance.id])
+    end
+    rels
   end
 
   # Ids of the {#activity_relations}.
@@ -289,6 +293,8 @@ class Actor < ApplicationRecord
   def connect_to(other_actor, as:)
     relation = relation_custom(as) ||
                (as.to_s == "follow" ? Relation::Follow.instance : nil) ||
+               (as.to_s == "owner" ? Relation::Owner.instance : nil) ||
+               (as.to_s == "local_admin" ? Relation::LocalAdmin.instance : nil) ||
                raise(ArgumentError, "Unknown relation: #{as}")
 
     contact = sent_contacts.find_or_create_by!(receiver: other_actor)
@@ -306,7 +312,9 @@ class Actor < ApplicationRecord
   # @return [void]
   def disconnect_from(actor, relation_name)
     relation = relation_custom(relation_name) ||
-               (relation_name.to_s == "follow" ? Relation::Follow.instance : nil)
+               (relation_name.to_s == "follow" ? Relation::Follow.instance : nil) ||
+               (relation_name.to_s == "owner" ? Relation::Owner.instance : nil) ||
+               (relation_name.to_s == "local_admin" ? Relation::LocalAdmin.instance : nil)
     return unless relation
     ties_to(actor).where(relation: relation).destroy_all
   end
@@ -316,7 +324,10 @@ class Actor < ApplicationRecord
   # @param relation_name [String, Symbol] the custom relation name.
   # @return [ActiveRecord::Relation<Actor>]
   def contacts_for(relation_name)
-    relation = relation_custom(relation_name)
+    relation = relation_custom(relation_name) ||
+               (relation_name.to_s == "follow" ? Relation::Follow.instance : nil) ||
+               (relation_name.to_s == "owner" ? Relation::Owner.instance : nil) ||
+               (relation_name.to_s == "local_admin" ? Relation::LocalAdmin.instance : nil)
     return Actor.none unless relation
     Actor.where(id: sent_contacts.joins(:ties).where(ties: { relation_id: relation.id }).select(:receiver_id))
   end

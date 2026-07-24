@@ -27,7 +27,7 @@ class GroupCreation
       )
 
       @group.actor.update!(activity_object: activity_object)
-      @group.actor.connect_to(@creator, as: "admin")
+      @group.actor.connect_to(@creator, as: "owner")
 
       @group
     end

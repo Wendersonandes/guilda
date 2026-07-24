@@ -69,8 +69,27 @@
     <div class="bg-white rounded-lg border border-stone-border p-5 sticky top-20 space-y-4">
       <h3 class="text-sm font-semibold text-charcoal flex items-center justify-between pb-2 border-b border-stone-100">
         <span>Members</span>
-        <span class="text-zinc-400 font-normal text-xs">(<%= @admins.size + @moderators.size + @members.size %>)</span>
+        <span class="text-zinc-400 font-normal text-xs">(<%= @owners.size + @admins.size + @moderators.size + @members.size + (@is_admin ? @silenced.size : 0) %>)</span>
       </h3>
+
+      <% if @owners.any? %>
+        <div class="space-y-1.5">
+          <span class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 block px-2">Owner</span>
+          <% @owners.each do |actor| %>
+            <%= link_to public_path_for(actor), class: "flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-stone-50 transition-colors" do %>
+              <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 overflow-hidden border border-stone-border">
+                <% if actor.avatar.attached? %>
+                  <%= image_tag actor.avatar.variant(:thumb), class: "w-7 h-7 rounded-full object-cover" %>
+                <% else %>
+                  <span class="bg-stone-200 w-full h-full flex items-center justify-center text-charcoal border-stone-300"><%= actor.name[0].upcase %></span>
+                <% end %>
+              </div>
+              <span class="flex-1 text-sm text-charcoal truncate font-medium"><%= actor.name %></span>
+              <span class="text-[9px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-semibold border border-brand/20 flex-shrink-0">Owner</span>
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
 
       <% if @admins.any? %>
         <div class="space-y-1.5">
@@ -127,6 +146,24 @@
           <% end %>
           <% if @members.size > 12 %>
             <p class="text-[10px] text-zinc-400 px-2 pt-1 font-medium">+<%= @members.size - 12 %> more members</p>
+          <% end %>
+        </div>
+      <% end %>
+
+      <% if @is_admin && @silenced.any? %>
+        <div class="space-y-1.5">
+          <span class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 block px-2">Silenced</span>
+          <% @silenced.each do |actor| %>
+            <%= link_to public_path_for(actor), class: "flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-stone-50 transition-colors" do %>
+              <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 overflow-hidden border border-stone-border">
+                <% if actor.avatar.attached? %>
+                  <%= image_tag actor.avatar.variant(:thumb), class: "w-7 h-7 rounded-full object-cover" %>
+                <% else %>
+                  <span class="bg-stone-100 w-full h-full flex items-center justify-center text-zinc-550 border border-stone-200"><%= actor.name[0].upcase %></span>
+                <% end %>
+              </div>
+              <span class="flex-1 text-sm text-charcoal truncate font-medium"><%= actor.name %></span>
+            <% end %>
           <% end %>
         </div>
       <% end %>

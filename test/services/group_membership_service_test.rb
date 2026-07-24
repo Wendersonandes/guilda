@@ -25,6 +25,11 @@ class GroupMembershipServiceTest < ActiveSupport::TestCase
     assert @group_actor.has_relation_with?(@bob_actor, "Admin")
   end
 
+  test "add member with owner role" do
+    GroupMembershipService.new(@group_actor, @bob_actor).add(role: "owner")
+    assert @group_actor.has_relation_with?(@bob_actor, "Owner")
+  end
+
   test "add member with moderator role" do
     GroupMembershipService.new(@group_actor, @bob_actor).add(role: "moderator")
     assert @group_actor.has_relation_with?(@bob_actor, "Moderator")

@@ -17,10 +17,12 @@ class GroupMembershipsController < ApplicationController
   # admins only), and headline counts. Authorized via +GroupPolicy#index?+.
   def index
     authorize @group_actor, policy_class: GroupPolicy
+    @owners = @group_actor.contacts_for("owner").includes(:avatar_attachment).to_a
     @admins = @group_actor.contacts_for("admin").includes(:avatar_attachment).to_a
     @moderators = @group_actor.contacts_for("moderator").includes(:avatar_attachment).to_a
     @members = @group_actor.contacts_for("member").includes(:avatar_attachment).to_a
-    @is_admin = current_actor && @group_actor.has_relation_with?(current_actor, "Admin")
+    @silenced = @group_actor.contacts_for("silenced").includes(:avatar_attachment).to_a
+    @is_admin = current_actor && (@group_actor.has_relation_with?(current_actor, "Admin") || @group_actor.has_relation_with?(current_actor, "Owner"))
     @pending_requests = if @is_admin
       @group_actor.received_contacts.pending.includes(sender: :avatar_attachment).to_a
     else

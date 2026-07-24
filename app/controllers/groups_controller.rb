@@ -36,9 +36,12 @@ class GroupsController < ApplicationController
 
     @is_member = current_actor && @group.actor.member_roles_for(current_actor).any?
     if @is_member
+      @owners     = @group.actor.contacts_for("owner").includes(:avatar_attachment).to_a
       @admins     = @group.actor.contacts_for("admin").includes(:avatar_attachment).to_a
       @moderators = @group.actor.contacts_for("moderator").includes(:avatar_attachment).to_a
       @members    = @group.actor.contacts_for("member").includes(:avatar_attachment).to_a
+      @silenced   = @group.actor.contacts_for("silenced").includes(:avatar_attachment).to_a
+      @is_admin   = current_actor && (@group.actor.has_relation_with?(current_actor, "Admin") || @group.actor.has_relation_with?(current_actor, "Owner"))
       @activity   = Activity.new(verb: :post, author: current_actor, owner: @group.actor)
     end
   end

@@ -34,7 +34,7 @@
           <% if @actor.actorable.is_a?(Profile) && @actor.actorable.occupations.any? %>
             <div class="flex flex-wrap gap-1.5 mt-2.5">
               <% @actor.actorable.occupations.each do |occupation| %>
-                <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-stone-100 text-zinc-600 border border-stone-200">
+                <span class="inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-medium bg-stone-100 text-zinc-600 border border-stone-200">
                   <%= occupation.name %>
                 </span>
               <% end %>

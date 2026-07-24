@@ -47,7 +47,7 @@ class GroupPolicy < ApplicationPolicy
   end
 
   def leave?
-    member? || moderator? || admin?
+    (admin? || moderator? || member?) && !owner?
   end
 
   class Scope < Scope
@@ -58,11 +58,18 @@ class GroupPolicy < ApplicationPolicy
 
   private
 
+  # Does the acting actor hold the +Owner+ role in this group?
+  # @return [Boolean]
+  def owner?
+    return false unless actor
+    record.has_relation_with?(actor, "Owner")
+  end
+
   # Does the acting actor hold the +Admin+ role in this group?
   # @return [Boolean]
   def admin?
     return false unless actor
-    record.has_relation_with?(actor, "Admin")
+    record.has_relation_with?(actor, "Admin") || owner?
   end
 
   # Does the acting actor hold the +Moderator+ role in this group?
@@ -82,6 +89,6 @@ class GroupPolicy < ApplicationPolicy
   # Does the acting actor hold any membership role (member, moderator or admin)?
   # @return [Boolean]
   def member_or_above?
-    admin? || moderator? || member?
+    owner? || admin? || moderator? || member?
   end
 end

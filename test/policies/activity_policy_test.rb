@@ -67,4 +67,14 @@ class ActivityPolicyTest < ActiveSupport::TestCase
     policy = ActivityPolicy.new(@charlie, activity)
     assert_not policy.create?
   end
+
+  test "silenced member cannot create post in the group" do
+    @group_actor.disconnect_from(@bob_actor, "member")
+    @group_actor.connect_to(@bob_actor, as: "silenced")
+    @bob_actor.reload
+    
+    activity = Activity.new(verb: :post, author: @bob_actor, owner: @group_actor)
+    policy = ActivityPolicy.new(@bob, activity)
+    assert_not policy.create?
+  end
 end

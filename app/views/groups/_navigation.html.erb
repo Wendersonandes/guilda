@@ -1,7 +1,8 @@
 <%
   member_roles = current_actor ? @group.actor.member_roles_for(current_actor) : []
   is_member = member_roles.any?
-  is_admin = current_actor && @group.actor.has_relation_with?(current_actor, "Admin")
+  is_owner = current_actor && @group.actor.has_relation_with?(current_actor, "Owner")
+  is_admin = current_actor && (@group.actor.has_relation_with?(current_actor, "Admin") || is_owner)
   total_members = @group.actor.sent_contacts.active.count
 %>
 
@@ -28,9 +29,11 @@
   <% if current_actor %>
     <div class="pr-2 flex items-center">
       <% if is_member %>
-        <%= button_to group_membership_path(@group, current_actor, role: member_roles.first), method: :delete, data: { turbo_confirm: "Are you sure you want to leave #{@group.name}?" }, class: "flex items-center gap-1.5 text-xs bg-white hover:bg-stone-50 text-red-650 border border-stone-300 px-3 py-1.5 rounded-lg font-semibold transition-colors cursor-pointer" do %>
-          <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
-          <span>Leave Group</span>
+        <% unless is_owner %>
+          <%= button_to group_membership_path(@group, current_actor, role: member_roles.first), method: :delete, data: { turbo_confirm: "Are you sure you want to leave #{@group.name}?" }, class: "flex items-center gap-1.5 text-xs bg-white hover:bg-stone-50 text-red-650 border border-stone-300 px-3 py-1.5 rounded-lg font-semibold transition-colors cursor-pointer" do %>
+            <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+            <span>Leave Group</span>
+          <% end %>
         <% end %>
       <% else %>
         <% if @group.public_group? %>

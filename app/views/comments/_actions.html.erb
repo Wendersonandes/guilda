@@ -36,7 +36,7 @@
 <% end %>
 
 <!-- Reply button -->
-<% if current_actor %>
+<% if policy(comment).reply? %>
   <%= link_to reply_comment_path(comment.short_id), data: { turbo_frame: dom_id(comment_activity, :reply_form), turbo_stream: true }, class: "flex items-center gap-1 text-gray-400 hover:text-blue-600" do %>
     <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
     <span>Reply</span>

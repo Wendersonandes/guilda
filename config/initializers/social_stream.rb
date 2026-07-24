@@ -102,6 +102,15 @@ module SocialStream
           [ "create", "comment" ]
         ],
         receiver_type: "Profile"
+      },
+      "silenced" => {
+        name: "Silenced",
+        permissions: [
+          [ "read", "activity" ],
+          [ "read", "post" ],
+          [ "read", "comment" ]
+        ],
+        receiver_type: "Profile"
       }
     },
     "site" => {

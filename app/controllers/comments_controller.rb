@@ -31,6 +31,11 @@ class CommentsController < ApplicationController
     # We authorize commenting based on whether we can see the parent activity
     authorize @parent_activity, :show?, policy_class: ActivityPolicy
 
+    # Authorize comment creation based on the parent activity's owner
+    comment = Comment.new
+    comment.build_activity_object(owner: @parent_activity.owner, author: current_actor)
+    authorize comment, :create?
+
     @comment_activity = CommentCreation.new(
       author: current_actor,
       user_author: current_user,
