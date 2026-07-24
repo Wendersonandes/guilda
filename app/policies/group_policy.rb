@@ -23,7 +23,7 @@ class GroupPolicy < ApplicationPolicy
   end
 
   def destroy?
-    admin?
+    owner?
   end
 
   def join?

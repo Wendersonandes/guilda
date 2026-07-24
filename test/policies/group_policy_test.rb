@@ -53,7 +53,7 @@ class GroupPolicyTest < ActiveSupport::TestCase
     # bob is connected as admin custom relation
     @group_actor.connect_to(@bob_actor, as: "admin")
     assert GroupPolicy.new(@bob, @group_actor).update?
-    assert GroupPolicy.new(@bob, @group_actor).destroy?
+    assert_not GroupPolicy.new(@bob, @group_actor).destroy?
     assert GroupPolicy.new(@bob, @group_actor).manage_members?
     assert GroupPolicy.new(@bob, @group_actor).add_member?
     assert GroupPolicy.new(@bob, @group_actor).remove_member?
