@@ -1,4 +1,5 @@
 puts "Seeding Guilda core..."
+ActiveJob::Base.queue_adapter = :inline
 
 # Clear database and reset cached singletons
 puts "  Cleaning database..."
