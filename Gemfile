@@ -41,7 +41,7 @@ gem "image_processing", "~> 1.2"
 
 # Authentication
 # Authentication
-gem "devise", "~> 4.9"
+gem "devise", "~> 5.0"
 
 # Authorization
 gem "pundit", "~> 2.4"
