@@ -51,7 +51,7 @@ gem "noticed"
 gem "ransack"
 
 # Location — country/city selects
-gem "country_select", "~> 9.0"
+gem "country_select", "~> 11.0"
 gem "city-state", "~> 1.1"
 
 # Friendly URLs
