@@ -94,13 +94,13 @@ production:
     port: <%= ENV.fetch("GUILDA_DATABASE_PORT", "5432") %>
   cache:
     <<: *primary_production
-    database: guilda_production_cache
+    database: <%= ENV.fetch("GUILDA_DATABASE_CACHE_NAME", ENV.fetch("GUILDA_DATABASE_NAME", "guilda_production")) %>
     migrations_paths: db/cache_migrate
   queue:
     <<: *primary_production
-    database: guilda_production_queue
+    database: <%= ENV.fetch("GUILDA_DATABASE_QUEUE_NAME", ENV.fetch("GUILDA_DATABASE_NAME", "guilda_production")) %>
     migrations_paths: db/queue_migrate
   cable:
     <<: *primary_production
-    database: guilda_production_cable
+    database: <%= ENV.fetch("GUILDA_DATABASE_CABLE_NAME", ENV.fetch("GUILDA_DATABASE_NAME", "guilda_production")) %>
     migrations_paths: db/cable_migrate
