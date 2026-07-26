@@ -87,20 +87,20 @@ test:
 production:
   primary: &primary_production
     <<: *default
-    database: <%= ENV.fetch("GUILDA_DATABASE_NAME", "guilda_production") %>
+    database: <%= ENV.fetch("GUILDA_DATABASE_NAME", "postgres") %>
     username: <%= ENV.fetch("GUILDA_DATABASE_USERNAME", "guilda") %>
     password: <%= ENV["GUILDA_DATABASE_PASSWORD"] %>
     host: <%= ENV["GUILDA_DATABASE_HOST"] %>
     port: <%= ENV.fetch("GUILDA_DATABASE_PORT", "5432") %>
   cache:
     <<: *primary_production
-    database: <%= ENV.fetch("GUILDA_DATABASE_CACHE_NAME", ENV.fetch("GUILDA_DATABASE_NAME", "guilda_production")) %>
+    database: <%= ENV.fetch("GUILDA_DATABASE_CACHE_NAME", ENV.fetch("GUILDA_DATABASE_NAME", "postgres")) %>
     migrations_paths: db/cache_migrate
   queue:
     <<: *primary_production
-    database: <%= ENV.fetch("GUILDA_DATABASE_QUEUE_NAME", ENV.fetch("GUILDA_DATABASE_NAME", "guilda_production")) %>
+    database: <%= ENV.fetch("GUILDA_DATABASE_QUEUE_NAME", ENV.fetch("GUILDA_DATABASE_NAME", "postgres")) %>
     migrations_paths: db/queue_migrate
   cable:
     <<: *primary_production
-    database: <%= ENV.fetch("GUILDA_DATABASE_CABLE_NAME", ENV.fetch("GUILDA_DATABASE_NAME", "guilda_production")) %>
+    database: <%= ENV.fetch("GUILDA_DATABASE_CABLE_NAME", ENV.fetch("GUILDA_DATABASE_NAME", "postgres")) %>
     migrations_paths: db/cable_migrate
