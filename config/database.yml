@@ -87,9 +87,11 @@ test:
 production:
   primary: &primary_production
     <<: *default
-    database: guilda_production
-    username: guilda
+    database: <%= ENV.fetch("GUILDA_DATABASE_NAME", "guilda_production") %>
+    username: <%= ENV.fetch("GUILDA_DATABASE_USERNAME", "guilda") %>
     password: <%= ENV["GUILDA_DATABASE_PASSWORD"] %>
+    host: <%= ENV["GUILDA_DATABASE_HOST"] %>
+    port: <%= ENV.fetch("GUILDA_DATABASE_PORT", "5432") %>
   cache:
     <<: *primary_production
     database: guilda_production_cache
