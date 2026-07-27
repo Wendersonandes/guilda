@@ -48,6 +48,7 @@ gem "pundit", "~> 2.4"
 
 # Notifications
 gem "noticed"
+gem "mailgun-ruby"
 gem "ransack"
 
 # Location — country/city selects
