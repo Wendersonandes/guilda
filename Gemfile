@@ -59,7 +59,7 @@ gem "city-state", "~> 1.1"
 gem "friendly_id", "~> 5.5"
 
 # Pagination
-gem "pagy", "~> 9.0"
+gem "pagy", "~> 43.6"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
