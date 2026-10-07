@@ -1,10 +1,11 @@
-# Authorization for {Group Groups}. The policy +record+ is the group's {Actor}, so role checks
-# are delegated to {Actor#has_relation_with?}. Public groups are listable by anyone; private
-# groups only by members and above. Management actions (update, destroy, member management)
-# require the +Admin+ role; leaving requires any membership role.
+# Authorization for {Group Groups}. The policy +record+ is the group's {Actor}, so
+# authorization is delegated to {Actor#can?} against the group context (the role's
+# {Permission} grants). Public groups are listable by anyone; private groups only by members
+# and above. Management actions require the +update member+/+update group+ capabilities; only
+# the owner may destroy the group, and only non-owners may leave it.
 #
 # @see Group
-# @see GroupMembershipService
+# @see Actor#can?
 class GroupPolicy < ApplicationPolicy
   def index?
     record.actorable&.public_group? || member_or_above?
@@ -19,11 +20,11 @@ class GroupPolicy < ApplicationPolicy
   end
 
   def update?
-    admin?
+    can?(:update, :group)
   end
 
   def destroy?
-    owner?
+    can?(:destroy, :group)
   end
 
   def join?
@@ -31,23 +32,23 @@ class GroupPolicy < ApplicationPolicy
   end
 
   def manage_members?
-    admin?
+    can?(:update, :member)
   end
 
   def add_member?
-    admin?
+    can?(:create, :member)
   end
 
   def remove_member?
-    admin?
+    can?(:destroy, :member)
   end
 
   def change_role?
-    admin?
+    can?(:update, :member)
   end
 
   def leave?
-    (admin? || moderator? || member?) && !owner?
+    member_or_above? && !owner?
   end
 
   class Scope < Scope
@@ -58,37 +59,23 @@ class GroupPolicy < ApplicationPolicy
 
   private
 
-  # Does the acting actor hold the +Owner+ role in this group?
+  # Whether the acting actor may perform +action+ on +object+ within this group's context.
+  #
+  # @return [Boolean]
+  def can?(action, object)
+    actor ? actor.can?(action, object, record) : false
+  end
+
+  # Does the acting actor hold the +Owner+ role in this group? (identity, used for +leave?+)
   # @return [Boolean]
   def owner?
-    return false unless actor
-    record.has_relation_with?(actor, "Owner")
+    actor ? record.has_relation_with?(actor, "Owner") : false
   end
 
-  # Does the acting actor hold the +Admin+ role in this group?
-  # @return [Boolean]
-  def admin?
-    return false unless actor
-    record.has_relation_with?(actor, "Admin") || owner?
-  end
-
-  # Does the acting actor hold the +Moderator+ role in this group?
-  # @return [Boolean]
-  def moderator?
-    return false unless actor
-    record.has_relation_with?(actor, "Moderator")
-  end
-
-  # Does the acting actor hold the +Member+ role in this group?
-  # @return [Boolean]
-  def member?
-    return false unless actor
-    record.has_relation_with?(actor, "Member")
-  end
-
-  # Does the acting actor hold any membership role (member, moderator or admin)?
+  # Whether the acting actor holds any membership role (member or above). Equivalent to being
+  # granted +read group+; silenced actors are excluded.
   # @return [Boolean]
   def member_or_above?
-    owner? || admin? || moderator? || member?
+    can?(:read, :group)
   end
 end

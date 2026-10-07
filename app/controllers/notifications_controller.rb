@@ -1,4 +1,8 @@
 class NotificationsController < ApplicationController
+  include FeatureGated
+
+  feature_gated_by :notifications
+
   before_action :authenticate_user!
   before_action :set_notification, only: [ :update ]
 

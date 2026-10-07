@@ -4,6 +4,10 @@
 # @see ContactPolicy
 # @see Actor#connect_to
 class ContactsController < ApplicationController
+  include FeatureGated
+
+  feature_gated_by :contacts
+
   # Lists the current actor's established contacts (scoped via +ContactPolicy::Scope+) plus the
   # pending incoming requests from other profiles.
   def index

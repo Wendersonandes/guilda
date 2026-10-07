@@ -110,6 +110,33 @@ class ActorTest < ActiveSupport::TestCase
     assert_not @bob_actor.has_relation_with?(@group.actor, "follow")
   end
 
+  test "can? resolves capabilities from the group role grants" do
+    @group.actor.connect_to(@bob_actor, as: "member")
+
+    assert @bob_actor.can?(:read, :group, @group)
+    assert @bob_actor.can?(:read, :member, @group)
+    assert_not @bob_actor.can?(:update, :member, @group)
+    assert_not @bob_actor.can?(:destroy, :group, @group)
+  end
+
+  test "can? distinguishes group admin from owner" do
+    @group.actor.connect_to(@bob_actor, as: "admin")
+
+    assert @bob_actor.can?(:update, :group, @group)
+    assert @bob_actor.can?(:update, :member, @group)
+    assert_not @bob_actor.can?(:destroy, :group, @group)
+
+    # @alice_actor founded the group and is its owner.
+    assert @alice_actor.can?(:destroy, :group, @group)
+  end
+
+  test "role? is an alias of has_role?" do
+    @group.actor.connect_to(@bob_actor, as: "member")
+
+    assert @bob_actor.role?("Member", @group)
+    assert_equal @bob_actor.role?("Member", @group), @bob_actor.has_role?("Member", @group)
+  end
+
   private
 
   def create_group_with_admin(admin_actor)

@@ -1,7 +1,4 @@
-<%
-  group ||= @group
-  is_member = local_assigns.has_key?(:is_member) ? local_assigns[:is_member] : (current_actor && group.actor.member_roles_for(current_actor).any?)
-%>
+<% group ||= @group %>
 
 <div class="bg-white rounded-lg border border-stone-border overflow-hidden">
   <% if group.actor.cover_image.attached? %>
@@ -41,13 +38,13 @@
           <span class="flex items-center gap-1"><i data-lucide="users" class="w-3.5 h-3.5"></i> <%= group.actor.sent_contacts.active.count %> members</span>
         </div>
 
-        <% if current_actor == group.actor || (is_member && group.actor.has_relation_with?(current_actor, "Admin")) %>
+        <% if current_actor && (current_actor == group.actor || current_actor.can?(:update, :group, group.actor)) %>
           <div class="mt-4 flex items-center gap-3 pt-3 border-t border-stone-100">
             <%= link_to edit_group_path(group), class: "inline-flex items-center gap-1 text-xs bg-white hover:bg-stone-50 text-zinc-700 font-semibold px-3 py-1.5 rounded-lg border border-stone-300 transition-colors shadow-sm cursor-pointer" do %>
               <i data-lucide="settings" class="w-3.5 h-3.5"></i>
               <span>Edit Group</span>
             <% end %>
-            <% if current_actor == group.actor %>
+            <% if current_actor && (current_actor == group.actor || current_actor.can?(:destroy, :group, group.actor)) %>
               <%= button_to group_path(group), method: :delete, data: { turbo_confirm: "Are you sure you want to delete this group?" }, class: "inline-flex items-center gap-1 text-xs bg-white hover:bg-stone-50 text-red-650 hover:text-red-700 border border-stone-300 px-3 py-1.5 rounded-lg font-medium transition-colors cursor-pointer" do %>
                 <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                 <span>Delete</span>

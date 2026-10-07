@@ -104,6 +104,23 @@ class MentionManagerTest < ActiveSupport::TestCase
     assert_empty @bob.notifications.all
   end
 
+  test "should not create mentions when the mentions feature is disabled" do
+    Flipper.disable(:mentions)
+
+    post = Post.new
+    post.build_activity_object(
+      description: "Hey @[Bob](bob), check this out!",
+      author: @alice,
+      user_author: @user_alice,
+      owner: @alice
+    )
+    post.save!
+
+    MentionManager.new(post.activity_object).call(post.activity_object.description)
+
+    assert_empty post.activity_object.mentions
+  end
+
   test "should sync mentions on update" do
     # 1. Create a comment mentioning Bob
     comment = Comment.new

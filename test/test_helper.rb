@@ -12,6 +12,14 @@ module ActiveSupport
 
     include Devise::Test::IntegrationHelpers
 
+    # Isolate feature flags per test and enable every registered feature by default, so existing
+    # coverage keeps exercising the "feature on" path. Tests that assert gated behaviour disable
+    # the specific flag they target.
+    setup do
+      Flipper.instance = Flipper.new(Flipper::Adapters::Memory.new)
+      FeatureFlags.names.each { |name| Flipper.enable(name) }
+    end
+
     def create_profile_for(user, name: nil)
       actor = ProfileCreation.new(user, name: name || user.email.split("@").first).call
       actor.actorable.update!(wizard_complete: true, country: "BR", state: "SP", city: "São Paulo", occupation_list: ["Developer"])
@@ -24,6 +32,8 @@ module ActiveSupport
     end
 
     def seed_permissions_and_relations
+      Relation::Single.destroy_all
+
       Permission.instances([
         [ :create, :activity ],
         [ :read,   :activity ],
@@ -38,7 +48,16 @@ module ActiveSupport
         [ :create, :comment ],
         [ :read,   :comment ],
         [ :update, :comment ],
-        [ :destroy, :comment ]
+        [ :destroy, :comment ],
+        [ :read,   :group ],
+        [ :update, :group ],
+        [ :destroy, :group ],
+        [ :read,   :member ],
+        [ :create, :member ],
+        [ :update, :member ],
+        [ :destroy, :member ],
+        [ :read,   :admin ],
+        [ :update, :role ]
       ])
 
       # Clear singleton caches for fresh records per test

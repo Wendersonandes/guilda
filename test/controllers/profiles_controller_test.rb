@@ -40,9 +40,10 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_equal "freelance", @actor.profile.reload.availability
   end
 
-  test "should redirect index when not signed in" do
+  test "should get index when not signed in" do
     get profiles_path
-    assert_redirected_to new_user_session_path
+    assert_response :success
+    assert_select "h1", "Artists & Suppliers"
   end
 
   test "should get index when signed in" do

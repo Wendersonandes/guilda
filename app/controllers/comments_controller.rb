@@ -1,6 +1,10 @@
 # Handles comments interactions: creating, editing, updating, deleting (soft-delete),
 # upvoting/downvoting, and flagging.
 class CommentsController < ApplicationController
+  include FeatureGated
+
+  feature_gated_by :comments, except: [ :show ]
+
   skip_before_action :authenticate_user!, only: [ :show ]
   before_action :set_comment, only: [ :edit, :update, :destroy, :reply, :flag_form, :upvote, :downvote, :flag, :unflag ]
 

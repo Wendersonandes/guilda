@@ -1,5 +1,5 @@
 module SocialStream
-  mattr_accessor :available_permissions, :custom_relations, :system_relations, :suggested_models
+  mattr_accessor :available_permissions, :custom_relations, :suggested_models
 
   self.available_permissions = {
     "profile" => [
@@ -30,7 +30,14 @@ module SocialStream
       [ "create", "comment" ],
       [ "read",   "comment" ],
       [ "update", "comment" ],
-      [ "destroy", "comment" ]
+      [ "destroy", "comment" ],
+      [ "read",   "group" ],
+      [ "update", "group" ],
+      [ "destroy", "group" ],
+      [ "read",   "member" ],
+      [ "create", "member" ],
+      [ "update", "member" ],
+      [ "destroy", "member" ]
     ],
     "site" => [
       [ "create", "activity" ],
@@ -46,7 +53,9 @@ module SocialStream
       [ "create", "comment" ],
       [ "read",   "comment" ],
       [ "update", "comment" ],
-      [ "destroy", "comment" ]
+      [ "destroy", "comment" ],
+      [ "read",   "admin" ],
+      [ "update", "role" ]
     ]
   }.freeze
 
@@ -72,7 +81,13 @@ module SocialStream
           [ "create", "comment" ],
           [ "read",   "comment" ],
           [ "update",  "comment" ],
-          [ "destroy", "comment" ]
+          [ "destroy", "comment" ],
+          [ "read",   "group" ],
+          [ "update",  "group" ],
+          [ "read",   "member" ],
+          [ "create", "member" ],
+          [ "update",  "member" ],
+          [ "destroy", "member" ]
         ],
         receiver_type: "Profile"
       },
@@ -87,7 +102,9 @@ module SocialStream
           [ "update", "post" ],
           [ "create", "comment" ],
           [ "read",   "comment" ],
-          [ "update", "comment" ]
+          [ "update", "comment" ],
+          [ "read", "group" ],
+          [ "read", "member" ]
         ],
         receiver_type: "Profile"
       },
@@ -99,7 +116,9 @@ module SocialStream
           [ "read", "post" ],
           [ "create", "post" ],
           [ "read", "comment" ],
-          [ "create", "comment" ]
+          [ "create", "comment" ],
+          [ "read", "group" ],
+          [ "read", "member" ]
         ],
         receiver_type: "Profile"
       },
@@ -129,7 +148,9 @@ module SocialStream
           [ "create", "comment" ],
           [ "read",   "comment" ],
           [ "update",  "comment" ],
-          [ "destroy", "comment" ]
+          [ "destroy", "comment" ],
+          [ "read",   "admin" ],
+          [ "update", "role" ]
         ],
         receiver_type: "Profile"
       },
@@ -189,6 +210,5 @@ module SocialStream
     }
   }.freeze
 
-  self.system_relations = {}.freeze
   self.suggested_models = [ :profile ]
 end

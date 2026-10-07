@@ -392,6 +392,11 @@ Sharing is modeled by join records that connect content to `Relations`:
 Each `Relation` stands for the set of Actors holding a `Tie` of that relation, so audiences define who can reach the content.
 
 ## Permissions
-Authorization in the network is extremely granular. `Permissions` are composed of an `action` (e.g., create, read, update, follow) and an `object` (e.g., activity, tie, post).
-Permissions are attached to `Relations`. When Actor A creates a `Tie` with Actor B using a specific Relation, Actor B is granted all Permissions defined in that Relation.
+Authorization in the network is extremely granular and data-driven. A `Permission` is a pair of `action` (create, read, update, destroy, follow, represent) and `object` (activity, post, comment, group, member, admin, role). Permissions are attached to `Relations`; when Actor A creates a `Tie` with Actor B using a specific Relation, Actor B is granted all Permissions defined in that Relation.
+
+Authorization decisions go through **`Actor#can?(action, object = nil, context = Site.instance)`**. `has_relation_with?` / `role?` (alias `has_role?`) are **identity checks only** — for labels and business rules (e.g. "owner cannot leave group"), never to grant/deny a resource action. `has_permission?` is a deprecated alias of `can?`.
+
+After changing `SocialStream.available_permissions` or `SocialStream.custom_relations`, run `bin/rails permissions:sync` in every environment so existing ties pick up the new grants.
+
+Full model, role → capability matrix and the capability checklist: see [`docs/permissions.md`](docs/permissions.md).
 <!-- ACTIVITY STREAMS GUIDELINES END -->

@@ -2,7 +2,7 @@
   member_roles = current_actor ? @group.actor.member_roles_for(current_actor) : []
   is_member = member_roles.any?
   is_owner = current_actor && @group.actor.has_relation_with?(current_actor, "Owner")
-  is_admin = current_actor && (@group.actor.has_relation_with?(current_actor, "Admin") || is_owner)
+  is_admin = current_actor && current_actor.can?(:update, :member, @group.actor)
   total_members = @group.actor.sent_contacts.active.count
 %>
 

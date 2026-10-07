@@ -74,4 +74,11 @@ class RelationTest < ActiveSupport::TestCase
   test "Relation::Reject.create_activity? is false" do
     assert_not Relation::Reject.create_activity?
   end
+
+  test "Relation::LocalAdmin grants the site permissions" do
+    local_admin = Relation::LocalAdmin.instance
+
+    assert_equal SocialStream.available_permissions["site"].size, local_admin.permissions.count
+    assert local_admin.permissions.exists?(action: :read, object: :activity)
+  end
 end

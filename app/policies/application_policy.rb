@@ -7,9 +7,9 @@
 # * {#actor} — the {Actor} the user is currently acting as ({User#current_profile}). This is
 #   the entity checked against the social graph and {Permission Permissions}.
 #
-# In this application, policies replace the permission checks that the legacy engine performed
-# through ties and roles: authorization questions about the graph are delegated to model
-# methods such as +Activity#visible_to?+ or +Actor#has_relation_with?+.
+# In this application, policies delegate authorization decisions about the graph to
+# {Actor#can?} (which resolves the {Permission Permissions} granted by the actor's {Tie Ties})
+# and to model methods such as {Activity#visible_to?}.
 #
 # @see Actor
 # @see User
@@ -60,6 +60,14 @@ class ApplicationPolicy
   # @return [Actor, nil]
   def actor
     @actor ||= user&.current_profile
+  end
+
+  # Whether the acting actor is a site administrator, resolved through the +read admin+
+  # {Permission} granted by the site's +Admin+ relation.
+  #
+  # @return [Boolean]
+  def site_admin?
+    actor ? actor.can?(:read, :admin) : false
   end
 
   # Whether the record's author or owner is the acting {#actor}.

@@ -4,6 +4,10 @@
 # @see Like
 # @see LikePolicy
 class LikesController < ApplicationController
+  include FeatureGated
+
+  feature_gated_by :likes
+
   before_action :set_activity
 
   # Creates a like: builds a new {Like} wrapper around an activity with verb: :like and saves it.

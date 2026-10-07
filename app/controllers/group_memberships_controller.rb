@@ -9,6 +9,10 @@
 # @see GroupMembershipService
 # @see GroupPolicy
 class GroupMembershipsController < ApplicationController
+  include FeatureGated
+
+  feature_gated_by :groups
+
   skip_before_action :authenticate_user!, only: [ :index ]
   skip_after_action :verify_policy_scoped, only: [ :index, :insights, :approve_request, :reject_request, :accept_invite, :decline_invite ]
   before_action :set_group
@@ -22,7 +26,7 @@ class GroupMembershipsController < ApplicationController
     @moderators = @group_actor.contacts_for("moderator").includes(:avatar_attachment).to_a
     @members = @group_actor.contacts_for("member").includes(:avatar_attachment).to_a
     @silenced = @group_actor.contacts_for("silenced").includes(:avatar_attachment).to_a
-    @is_admin = current_actor && (@group_actor.has_relation_with?(current_actor, "Admin") || @group_actor.has_relation_with?(current_actor, "Owner"))
+    @is_admin = current_actor && current_actor.can?(:update, :member, @group_actor)
     @pending_requests = if @is_admin
       @group_actor.received_contacts.pending.includes(sender: :avatar_attachment).to_a
     else

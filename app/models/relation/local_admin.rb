@@ -24,12 +24,11 @@
 #
 
 # System {Relation} granting administrative permissions over the {Site}. Its permissions come
-# from +SocialStream.available_permissions["site/current"]+. Admin ties do not publish an
-# {Activity}.
+# from +SocialStream.available_permissions["site"]+. Admin ties do not publish an {Activity}.
 #
 # @see Relation::Single
 class Relation::LocalAdmin < Relation::Single
-  PERMISSIONS = (SocialStream.available_permissions["site/current"] || []).freeze
+  PERMISSIONS = (SocialStream.available_permissions["site"] || []).freeze
 
   class << self
     # Local-admin ties never publish a contact {Activity}.

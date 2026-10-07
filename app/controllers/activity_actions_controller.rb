@@ -5,6 +5,10 @@
 # @see ActivityAction
 # @see ActivityActionPolicy
 class ActivityActionsController < ApplicationController
+  include FeatureGated
+
+  feature_gated_by :follow_objects
+
   before_action :set_ao
 
   # Follows the object: finds or builds the current actor's {ActivityAction} and marks it as a

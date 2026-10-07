@@ -2,9 +2,11 @@
 <% is_persisted = comment.persisted? %>
 <% url = is_persisted ? comment_path(comment.short_id) : activity_comments_path(parent_activity) %>
 <% method = is_persisted ? :patch : :post %>
+<% editor_controllers = feature_enabled?(:mentions) ? "comment-form mention" : "comment-form" %>
+<% editor_actions = feature_enabled?(:mentions) ? "submit->mention#sync turbo:submit-end->comment-form#reset turbo:submit-end->mention#clear" : "turbo:submit-end->comment-form#reset" %>
 
 <div class="comment_form_container bg-stone-50 border border-stone-border rounded-lg p-3 mt-3">
-  <%= form_with(model: comment, url: url, method: method, class: "space-y-3", data: { controller: "comment-form mention", action: "submit->mention#sync turbo:submit-end->comment-form#reset turbo:submit-end->mention#clear" }) do |f| %>
+  <%= form_with(model: comment, url: url, method: method, class: "space-y-3", data: { controller: editor_controllers, action: editor_actions }) do |f| %>
     <% if comment.errors.any? %>
       <div class="text-xs text-red-500 font-medium">
         <%= comment.errors.full_messages.to_sentence %>

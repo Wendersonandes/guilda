@@ -5,9 +5,13 @@
 # @see ActivityCreation
 # @see ActivityPolicy
 class ActivitiesController < ApplicationController
+  include FeatureGated
+
   skip_before_action :authenticate_user!, only: [ :show ]
   before_action :set_activity, only: [ :destroy, :flag_form, :flag, :unflag ]
   before_action :set_activity_with_includes, only: [ :show ]
+
+  feature_gated_by :social_feed, only: [ :index, :new, :create ], fallback: -> { profiles_path }
 
   # The signed-in actor's home timeline, paginated and narrowed to what they may see.
   #

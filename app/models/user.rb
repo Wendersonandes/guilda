@@ -61,9 +61,11 @@ class User < ApplicationRecord
     current_profile ? current_profile.has_role?(role, other) : false
   end
 
-  def has_permission?(action, object, context = Site.instance)
-    current_profile ? current_profile.has_permission?(action, object, context) : false
+  # Whether the current profile is allowed to perform +action+ on +object+ within +context+.
+  def can?(action, object = nil, context = Site.instance)
+    current_profile ? current_profile.can?(action, object, context) : false
   end
+  alias_method :has_permission?, :can?
 
   validates :email, presence: true, uniqueness: true
   validates :profile_name, presence: true, on: :create

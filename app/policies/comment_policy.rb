@@ -5,13 +5,13 @@
 class CommentPolicy < ApplicationPolicy
   def create?
     return false unless user.present? && actor.present?
-    
+
     owner = record.activity_object&.owner
     return true if owner.nil?
     return true if owner == actor
-    
+
     if owner.actorable_type == "Group"
-      owner.allow?(actor, :create, :comment)
+      actor.can?(:create, :comment, owner)
     else
       true
     end

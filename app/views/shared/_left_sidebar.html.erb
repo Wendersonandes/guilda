@@ -18,14 +18,18 @@
       </p>
 
       <div class="grid grid-cols-2 gap-2 mt-4 pt-4 border-t border-stone-100 text-center">
-        <div>
-          <span class="block text-sm font-bold text-charcoal"><%= current_actor.authored_activities.posts.count %></span>
-          <span class="text-[10px] text-zinc-400 font-medium">Posts</span>
-        </div>
-        <div>
-          <span class="block text-sm font-bold text-charcoal"><%= current_actor.sent_active_contact_ids.size %></span>
-          <span class="text-[10px] text-zinc-400 font-medium">Connections</span>
-        </div>
+        <% if feature_enabled?(:social_feed) %>
+          <div>
+            <span class="block text-sm font-bold text-charcoal"><%= current_actor.authored_activities.posts.count %></span>
+            <span class="text-[10px] text-zinc-400 font-medium">Posts</span>
+          </div>
+        <% end %>
+        <% if feature_enabled?(:contacts) %>
+          <div>
+            <span class="block text-sm font-bold text-charcoal"><%= current_actor.sent_active_contact_ids.size %></span>
+            <span class="text-[10px] text-zinc-400 font-medium">Connections</span>
+          </div>
+        <% end %>
       </div>
     </div>
 
@@ -36,9 +40,11 @@
       <% is_contacts = controller_name == 'contacts' %>
       <% is_groups = (controller_name == 'groups' && action_name == 'index') || (controller_name == 'groups' && action_name == 'new') %>
       
-      <%= link_to activities_path, class: "flex items-center gap-2.5 px-3 py-2 text-sm font-semibold rounded-lg transition-colors #{is_home ? 'bg-stone-100 text-charcoal' : 'text-zinc-600 hover:bg-stone-50'}" do %>
-        <i data-lucide="home" class="w-4 h-4 <%= is_home ? 'text-brand' : 'text-zinc-400' %>"></i>
-        <span>Home</span>
+      <% if feature_enabled?(:social_feed) %>
+        <%= link_to activities_path, class: "flex items-center gap-2.5 px-3 py-2 text-sm font-semibold rounded-lg transition-colors #{is_home ? 'bg-stone-100 text-charcoal' : 'text-zinc-600 hover:bg-stone-50'}" do %>
+          <i data-lucide="home" class="w-4 h-4 <%= is_home ? 'text-brand' : 'text-zinc-400' %>"></i>
+          <span>Home</span>
+        <% end %>
       <% end %>
 
       <%= link_to profiles_path, class: "flex items-center gap-2.5 px-3 py-2 text-sm font-semibold rounded-lg transition-colors #{is_profiles ? 'bg-stone-100 text-charcoal' : 'text-zinc-600 hover:bg-stone-50'}" do %>
@@ -46,14 +52,18 @@
         <span>Profiles</span>
       <% end %>
 
-      <%= link_to contacts_path, class: "flex items-center gap-2.5 px-3 py-2 text-sm font-semibold rounded-lg transition-colors #{is_contacts ? 'bg-stone-100 text-charcoal' : 'text-zinc-600 hover:bg-stone-50'}" do %>
-        <i data-lucide="users" class="w-4 h-4 <%= is_contacts ? 'text-brand' : 'text-zinc-400' %>"></i>
-        <span>Contacts</span>
+      <% if feature_enabled?(:contacts) %>
+        <%= link_to contacts_path, class: "flex items-center gap-2.5 px-3 py-2 text-sm font-semibold rounded-lg transition-colors #{is_contacts ? 'bg-stone-100 text-charcoal' : 'text-zinc-600 hover:bg-stone-50'}" do %>
+          <i data-lucide="users" class="w-4 h-4 <%= is_contacts ? 'text-brand' : 'text-zinc-400' %>"></i>
+          <span>Contacts</span>
+        <% end %>
       <% end %>
 
-      <%= link_to groups_path, class: "flex items-center gap-2.5 px-3 py-2 text-sm font-semibold rounded-lg transition-colors #{is_groups ? 'bg-stone-100 text-charcoal' : 'text-zinc-650 hover:bg-stone-50'}" do %>
-        <i data-lucide="layers" class="w-4 h-4 <%= is_groups ? 'text-brand' : 'text-zinc-400' %>"></i>
-        <span>Groups</span>
+      <% if feature_enabled?(:groups) %>
+        <%= link_to groups_path, class: "flex items-center gap-2.5 px-3 py-2 text-sm font-semibold rounded-lg transition-colors #{is_groups ? 'bg-stone-100 text-charcoal' : 'text-zinc-650 hover:bg-stone-50'}" do %>
+          <i data-lucide="layers" class="w-4 h-4 <%= is_groups ? 'text-brand' : 'text-zinc-400' %>"></i>
+          <span>Groups</span>
+        <% end %>
       <% end %>
     </div>
   </div>

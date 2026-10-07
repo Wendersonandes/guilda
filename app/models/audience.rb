@@ -26,6 +26,6 @@
 # @see Activity
 # @see Relation
 class Audience < ApplicationRecord
-  belongs_to :activity, optional: true
-  belongs_to :relation, optional: true
+  belongs_to :activity
+  belongs_to :relation
 end

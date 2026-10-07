@@ -5,6 +5,8 @@
 # @see Profile
 # @see ActorPolicy
 class ProfilesController < ApplicationController
+  # The directory is the public application root, reachable while signed out.
+  skip_before_action :authenticate_user!, only: [ :index ]
   before_action :set_profile, only: [ :edit, :update ]
   skip_after_action :verify_policy_scoped, only: [ :index ]
 

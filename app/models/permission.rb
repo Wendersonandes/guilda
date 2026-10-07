@@ -10,7 +10,8 @@
 #
 # Indexes
 #
-#  index_permissions_on_action_and_object  (action,object) UNIQUE
+#  index_permissions_on_action_and_object            (action,object) UNIQUE
+#  index_permissions_on_action_where_object_is_null  (action) UNIQUE WHERE (object IS NULL)
 #
 
 # A {Permission} is the unit of authorization in the network. It is a pair of *action* and
@@ -23,18 +24,20 @@
 # (act on behalf of another actor).
 #
 # == Objects
-# +activity+, +tie+, +post+, +comment+. A +nil+ object applies the action broadly (e.g. +follow+).
+# +activity+, +post+, +comment+, +group+, +member+, +admin+, +role+. A +nil+ object applies the
+# action broadly (e.g. +follow+).
 #
 # @see Relation           The role permissions are attached to.
 # @see RelationPermission The join model between relations and permissions.
 class Permission < ApplicationRecord
   enum :action, { create: 0, read: 1, update: 2, destroy: 3, follow: 4, represent: 5 }, prefix: :action
-  enum :object, { activity: 0, tie: 1, post: 2, comment: 3 }, prefix: :object
+  enum :object, { activity: 0, post: 2, comment: 3, group: 4, member: 5, admin: 6, role: 7 }, prefix: :object
 
   has_many :relation_permissions, dependent: :destroy
   has_many :relations, through: :relation_permissions
 
   validates :action, presence: true
+  validates :object, uniqueness: { scope: :action }
 
   # Permissions with the +follow+ action.
   #

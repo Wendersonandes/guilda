@@ -1,9 +1,10 @@
 <%
   title_value = local_assigns[:clear_inputs] ? "" : (activity.direct_object&.title || params.dig(:activity, :text, :title))
   body_value = local_assigns[:clear_inputs] ? "" : (activity.direct_object&.description || params.dig(:activity, :text, :body))
+  editor_data = feature_enabled?(:mentions) ? { controller: "mention", action: "submit->mention#sync" } : {}
 %>
 
-<%= form_with model: activity, id: "activity_form_container", class: "bg-white rounded-lg border border-stone-border p-6 space-y-5", data: { controller: "mention", action: "submit->mention#sync" } do |f| %>
+<%= form_with model: activity, id: "activity_form_container", class: "bg-white rounded-lg border border-stone-border p-6 space-y-5", data: editor_data do |f| %>
   <%= f.hidden_field :verb %>
   <%= f.hidden_field :owner_id %>
 

@@ -105,4 +105,27 @@ class AdminAccessTest < ActionDispatch::IntegrationTest
     get "/admin/ties/#{tie.id}"
     assert_redirected_to root_path
   end
+
+  test "site admin can access the feature flags dashboard" do
+    sign_in @alice
+
+    get "/admin/flipper"
+    follow_redirect!
+
+    assert_response :success
+  end
+
+  test "non-admin cannot access the feature flags dashboard" do
+    sign_in @bob
+
+    get "/admin/flipper"
+
+    assert_response :not_found
+  end
+
+  test "signed out user cannot access the feature flags dashboard" do
+    get "/admin/flipper"
+
+    assert_response :not_found
+  end
 end

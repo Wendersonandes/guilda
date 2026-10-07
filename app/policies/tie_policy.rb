@@ -13,13 +13,6 @@ class TiePolicy < ApplicationPolicy
     site_admin?
   end
 
-  private
-
-  def site_admin?
-    return false unless actor
-    Site.instance.actor.has_relation_with?(actor, "Admin")
-  end
-
   class Scope < Scope
     def resolve
       scope.none

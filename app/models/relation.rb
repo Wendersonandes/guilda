@@ -182,18 +182,6 @@ class Relation < ApplicationRecord
 
       ids.uniq
     end
-
-    # The system (non-custom) relations offered to a subject, as configured in
-    # +SocialStream.system_relations+.
-    #
-    # @param subject [Profile, Group, Site]
-    # @return [Array<Relation::Single>]
-    def system_list(subject)
-      name = subject.class.to_s.underscore
-      list = SocialStream.system_relations[name] || SocialStream.system_relations[name.to_sym]
-      return [] if list.blank?
-      list.map { |r| "Relation::#{r.to_s.classify}".constantize.instance }
-    end
   end
 
   # A scope of relations sharing this relation's sender/receiver mode.
@@ -203,15 +191,6 @@ class Relation < ApplicationRecord
   # @return [ActiveRecord::Relation<Relation>]
   def mode(st, rt)
     Relation.where(sender_type: st, receiver_type: rt)
-  end
-
-  # Orders relations by permission count; {Relation::Public} always sorts first.
-  #
-  # @param rel [Relation]
-  # @return [Integer] -1, 0 or 1.
-  def <=>(rel)
-    return -1 if rel.is_a?(Relation::Public)
-    permissions.count <=> rel.permissions.count
   end
 
   # Is this a positive relation (a real, active link)?

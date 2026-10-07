@@ -70,11 +70,20 @@ Rails.application.routes.draw do
     resources :roles, only: [ :index, :create, :update ]
   end
 
+  # Feature flags dashboard (Flipper) — restricted to signed-in site admins via AdminConstraint.
+  # Unauthorized requests match no route and answer 404, so the endpoint is not discoverable.
+  constraints AdminConstraint.new do
+    mount Flipper::UI.app(Flipper) => "/admin/flipper"
+  end
+
   # Locations — dynamic state/city loading
   get "locations/states", to: "locations#states"
   get "locations/cities", to: "locations#cities"
 
   # Health + Root
   get "up" => "rails/health#show", as: :rails_health_check
-  root to: "activities#index"
+
+  # The profiles directory is the application root for every visitor (public).
+  root to: "profiles#index"
+  get "/about", to: "pages#landing", as: :about
 end

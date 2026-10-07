@@ -23,11 +23,12 @@ class ActivityPolicy < ApplicationPolicy
     if record.relation_ids_to_authorize.present?
       allowed_ids = [ Relation::Public.instance.id ] + actor.relation_ids
       allowed_ids += record.owner.relation_ids if record.owner && record.owner != actor
+      allowed_ids << Relation::Owner.instance.id if record.owner && record.owner.actorable_type == "Group"
       return false unless (record.relation_ids_to_authorize.map(&:to_i) - allowed_ids).empty?
     end
 
     return true if record.owner_id == actor.id
-    record.owner.allow?(actor, :create, :activity)
+    actor.can?(:create, :activity, record.owner)
   end
 
   def update?

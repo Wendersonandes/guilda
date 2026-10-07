@@ -133,12 +133,16 @@
                   <% end %>
 
                   <!-- Stats -->
-                  <div class="flex gap-3 pt-1.5 text-[10px] text-zinc-400 font-medium">
-                    <span class="flex items-center gap-1"><i data-lucide="file-text" class="w-3 h-3"></i> <%= profile.actor.authored_activities.posts.count %> posts</span>
-                    <% if profile.actor.sent_active_contact_ids.any? %>
-                      <span class="flex items-center gap-1"><i data-lucide="users" class="w-3 h-3"></i> <%= profile.actor.sent_active_contact_ids.size %> connections</span>
-                    <% end %>
-                  </div>
+                  <% if feature_enabled?(:social_feed) || feature_enabled?(:contacts) %>
+                    <div class="flex gap-3 pt-1.5 text-[10px] text-zinc-400 font-medium">
+                      <% if feature_enabled?(:social_feed) %>
+                        <span class="flex items-center gap-1"><i data-lucide="file-text" class="w-3 h-3"></i> <%= profile.actor.authored_activities.posts.count %> posts</span>
+                      <% end %>
+                      <% if feature_enabled?(:contacts) && profile.actor.sent_active_contact_ids.any? %>
+                        <span class="flex items-center gap-1"><i data-lucide="users" class="w-3 h-3"></i> <%= profile.actor.sent_active_contact_ids.size %> connections</span>
+                      <% end %>
+                    </div>
+                  <% end %>
                 </div>
               </div>
             </div>

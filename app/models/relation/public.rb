@@ -33,14 +33,6 @@ class Relation::Public < Relation::Single
     [ "read", "activity" ]
   ].freeze
 
-  # {Relation::Public} always sorts last among relations.
-  #
-  # @param relation [Relation]
-  # @return [Integer] always 1.
-  def <=>(relation)
-    1
-  end
-
   # Grants only +read activity+; every other action/object is denied.
   #
   # @param user [Object] unused; kept for interface symmetry.

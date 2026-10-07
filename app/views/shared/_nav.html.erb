@@ -1,5 +1,5 @@
 <nav class="bg-white border-b border-stone-border fixed top-0 left-0 right-0 z-50" data-controller="mobile-menu" aria-label="Global Navigation">
-  <% if current_actor %>
+  <% if current_actor && feature_enabled?(:notifications) %>
     <%= turbo_stream_from current_actor, :notifications %>
   <% end %>
   <div class="container mx-auto px-5 flex items-center justify-between h-14">
@@ -11,26 +11,36 @@
       
       <% if current_actor %>
         <div class="hidden sm:flex items-center gap-5">
-          <%= link_to activities_path, class: "flex items-center gap-1.5 text-sm font-medium text-zinc-600 hover:text-brand transition-colors" do %>
-            <i data-lucide="home" class="w-4 h-4"></i>
-            <span>Home</span>
+          <% if feature_enabled?(:social_feed) %>
+            <%= link_to activities_path, class: "flex items-center gap-1.5 text-sm font-medium text-zinc-600 hover:text-brand transition-colors" do %>
+              <i data-lucide="home" class="w-4 h-4"></i>
+              <span>Home</span>
+            <% end %>
           <% end %>
           <%= link_to profiles_path, class: "flex items-center gap-1.5 text-sm font-medium text-zinc-600 hover:text-brand transition-colors" do %>
             <i data-lucide="search" class="w-4 h-4"></i>
             <span>Profiles</span>
           <% end %>
-          <%= link_to contacts_path, class: "flex items-center gap-1.5 text-sm font-medium text-zinc-600 hover:text-brand transition-colors" do %>
-            <i data-lucide="users" class="w-4 h-4"></i>
-            <span>Contacts</span>
+          <% if feature_enabled?(:contacts) %>
+            <%= link_to contacts_path, class: "flex items-center gap-1.5 text-sm font-medium text-zinc-600 hover:text-brand transition-colors" do %>
+              <i data-lucide="users" class="w-4 h-4"></i>
+              <span>Contacts</span>
+            <% end %>
           <% end %>
-          <%= link_to groups_path, class: "flex items-center gap-1.5 text-sm font-medium text-zinc-600 hover:text-brand transition-colors" do %>
-            <i data-lucide="layers" class="w-4 h-4"></i>
-            <span>Groups</span>
+          <% if feature_enabled?(:groups) %>
+            <%= link_to groups_path, class: "flex items-center gap-1.5 text-sm font-medium text-zinc-600 hover:text-brand transition-colors" do %>
+              <i data-lucide="layers" class="w-4 h-4"></i>
+              <span>Groups</span>
+            <% end %>
           <% end %>
-          <% if current_actor.has_role?(:admin, Site.instance) %>
+          <% if current_actor.can?(:read, :admin) %>
             <%= link_to admin_roles_path, class: "flex items-center gap-1.5 text-sm font-medium text-rose-600 hover:text-rose-700 transition-colors" do %>
               <i data-lucide="shield-alert" class="w-4 h-4"></i>
               <span>Admin</span>
+            <% end %>
+            <%= link_to "/admin/flipper", class: "flex items-center gap-1.5 text-sm font-medium text-rose-600 hover:text-rose-700 transition-colors" do %>
+              <i data-lucide="flag" class="w-4 h-4"></i>
+              <span>Flags</span>
             <% end %>
           <% end %>
         </div>
@@ -48,7 +58,7 @@
             <span class="max-w-[120px] truncate"><%= current_actor.name %></span>
           <% end %>
         <% end %>
-        <% if current_actor %>
+        <% if current_actor && feature_enabled?(:notifications) %>
           <%= link_to notifications_path, class: "p-1.5 text-zinc-500 hover:text-brand transition-colors flex items-center mr-1", title: "Notifications" do %>
             <div class="relative">
               <i data-lucide="bell" class="w-4.5 h-4.5"></i>
@@ -88,38 +98,50 @@
   <!-- Mobile Dropdown Menu -->
   <div data-mobile-menu-target="menu" class="hidden sm:hidden bg-white border-t border-stone-border px-5 py-3 space-y-2.5 shadow-md">
     <% if current_actor %>
-      <%= link_to activities_path, class: "flex items-center gap-2 text-sm font-medium text-zinc-700 hover:text-brand py-1 transition-colors" do %>
-        <i data-lucide="home" class="w-4 h-4"></i>
-        <span>Home</span>
+      <% if feature_enabled?(:social_feed) %>
+        <%= link_to activities_path, class: "flex items-center gap-2 text-sm font-medium text-zinc-700 hover:text-brand py-1 transition-colors" do %>
+          <i data-lucide="home" class="w-4 h-4"></i>
+          <span>Home</span>
+        <% end %>
       <% end %>
       <%= link_to profiles_path, class: "flex items-center gap-2 text-sm font-medium text-zinc-700 hover:text-brand py-1 transition-colors" do %>
         <i data-lucide="search" class="w-4 h-4"></i>
         <span>Profiles</span>
       <% end %>
-      <%= link_to contacts_path, class: "flex items-center gap-2 text-sm font-medium text-zinc-700 hover:text-brand py-1 transition-colors" do %>
-        <i data-lucide="users" class="w-4 h-4"></i>
-        <span>Contacts</span>
+      <% if feature_enabled?(:contacts) %>
+        <%= link_to contacts_path, class: "flex items-center gap-2 text-sm font-medium text-zinc-700 hover:text-brand py-1 transition-colors" do %>
+          <i data-lucide="users" class="w-4 h-4"></i>
+          <span>Contacts</span>
+        <% end %>
       <% end %>
-      <%= link_to groups_path, class: "flex items-center gap-2 text-sm font-medium text-zinc-700 hover:text-brand py-1 transition-colors" do %>
-        <i data-lucide="layers" class="w-4 h-4"></i>
-        <span>Groups</span>
+      <% if feature_enabled?(:groups) %>
+        <%= link_to groups_path, class: "flex items-center gap-2 text-sm font-medium text-zinc-700 hover:text-brand py-1 transition-colors" do %>
+          <i data-lucide="layers" class="w-4 h-4"></i>
+          <span>Groups</span>
+        <% end %>
       <% end %>
-      <% if current_actor.has_role?(:admin, Site.instance) %>
+      <% if current_actor.can?(:read, :admin) %>
         <%= link_to admin_roles_path, class: "flex items-center gap-2 text-sm font-medium text-rose-600 hover:text-rose-700 py-1 transition-colors" do %>
           <i data-lucide="shield-alert" class="w-4 h-4"></i>
           <span>Admin Area</span>
         <% end %>
+        <%= link_to "/admin/flipper", class: "flex items-center gap-2 text-sm font-medium text-rose-600 hover:text-rose-700 py-1 transition-colors" do %>
+          <i data-lucide="flag" class="w-4 h-4"></i>
+          <span>Feature Flags</span>
+        <% end %>
       <% end %>
-      <%= link_to notifications_path, class: "flex items-center justify-between text-sm font-medium text-zinc-700 hover:text-brand py-1 transition-colors" do %>
-        <div class="flex items-center gap-2">
-          <i data-lucide="bell" class="w-4 h-4"></i>
-          <span>Notifications</span>
-        </div>
-        <% unread_count = current_actor.notifications.unread.count %>
-        <% if unread_count > 0 %>
-          <span class="bg-brand text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-            <%= unread_count %>
-          </span>
+      <% if feature_enabled?(:notifications) %>
+        <%= link_to notifications_path, class: "flex items-center justify-between text-sm font-medium text-zinc-700 hover:text-brand py-1 transition-colors" do %>
+          <div class="flex items-center gap-2">
+            <i data-lucide="bell" class="w-4 h-4"></i>
+            <span>Notifications</span>
+          </div>
+          <% unread_count = current_actor.notifications.unread.count %>
+          <% if unread_count > 0 %>
+            <span class="bg-brand text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+              <%= unread_count %>
+            </span>
+          <% end %>
         <% end %>
       <% end %>
       <hr class="border-stone-100">

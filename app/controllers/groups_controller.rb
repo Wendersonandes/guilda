@@ -6,6 +6,10 @@
 # @see GroupCreation
 # @see GroupPolicy
 class GroupsController < ApplicationController
+  include FeatureGated
+
+  feature_gated_by :groups
+
   skip_before_action :authenticate_user!, only: [ :index, :show ]
   before_action :set_group, only: [ :show, :edit, :update, :destroy ]
 
@@ -41,7 +45,7 @@ class GroupsController < ApplicationController
       @moderators = @group.actor.contacts_for("moderator").includes(:avatar_attachment).to_a
       @members    = @group.actor.contacts_for("member").includes(:avatar_attachment).to_a
       @silenced   = @group.actor.contacts_for("silenced").includes(:avatar_attachment).to_a
-      @is_admin   = current_actor && (@group.actor.has_relation_with?(current_actor, "Admin") || @group.actor.has_relation_with?(current_actor, "Owner"))
+      @is_admin   = current_actor && current_actor.can?(:update, :member, @group.actor)
       @activity   = Activity.new(verb: :post, author: current_actor, owner: @group.actor)
     end
   end

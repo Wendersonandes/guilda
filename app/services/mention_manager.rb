@@ -19,6 +19,7 @@ class MentionManager
   # @return [Boolean] true if sync was completed, false otherwise
   def call(text)
     return false if @activity_object.nil?
+    return false unless Flipper.enabled?(:mentions, @author)
 
     if text.blank?
       @activity_object.mentions.destroy_all

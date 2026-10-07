@@ -202,14 +202,6 @@ class Actor < ApplicationRecord
     @received_relation_ids ||= received_relations.pluck(:id)
   end
 
-  # The relations offered when adding a new contact: the system relations available for
-  # this subject plus its own {Relation::Custom custom relations}.
-  #
-  # @return [Array<Relation>]
-  def relations_for_select
-    Relation.system_list(subject) + relation_customs
-  end
-
   # The default {Relation Relations} used to share an {Activity} owned by this actor,
   # i.e. those granting +read activity+.
   #
@@ -436,25 +428,38 @@ class Actor < ApplicationRecord
     GroupMembershipService.new(other_actor, self).remove(role: role.to_s)
   end
 
-  # Whether this actor has a specific role in a group or site.
+  # Whether this actor holds the role named +role+ within +other+. This is an identity check
+  # (which relation the actor is tied by), not an authorization decision — use {#can?} for that.
   #
   # @param role [String, Symbol] the role name.
   # @param other [Actor, Group, Site] the group or site.
   # @return [Boolean]
-  def has_role?(role, other)
+  def role?(role, other)
     other_actor = other.is_a?(Actor) ? other : other.actor
     other_actor.has_relation_with?(self, role)
   end
+  alias_method :has_role?, :role?
 
-  # Whether this actor has permission to perform +action+ on +object+ in a given context.
+  # Whether this actor is allowed to perform +action+ on +object+ within +context+, based on
+  # the {Permission Permissions} granted by the {Relation} of the {Tie} the context holds over
+  # this actor. This is the single authorization predicate of the domain.
   #
-  # @param action [Symbol, String] the action (e.g. :create, :read).
-  # @param object [Symbol, String] the object (e.g. :post, :comment).
+  # @param action [Symbol, String] the permission action (see {Permission.actions}).
+  # @param object [Symbol, String, nil] the permission object (see {Permission.objects}).
   # @param context [Actor, Group, Site] the context (defaults to the Site).
   # @return [Boolean]
-  def has_permission?(action, object, context = Site.instance)
+  def can?(action, object = nil, context = Site.instance)
     context_actor = context.is_a?(Actor) ? context : context.actor
-    context_actor.allow?(self, action, object)
+    context_actor ? context_actor.allow?(self, action, object) : false
+  end
+  alias_method :has_permission?, :can?
+
+  # Stable identifier used by Flipper to gate features per actor. Namespaced by class so it can
+  # never collide with another flippable record.
+  #
+  # @return [String]
+  def flipper_id
+    "Actor;#{id}"
   end
 
   # Uses the friendly {#slug} as the URL parameter.

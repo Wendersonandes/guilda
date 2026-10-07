@@ -1,4 +1,4 @@
-<% if current_actor && current_actor != actor %>
+<% if feature_enabled?(:contacts) && current_actor && current_actor != actor %>
   <div class="flex-shrink-0 self-start mt-2 sm:mt-0" id="<%= dom_id(actor, :connection) %>">
     <% if current_actor.connected_with?(actor) %>
       <%= button_to contact_path(current_actor.contact_to(actor)), method: :delete, class: "flex items-center gap-1.5 text-xs bg-white text-red-600 hover:bg-red-600 hover:text-white font-semibold px-3.5 py-1.5 rounded-md border border-stone-300 transition-all cursor-pointer shadow-sm" do %>

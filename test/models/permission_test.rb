@@ -12,7 +12,8 @@ require "test_helper"
 #
 # Indexes
 #
-#  index_permissions_on_action_and_object  (action,object) UNIQUE
+#  index_permissions_on_action_and_object            (action,object) UNIQUE
+#  index_permissions_on_action_where_object_is_null  (action) UNIQUE WHERE (object IS NULL)
 #
 class PermissionTest < ActiveSupport::TestCase
   test "validates presence of action" do
@@ -30,7 +31,6 @@ class PermissionTest < ActiveSupport::TestCase
 
   test "object enum maps correctly" do
     assert_equal 0, Permission.objects[:activity]
-    assert_equal 1, Permission.objects[:tie]
     assert_equal 2, Permission.objects[:post]
     assert_equal 3, Permission.objects[:comment]
   end
@@ -55,5 +55,14 @@ class PermissionTest < ActiveSupport::TestCase
     perm = Permission.find_or_create_by(action: :follow, object: nil)
     assert perm.valid?
     assert_nil perm.object
+  end
+
+  test "does not allow duplicate permissions for a nil object" do
+    Permission.find_or_create_by!(action: :follow, object: nil)
+
+    duplicate = Permission.new(action: :follow, object: nil)
+
+    assert_not duplicate.valid?
+    assert_includes duplicate.errors[:object], "has already been taken"
   end
 end

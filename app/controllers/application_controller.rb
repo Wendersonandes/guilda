@@ -76,6 +76,16 @@ class ApplicationController < ActionController::Base
   end
   helper_method :public_path_for
 
+  # Whether a {https://github.com/flippercloud/flipper Flipper} feature is enabled for the
+  # current actor. Exposed to views so entry points to disabled features can be hidden.
+  #
+  # @param name [Symbol, String] the feature flag name (see {FeatureFlags::FEATURES}).
+  # @return [Boolean]
+  def feature_enabled?(name)
+    Flipper.enabled?(name, current_actor)
+  end
+  helper_method :feature_enabled?
+
   # Adds +:profile_name+ to the permitted Devise sign-up parameters so the initial {Profile}
   # can be created (see {User#setup_initial_profile!}).
   def configure_permitted_parameters

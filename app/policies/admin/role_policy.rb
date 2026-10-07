@@ -1,28 +1,28 @@
 # Authorization for the admin *roles* area, where site administrators manage relations and
-# permissions. Every action requires the acting actor to hold the +Admin+ role on the
-# {Site}'s actor (see {Relation::LocalAdmin}).
+# permissions. Listing requires the +read admin+ permission and mutating roles requires
+# +update role+, both granted by the site's +Admin+ relation.
 #
 # @see Site
-# @see Relation::LocalAdmin
+# @see Permission
 class Admin::RolePolicy < ApplicationPolicy
   def index?
     site_admin?
   end
 
   def create?
-    site_admin?
+    role_manager?
   end
 
   def update?
-    site_admin?
+    role_manager?
   end
 
   private
 
-  # Does the acting actor hold the +Admin+ role on the site's actor?
+  # Whether the acting actor may manage site roles (+update role+).
+  #
   # @return [Boolean]
-  def site_admin?
-    return false unless actor
-    Site.instance.actor.has_relation_with?(actor, "Admin")
+  def role_manager?
+    actor ? actor.can?(:update, :role) : false
   end
 end
