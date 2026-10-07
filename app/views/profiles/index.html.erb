@@ -93,7 +93,7 @@
                   </h2>
                   
                   <% if profile.actor.description.present? %>
-                    <p class="text-xs text-zinc-600 line-clamp-2 min-h-[2rem] leading-relaxed"><%= profile.actor.description %></p>
+                    <p class="text-xs text-zinc-600 line-clamp-2 min-h-[2rem] leading-relaxed"><%= truncate(strip_tags(profile.actor.description.to_s), length: 140) %></p>
                   <% else %>
                     <p class="text-xs text-zinc-400 italic min-h-[2rem] leading-relaxed">No biography provided.</p>
                   <% end %>

@@ -18,3 +18,26 @@
 .animate-shake {
   animation: shake 0.4s ease-in-out;
 }
+
+/*
+ * Lexxy bio editor: keep the toolbar limited to bold, italic and link.
+ * Extra buttons/dropdowns are hidden here (the editor ships a full toolbar).
+ */
+.profile-bio-editor lexxy-toolbar button[name="strikethrough"],
+.profile-bio-editor lexxy-toolbar button[name="underline"],
+.profile-bio-editor lexxy-toolbar button[name="quote"],
+.profile-bio-editor lexxy-toolbar button[name="code"],
+.profile-bio-editor lexxy-toolbar button[name="unordered-list"],
+.profile-bio-editor lexxy-toolbar button[name="ordered-list"],
+.profile-bio-editor lexxy-toolbar button[name="table"],
+.profile-bio-editor lexxy-toolbar button[name="divider"],
+.profile-bio-editor lexxy-toolbar button[name="undo"],
+.profile-bio-editor lexxy-toolbar button[name="redo"],
+.profile-bio-editor lexxy-toolbar button[name="image"],
+.profile-bio-editor lexxy-toolbar button[name="file"],
+.profile-bio-editor lexxy-toolbar .lexxy-editor__toolbar-overflow,
+.profile-bio-editor lexxy-toolbar .lexxy-editor__toolbar-dropdown:has(button[name="format"]),
+.profile-bio-editor lexxy-toolbar .lexxy-editor__toolbar-dropdown:has(button[name="highlight"]) {
+  display: none;
+}
+

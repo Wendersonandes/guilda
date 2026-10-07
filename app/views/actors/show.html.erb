@@ -28,7 +28,7 @@
         <div class="space-y-1.5">
           <h1 class="text-2xl font-serif font-bold text-charcoal tracking-tight leading-tight"><%= @actor.name %></h1>
           <% if @actor.description.present? %>
-            <p class="text-sm text-zinc-600 mt-1 leading-relaxed"><%= @actor.description %></p>
+            <div class="text-sm text-zinc-600 mt-1 leading-relaxed space-y-2"><%= sanitize(@actor.description) %></div>
           <% end %>
 
           <% if @actor.actorable.is_a?(Profile) && @actor.actorable.occupations.any? %>

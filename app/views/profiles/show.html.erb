@@ -24,7 +24,7 @@
           <h1 class="text-2xl font-serif font-bold text-charcoal tracking-tight leading-tight"><%= @profile.name %></h1>
           
           <% if @profile.description.present? %>
-            <p class="text-sm text-zinc-650 max-w-lg leading-relaxed"><%= @profile.description %></p>
+            <div class="text-sm text-zinc-650 max-w-lg leading-relaxed space-y-2"><%= sanitize(@profile.description) %></div>
           <% end %>
 
           <!-- Location, Website & Availability info -->

@@ -42,6 +42,9 @@ gem "image_processing", "~> 1.2"
 # S3 adapter for Active Storage (see config/storage.yml)
 gem "aws-sdk-s3", require: false
 
+# Rich text editor (Lexical-based) — used for the profile bio
+gem "lexxy", "~> 0.9"
+
 # Authentication
 # Authentication
 gem "devise", "~> 4.9"

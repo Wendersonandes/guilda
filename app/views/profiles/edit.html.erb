@@ -38,7 +38,11 @@
 
       <div class="space-y-1">
         <%= af.label :description, "Bio", class: "block text-sm font-medium text-zinc-700" %>
-        <%= af.text_area :description, rows: 3, placeholder: "Tell people about yourself...", class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal transition-shadow" %>
+        <lexxy-editor name="profile[actor_attributes][description]"
+                      value="<%= @profile.description %>"
+                      preset="bio"
+                      placeholder="Tell people about yourself..."
+                      class="profile-bio-editor lexxy-content block w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-charcoal"></lexxy-editor>
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">

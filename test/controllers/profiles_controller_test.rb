@@ -103,4 +103,37 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "h2", text: /Diego Rocha/, count: 0
   end
+
+  test "renders the Lexxy bio editor with the saved text in the edit form" do
+    @actor.update!(description: "<p>Bio salva</p>")
+    sign_in @user
+
+    get edit_my_profile_path
+
+    assert_response :success
+    assert_select "lexxy-editor[name=?][value=?]",
+                  "profile[actor_attributes][description]",
+                  "<p>Bio salva</p>"
+  end
+
+  test "persists a rich text bio" do
+    sign_in @user
+
+    patch my_profile_path, params: {
+      profile: { actor_attributes: { id: @actor.id, description: "<p>Olá <em>mundo</em></p>" } }
+    }
+
+    assert_redirected_to profile_path(@actor)
+    assert_equal "<p>Olá <em>mundo</em></p>", @actor.reload.description
+  end
+
+  test "sanitizes the bio when rendering the profile" do
+    @actor.update!(description: "<p>Hello <strong>world</strong></p><script>alert('xss')</script>")
+
+    get profile_path(@actor)
+
+    assert_response :success
+    assert_select "strong", text: "world"
+    assert_no_match(%r{<script>alert}, response.body)
+  end
 end
