@@ -65,6 +65,20 @@ class GroupsControllerTest < ActionDispatch::IntegrationTest
     assert_select "turbo-frame#group_activities_page_3", count: 1
   end
 
+  test "new group form uses direct upload for the image fields" do
+    get new_group_path
+
+    assert_response :success
+    assert_select "input[type=file][data-direct-upload-url]", count: 2
+  end
+
+  test "edit group form uses direct upload for the image fields" do
+    get edit_group_path(@group)
+
+    assert_response :success
+    assert_select "input[type=file][data-direct-upload-url]", count: 2
+  end
+
   private
 
   def create_group_with_admin(admin_actor)

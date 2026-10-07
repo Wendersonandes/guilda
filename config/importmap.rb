@@ -8,3 +8,4 @@ pin_all_from "app/javascript/controllers", under: "controllers"
 pin "tributejs" # @5.1.3
 pin "lexxy", to: "lexxy.js" # @0.9.33
 pin "lexxy_setup"
+pin "@rails/activestorage", to: "activestorage.esm.js" # direct uploads

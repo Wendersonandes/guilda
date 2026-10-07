@@ -47,38 +47,15 @@
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
         <!-- Avatar Upload -->
-        <div class="space-y-2">
-          <%= af.label :avatar, class: "block text-sm font-medium text-zinc-700" %>
-          <div class="flex items-center gap-3">
-            <% if @profile.actor.avatar.attached? %>
-              <%= image_tag @profile.actor.avatar.variant(:thumb), class: "w-12 h-12 rounded-full object-cover border border-stone-200" %>
-            <% else %>
-              <div class="w-12 h-12 rounded-full bg-stone-100 text-charcoal border border-stone-border flex items-center justify-center font-bold text-base">
-                <%= @profile.name.first.upcase %>
-              </div>
-            <% end %>
-            <div class="flex-1 min-w-0">
-              <%= af.file_field :avatar, accept: "image/png,image/jpeg,image/webp", class: "w-full text-xs text-zinc-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border file:border-stone-250 file:text-xs file:font-semibold file:bg-stone-50 file:text-zinc-700 hover:file:bg-stone-100 cursor-pointer" %>
-            </div>
-          </div>
-        </div>
+        <%= render "shared/image_upload_field",
+              form: af, attribute: :avatar, attachment: @profile.actor.avatar,
+              label: "Avatar", preview_classes: "w-12 h-12 rounded-full text-base",
+              initials: @profile.name.first.upcase %>
 
         <!-- Cover Image Upload -->
-        <div class="space-y-2">
-          <%= af.label :cover_image, "Cover Image", class: "block text-sm font-medium text-zinc-700" %>
-          <div class="flex items-center gap-3">
-            <% if @profile.actor.cover_image.attached? %>
-              <%= image_tag @profile.actor.cover_image.variant(:thumb), class: "w-12 h-8 rounded object-cover border border-stone-200" %>
-            <% else %>
-              <div class="w-12 h-8 rounded bg-stone-50 border border-stone-200 flex items-center justify-center text-zinc-300">
-                <i data-lucide="image" class="w-4 h-4"></i>
-              </div>
-            <% end %>
-            <div class="flex-1 min-w-0">
-              <%= af.file_field :cover_image, accept: "image/png,image/jpeg,image/webp", class: "w-full text-xs text-zinc-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border file:border-stone-250 file:text-xs file:font-semibold file:bg-stone-50 file:text-zinc-700 hover:file:bg-stone-100 cursor-pointer" %>
-            </div>
-          </div>
-        </div>
+        <%= render "shared/image_upload_field",
+              form: af, attribute: :cover_image, attachment: @profile.actor.cover_image,
+              label: "Cover Image", preview_classes: "w-12 h-8 rounded" %>
       </div>
     </div>
   <% end %>

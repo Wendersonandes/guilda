@@ -34,29 +34,14 @@
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-        <div class="space-y-2">
-          <%= af.label :avatar, "Group Avatar", class: "block text-sm font-medium text-gray-700" %>
-          <div class="flex items-center gap-3">
-            <div class="w-12 h-12 rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center font-bold text-lg">
-              G
-            </div>
-            <div class="flex-1 min-w-0">
-              <%= af.file_field :avatar, accept: "image/png,image/jpeg,image/webp", class: "w-full text-xs text-gray-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border file:border-gray-200 file:text-xs file:font-semibold file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100 cursor-pointer" %>
-            </div>
-          </div>
-        </div>
+        <%= render "shared/image_upload_field",
+              form: af, attribute: :avatar, attachment: @group.actor.avatar,
+              label: "Group Avatar", preview_classes: "w-12 h-12 rounded-lg text-lg",
+              initials: (@group.name.presence || "G").first.upcase %>
 
-        <div class="space-y-2">
-          <%= af.label :cover_image, "Cover Image", class: "block text-sm font-medium text-gray-700" %>
-          <div class="flex items-center gap-3">
-            <div class="w-12 h-8 rounded bg-gray-50 border border-gray-200 flex items-center justify-center text-gray-300">
-              <i data-lucide="image" class="w-4 h-4"></i>
-            </div>
-            <div class="flex-1 min-w-0">
-              <%= af.file_field :cover_image, accept: "image/png,image/jpeg,image/webp", class: "w-full text-xs text-gray-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border file:border-gray-200 file:text-xs file:font-semibold file:bg-gray-50 file:text-gray-700 hover:file:bg-gray-100 cursor-pointer" %>
-            </div>
-          </div>
-        </div>
+        <%= render "shared/image_upload_field",
+              form: af, attribute: :cover_image, attachment: @group.actor.cover_image,
+              label: "Cover Image", preview_classes: "w-12 h-8 rounded" %>
       </div>
     <% end %>
 

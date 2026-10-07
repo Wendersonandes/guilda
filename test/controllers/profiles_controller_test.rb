@@ -116,6 +116,15 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
                   "<p>Bio salva</p>"
   end
 
+  test "profile edit form uses direct upload for the image fields" do
+    sign_in @user
+
+    get edit_my_profile_path
+
+    assert_response :success
+    assert_select "input[type=file][data-direct-upload-url]", count: 2
+  end
+
   test "persists a rich text bio" do
     sign_in @user
 

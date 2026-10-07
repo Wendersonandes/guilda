@@ -1,0 +1,44 @@
+<%#
+  Image upload field with Active Storage direct upload, local preview and progress.
+
+  locals:
+    form:            form builder (e.g. `af`)
+    attribute:       attachment name (:avatar / :cover_image)
+    attachment:      the Active Storage attachment (e.g. @profile.actor.avatar)
+    label:           field label
+    preview_classes: Tailwind classes for the preview/placeholder box
+    initials:        (optional) text shown in the placeholder when nothing is attached
+%>
+<% initials = local_assigns.fetch(:initials, nil) %>
+<div class="space-y-2" data-controller="direct-upload">
+  <%= form.label attribute, label, class: "block text-sm font-medium text-zinc-700" %>
+  <div class="flex items-center gap-3">
+    <% preview_url = attachment.attached? ? url_for(attachment.variant(:thumb)) : nil %>
+    <img data-direct-upload-target="preview"
+         src="<%= preview_url %>"
+         alt=""
+         class="<%= preview_classes %> object-cover border border-stone-200 <%= "hidden" unless attachment.attached? %>" />
+
+    <div data-direct-upload-target="placeholder"
+         class="<%= preview_classes %> bg-stone-100 text-charcoal border border-stone-border flex items-center justify-center font-bold <%= "hidden" if attachment.attached? %>">
+      <% if initials.present? %>
+        <%= initials %>
+      <% else %>
+        <i data-lucide="image" class="w-4 h-4 text-zinc-400"></i>
+      <% end %>
+    </div>
+
+    <div class="flex-1 min-w-0">
+      <%= form.file_field attribute,
+            direct_upload: true,
+            accept: "image/png,image/jpeg,image/webp",
+            data: { direct_upload_target: "input" },
+            class: "w-full text-xs text-zinc-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border file:border-stone-250 file:text-xs file:font-semibold file:bg-stone-50 file:text-zinc-700 hover:file:bg-stone-100 cursor-pointer" %>
+
+      <div data-direct-upload-target="progress" class="hidden mt-2 h-1 w-full rounded bg-stone-100 overflow-hidden">
+        <div data-direct-upload-target="bar" class="h-full bg-brand transition-all" style="width: 0%"></div>
+      </div>
+      <p data-direct-upload-target="error" class="hidden mt-1 text-xs text-red-500"></p>
+    </div>
+  </div>
+</div>

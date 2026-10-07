@@ -137,6 +137,27 @@ class ActorTest < ActiveSupport::TestCase
     assert_equal @bob_actor.role?("Member", @group), @bob_actor.has_role?("Member", @group)
   end
 
+  test "rejects image attachments with a disallowed content type" do
+    @bob_actor.avatar.attach(io: StringIO.new("data"), filename: "note.txt", content_type: "text/plain")
+
+    assert_not @bob_actor.valid?
+    assert_includes @bob_actor.errors[:avatar], "must be a PNG, JPEG or WebP image"
+  end
+
+  test "rejects image attachments larger than the limit" do
+    @bob_actor.avatar.attach(io: StringIO.new("data"), filename: "big.png", content_type: "image/png")
+    @bob_actor.avatar.blob.define_singleton_method(:byte_size) { 6.megabytes }
+
+    assert_not @bob_actor.valid?
+    assert_includes @bob_actor.errors[:avatar], "must be smaller than 5MB"
+  end
+
+  test "accepts allowed image attachments" do
+    @bob_actor.cover_image.attach(io: StringIO.new("data"), filename: "cover.webp", content_type: "image/webp")
+
+    assert @bob_actor.valid?
+  end
+
   private
 
   def create_group_with_admin(admin_actor)

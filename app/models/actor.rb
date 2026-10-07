@@ -47,6 +47,10 @@ class Actor < ApplicationRecord
 
   delegated_type :actorable, types: %w[Profile Group Site]
 
+  # Constraints for the image attachments (avatar and cover_image).
+  ALLOWED_IMAGE_TYPES = %w[image/png image/jpeg image/webp].freeze
+  MAX_IMAGE_SIZE = 5.megabytes
+
   belongs_to :activity_object, optional: true
   has_many :notifications, as: :recipient, dependent: :destroy, class_name: "Noticed::Notification"
 
@@ -73,6 +77,7 @@ class Actor < ApplicationRecord
 
   validates :name, presence: true
   validates :actorable_type, presence: true
+  validate :acceptable_image_attachments
 
   friendly_id :name, use: :slugged
 
@@ -482,5 +487,22 @@ class Actor < ApplicationRecord
   # +after_create+ callback: seeds this actor's default {Relation::Custom custom relations}.
   def create_initial_relations
     Relation::Custom.defaults_for(self)
+  end
+
+  # Validates the +avatar+ and +cover_image+ attachments: allowed content types and max size.
+  def acceptable_image_attachments
+    { avatar: avatar, cover_image: cover_image }.each do |attribute, attachment|
+      next unless attachment.attached?
+
+      blob = attachment.blob
+
+      unless ALLOWED_IMAGE_TYPES.include?(blob.content_type)
+        errors.add(attribute, "must be a PNG, JPEG or WebP image")
+      end
+
+      if blob.byte_size > MAX_IMAGE_SIZE
+        errors.add(attribute, "must be smaller than #{MAX_IMAGE_SIZE / 1.megabyte}MB")
+      end
+    end
   end
 end
