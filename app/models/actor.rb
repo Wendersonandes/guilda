@@ -497,11 +497,11 @@ class Actor < ApplicationRecord
       blob = attachment.blob
 
       unless ALLOWED_IMAGE_TYPES.include?(blob.content_type)
-        errors.add(attribute, "must be a PNG, JPEG or WebP image")
+        errors.add(attribute, "deve ser uma imagem PNG, JPEG ou WebP")
       end
 
       if blob.byte_size > MAX_IMAGE_SIZE
-        errors.add(attribute, "must be smaller than #{MAX_IMAGE_SIZE / 1.megabyte}MB")
+        errors.add(attribute, "deve ter no máximo #{MAX_IMAGE_SIZE / 1.megabyte}MB")
       end
     end
   end

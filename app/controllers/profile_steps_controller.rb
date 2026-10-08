@@ -50,7 +50,7 @@ class ProfileStepsController < ApplicationController
     # Using the current logged in user's profile
     @profile = current_user.profiles.last
     unless @profile
-      redirect_to root_path, alert: "Profile not found."
+      redirect_to root_path, alert: t("flash.profile_not_found")
     end
   end
 

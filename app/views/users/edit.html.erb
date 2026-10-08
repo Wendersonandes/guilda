@@ -1,14 +1,14 @@
-<%= content_for :title, "Edit Account" %>
+<%= content_for :title, t(".title") %>
 
 <div class="max-w-lg mx-auto space-y-6">
   <div class="flex items-center gap-2">
     <%= link_to account_path, class: "text-gray-400 hover:text-gray-600 transition-colors" do %>
       <i data-lucide="arrow-left" class="w-5 h-5"></i>
     <% end %>
-    <span class="text-sm font-medium text-gray-500">Back to Account Settings</span>
+    <span class="text-sm font-medium text-gray-500"><%= t(".back") %></span>
   </div>
 
-  <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Edit Account Settings</h1>
+  <h1 class="text-2xl font-bold text-gray-900 tracking-tight"><%= t(".title") %></h1>
 
   <%= form_with model: current_user, url: account_path, method: :patch, class: "bg-white rounded-xl border border-gray-200/80 p-6 shadow-sm space-y-5" do |f| %>
     <div class="space-y-1">
@@ -17,23 +17,23 @@
     </div>
 
     <div class="space-y-1">
-      <%= f.label :current_password, "Current password", class: "block text-sm font-medium text-gray-700" %>
-      <%= f.password_field :current_password, placeholder: "Required to confirm changes", class: "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" %>
+      <%= f.label :current_password, t(".current_password"), class: "block text-sm font-medium text-gray-700" %>
+      <%= f.password_field :current_password, placeholder: t(".current_password_placeholder"), class: "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" %>
     </div>
 
     <div class="space-y-1">
-      <%= f.label :password, "New password", class: "block text-sm font-medium text-gray-700" %>
-      <%= f.password_field :password, placeholder: "Leave blank to keep current password", class: "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" %>
+      <%= f.label :password, t(".new_password"), class: "block text-sm font-medium text-gray-700" %>
+      <%= f.password_field :password, placeholder: t(".new_password_placeholder"), class: "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" %>
     </div>
 
     <div class="space-y-1">
-      <%= f.label :password_confirmation, "Confirm new password", class: "block text-sm font-medium text-gray-700" %>
-      <%= f.password_field :password_confirmation, placeholder: "Confirm new password", class: "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" %>
+      <%= f.label :password_confirmation, t(".confirm_password"), class: "block text-sm font-medium text-gray-700" %>
+      <%= f.password_field :password_confirmation, placeholder: t(".confirm_password"), class: "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" %>
     </div>
 
     <div class="flex items-center justify-between border-t border-gray-100 pt-5">
-      <%= link_to "Cancel", account_path, class: "text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors" %>
-      <%= f.submit "Save changes", class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-sm cursor-pointer" %>
+      <%= link_to t(".cancel"), account_path, class: "text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors" %>
+      <%= f.submit t(".submit"), class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-sm cursor-pointer" %>
     </div>
   <% end %>
 </div>

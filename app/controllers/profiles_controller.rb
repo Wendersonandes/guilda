@@ -55,7 +55,7 @@ class ProfilesController < ApplicationController
   def update
     authorize @profile.actor
     if @profile.update(profile_params)
-      redirect_to public_path_for(current_actor), notice: "Profile updated."
+      redirect_to public_path_for(current_actor), notice: t("flash.profile_updated")
     else
       setup_location_variables
       render :edit, status: :unprocessable_entity
@@ -79,7 +79,7 @@ class ProfilesController < ApplicationController
   def set_profile
     @profile = current_user.profiles.first!
   rescue ActiveRecord::RecordNotFound
-    redirect_to root_path, alert: "No profile found. Please create one first."
+    redirect_to root_path, alert: t("flash.profile_not_found")
   end
 
   def profile_params

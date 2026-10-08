@@ -29,7 +29,7 @@ class GroupJoinFlowTest < ActionDispatch::IntegrationTest
          params: { actor_id: @bob_actor.id, role: "member" }
 
     assert_response :redirect
-    assert_equal "You joined the group.", flash[:notice]
+    assert_equal "Você entrou no grupo.", flash[:notice]
 
     # Verify bidirectional ties
     assert @bob_actor.reload.connected_with?(@public_group.actor)
@@ -44,7 +44,7 @@ class GroupJoinFlowTest < ActionDispatch::IntegrationTest
          params: { actor_id: @bob_actor.id, role: "member" }
 
     assert_response :redirect
-    assert_equal "Request sent. Awaiting approval.", flash[:notice]
+    assert_equal "Solicitação enviada. Aguardando aprovação.", flash[:notice]
 
     # Only one-sided
     assert @bob_actor.reload.connected_with?(@private_group.actor)
@@ -61,7 +61,7 @@ class GroupJoinFlowTest < ActionDispatch::IntegrationTest
          params: { actor_id: @bob_actor.id, role: "member" }
 
     assert_response :redirect
-    assert_equal "You joined the group.", flash[:notice]
+    assert_equal "Você entrou no grupo.", flash[:notice]
 
     # Should now be fully connected both ways
     assert @public_group.actor.reload.member_roles_for(@bob_actor).include?("member")
@@ -73,7 +73,7 @@ class GroupJoinFlowTest < ActionDispatch::IntegrationTest
     # Bob joins
     post group_memberships_path(@public_group),
          params: { actor_id: @bob_actor.id, role: "member" }
-    assert_equal "You joined the group.", flash[:notice]
+    assert_equal "Você entrou no grupo.", flash[:notice]
 
     # Bob leaves
     delete group_membership_path(@public_group, @bob_actor, role: "member")
@@ -85,7 +85,7 @@ class GroupJoinFlowTest < ActionDispatch::IntegrationTest
     # Bob can join again
     post group_memberships_path(@public_group),
          params: { actor_id: @bob_actor.id, role: "member" }
-    assert_equal "You joined the group.", flash[:notice]
+    assert_equal "Você entrou no grupo.", flash[:notice]
   end
 
   test "member of private group can leave and request to join again" do
@@ -105,6 +105,6 @@ class GroupJoinFlowTest < ActionDispatch::IntegrationTest
     # Bob can request to join again
     post group_memberships_path(@private_group),
          params: { actor_id: @bob_actor.id, role: "member" }
-    assert_equal "Request sent. Awaiting approval.", flash[:notice]
+    assert_equal "Solicitação enviada. Aguardando aprovação.", flash[:notice]
   end
 end

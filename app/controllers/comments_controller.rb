@@ -23,7 +23,7 @@ class CommentsController < ApplicationController
     if post_activity
       redirect_to activity_path(post_activity, anchor: ActionView::RecordIdentifier.dom_id(comment.activity))
     else
-      redirect_to root_path, alert: "Comment parent post not found."
+      redirect_to root_path, alert: t("flash.comment_parent_not_found")
     end
   end
 

@@ -3,8 +3,8 @@
     <div class="w-12 h-12 bg-stone-100 text-brand rounded-full flex items-center justify-center mx-auto mb-3 border border-stone-border shadow-sm">
       <i data-lucide="user-plus" class="w-6 h-6"></i>
     </div>
-    <h1 class="text-2xl font-serif font-bold text-charcoal tracking-tight">Create your account</h1>
-    <p class="text-sm text-zinc-500 mt-1">Get started with Guilda today</p>
+    <h1 class="text-2xl font-serif font-bold text-charcoal tracking-tight"><%= t("auth.registrations.new.title") %></h1>
+    <p class="text-sm text-zinc-500 mt-1"><%= t("auth.registrations.new.subtitle") %></p>
   </div>
 
   <div class="bg-white rounded-lg border border-stone-border p-6">
@@ -13,8 +13,8 @@
 
       <div class="space-y-4">
         <div class="space-y-1">
-          <%= f.label :profile_name, "Display Name", class: "block text-sm font-medium text-zinc-700" %>
-          <%= f.text_field :profile_name, autofocus: true, placeholder: "Your name or handle",
+          <%= f.label :profile_name, t("auth.registrations.new.display_name"), class: "block text-sm font-medium text-zinc-700" %>
+          <%= f.text_field :profile_name, autofocus: true, placeholder: t("auth.registrations.new.display_name_placeholder"),
                 class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal transition-shadow" %>
         </div>
 
@@ -29,17 +29,17 @@
           <%= f.password_field :password, autocomplete: "new-password", placeholder: "••••••••",
                 class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal transition-shadow" %>
           <% if @minimum_password_length %>
-            <p class="text-[10px] text-zinc-400 font-medium"><%= @minimum_password_length %> characters minimum</p>
+            <p class="text-[10px] text-zinc-400 font-medium"><%= t("auth.registrations.new.password_minimum", count: @minimum_password_length) %></p>
           <% end %>
         </div>
 
         <div class="space-y-1">
-          <%= f.label :password_confirmation, "Confirm Password", class: "block text-sm font-medium text-zinc-700" %>
+          <%= f.label :password_confirmation, t("auth.registrations.new.confirm_password"), class: "block text-sm font-medium text-zinc-700" %>
           <%= f.password_field :password_confirmation, autocomplete: "new-password", placeholder: "••••••••",
                 class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal transition-shadow" %>
         </div>
 
-        <%= f.submit "Sign up", class: "w-full bg-charcoal hover:bg-zinc-800 text-white rounded-lg px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer mt-2" %>
+        <%= f.submit t("auth.registrations.new.submit"), class: "w-full bg-charcoal hover:bg-zinc-800 text-white rounded-lg px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer mt-2" %>
       </div>
     <% end %>
 

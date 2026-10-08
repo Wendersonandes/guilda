@@ -57,7 +57,7 @@ class NotificationsController < ApplicationController
           turbo_stream.replace("nav_notification_badge", partial: "shared/nav_notification_badge")
         ]
       end
-      format.html { redirect_to notifications_path, notice: "All notifications marked as read." }
+      format.html { redirect_to notifications_path, notice: t("flash.notifications_all_read") }
     end
   end
 

@@ -52,7 +52,7 @@ class NotificationsControllerTest < ActionDispatch::IntegrationTest
   test "should get index" do
     get notifications_path
     assert_response :success
-    assert_select "h1", "Notifications"
+    assert_select "h1", "Notificações"
     assert_includes response.body, "bob publicou um novo post."
   end
 
@@ -104,7 +104,7 @@ class NotificationsControllerTest < ActionDispatch::IntegrationTest
 
     patch notification_path(@notification)
     assert_redirected_to root_path
-    assert_equal "You are not authorized to perform this action.", flash[:alert]
+    assert_equal "Você não tem permissão para executar esta ação.", flash[:alert]
     assert @notification.reload.unread?
   end
 

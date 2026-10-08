@@ -5,7 +5,7 @@
       <%= turbo_frame_tag "group_activities_page_#{@pagy.next}", src: group_path(@group, page: @pagy.next), loading: :lazy, class: "space-y-4 block" do %>
         <div class="flex justify-center items-center py-6 gap-2 text-zinc-500">
           <div class="animate-spin rounded-full h-5 w-5 border-2 border-stone-200 border-t-brand"></div>
-          <span class="text-sm font-medium">Loading more posts...</span>
+          <span class="text-sm font-medium">Carregando mais publicações...</span>
         </div>
       <% end %>
     <% end %>
@@ -35,7 +35,7 @@
           <%= turbo_frame_tag "group_activities_page_#{@pagy.next}", src: group_path(@group, page: @pagy.next), loading: :lazy, class: "space-y-4 block" do %>
             <div class="flex justify-center items-center py-6 gap-2 text-zinc-500">
               <div class="animate-spin rounded-full h-5 w-5 border-2 border-stone-200 border-t-brand"></div>
-              <span class="text-sm font-medium">Loading more posts...</span>
+              <span class="text-sm font-medium">Carregando mais publicações...</span>
             </div>
           <% end %>
         <% end %>
@@ -44,8 +44,8 @@
           <div class="w-12 h-12 bg-stone-50 rounded-full flex items-center justify-center mx-auto mb-3 border border-stone-100">
             <i data-lucide="file-text" class="w-6 h-6 text-zinc-400"></i>
           </div>
-          <h3 class="text-base font-semibold text-charcoal">No posts yet</h3>
-          <p class="text-sm text-zinc-500 mt-1 max-w-sm mx-auto">No one has shared anything in this group yet.</p>
+          <h3 class="text-base font-semibold text-charcoal">Ainda sem publicações</h3>
+          <p class="text-sm text-zinc-500 mt-1 max-w-sm mx-auto">Ninguém compartilhou nada neste grupo ainda.</p>
         </div>
       <% end %>
     </div>
@@ -54,11 +54,11 @@
       <div class="w-12 h-12 bg-stone-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-stone-200">
         <i data-lucide="lock" class="w-6 h-6 text-brand"></i>
       </div>
-      <h2 class="text-base font-bold text-charcoal">Private Group</h2>
-      <p class="text-sm text-zinc-500 mt-1 max-w-xs mx-auto mb-6">This community is private. Request to join below to view its posts and members list.</p>
+      <h2 class="text-base font-bold text-charcoal">Grupo privado</h2>
+      <p class="text-sm text-zinc-500 mt-1 max-w-xs mx-auto mb-6">Esta comunidade é privada. Solicite entrada abaixo para ver as publicações e a lista de membros.</p>
       <%= button_to group_memberships_path(@group), params: { actor_id: current_actor&.id }, method: :post, class: "inline-flex items-center gap-1.5 text-sm bg-charcoal hover:bg-zinc-800 text-white font-medium px-4 py-2 rounded-lg transition-colors cursor-pointer border-0 shadow-sm" do %>
         <i data-lucide="user-plus" class="w-4 h-4"></i>
-        <span>Request to Join Group</span>
+        <span>Solicitar entrada no grupo</span>
       <% end %>
     </div>
   <% end %>
@@ -68,13 +68,13 @@
   <% content_for :right_sidebar do %>
     <div class="bg-white rounded-lg border border-stone-border p-5 sticky top-20 space-y-4">
       <h3 class="text-sm font-semibold text-charcoal flex items-center justify-between pb-2 border-b border-stone-100">
-        <span>Members</span>
+        <span>Membros</span>
         <span class="text-zinc-400 font-normal text-xs">(<%= @owners.size + @admins.size + @moderators.size + @members.size + (@is_admin ? @silenced.size : 0) %>)</span>
       </h3>
 
       <% if @owners.any? %>
         <div class="space-y-1.5">
-          <span class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 block px-2">Owner</span>
+          <span class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 block px-2">Proprietário</span>
           <% @owners.each do |actor| %>
             <%= link_to public_path_for(actor), class: "flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-stone-50 transition-colors" do %>
               <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 overflow-hidden border border-stone-border">
@@ -85,7 +85,7 @@
                 <% end %>
               </div>
               <span class="flex-1 text-sm text-charcoal truncate font-medium"><%= actor.name %></span>
-              <span class="text-[9px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-semibold border border-brand/20 flex-shrink-0">Owner</span>
+              <span class="text-[9px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-semibold border border-brand/20 flex-shrink-0">Proprietário</span>
             <% end %>
           <% end %>
         </div>
@@ -93,7 +93,7 @@
 
       <% if @admins.any? %>
         <div class="space-y-1.5">
-          <span class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 block px-2">Admins</span>
+          <span class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 block px-2">Administradores</span>
           <% @admins.each do |actor| %>
             <%= link_to public_path_for(actor), class: "flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-stone-50 transition-colors" do %>
               <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 overflow-hidden border border-stone-border">
@@ -104,7 +104,7 @@
                 <% end %>
               </div>
               <span class="flex-1 text-sm text-charcoal truncate font-medium"><%= actor.name %></span>
-              <span class="text-[9px] bg-stone-100 text-zinc-700 px-1.5 py-0.5 rounded font-semibold border border-stone-200 flex-shrink-0">Admin</span>
+              <span class="text-[9px] bg-stone-100 text-zinc-700 px-1.5 py-0.5 rounded font-semibold border border-stone-200 flex-shrink-0">Administrador</span>
             <% end %>
           <% end %>
         </div>
@@ -112,7 +112,7 @@
 
       <% if @moderators.any? %>
         <div class="space-y-1.5">
-          <span class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 block px-2">Moderators</span>
+          <span class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 block px-2">Moderadores</span>
           <% @moderators.each do |actor| %>
             <%= link_to public_path_for(actor), class: "flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-stone-50 transition-colors" do %>
               <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 overflow-hidden border border-stone-border">
@@ -131,7 +131,7 @@
 
       <% if @members.any? %>
         <div class="space-y-1.5">
-          <span class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 block px-2">Members</span>
+          <span class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 block px-2">Membros</span>
           <% @members.first(12).each do |actor| %>
             <%= link_to public_path_for(actor), class: "flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-stone-50 transition-colors" do %>
               <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 overflow-hidden border border-stone-border">
@@ -145,14 +145,14 @@
             <% end %>
           <% end %>
           <% if @members.size > 12 %>
-            <p class="text-[10px] text-zinc-400 px-2 pt-1 font-medium">+<%= @members.size - 12 %> more members</p>
+            <p class="text-[10px] text-zinc-400 px-2 pt-1 font-medium">+<%= @members.size - 12 %> membros</p>
           <% end %>
         </div>
       <% end %>
 
       <% if @is_admin && @silenced.any? %>
         <div class="space-y-1.5">
-          <span class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 block px-2">Silenced</span>
+          <span class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 block px-2">Silenciados</span>
           <% @silenced.each do |actor| %>
             <%= link_to public_path_for(actor), class: "flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-stone-50 transition-colors" do %>
               <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 overflow-hidden border border-stone-border">
@@ -169,7 +169,7 @@
       <% end %>
 
       <%= link_to group_memberships_path(@group), class: "flex items-center justify-center gap-1.5 text-xs text-brand hover:text-brand-hover font-semibold mt-3 pt-3 border-t border-stone-100 transition-colors" do %>
-        <span>View all members</span>
+        <span>Ver todos os membros</span>
         <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
       <% end %>
     </div>

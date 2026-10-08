@@ -65,7 +65,7 @@ class GroupsController < ApplicationController
     authorize @group.actor, policy_class: GroupPolicy
 
     @group = GroupCreation.new(current_actor, @group).call
-    redirect_to group_path(@group), notice: "Group created."
+    redirect_to group_path(@group), notice: t("flash.group_created")
   rescue ActiveRecord::RecordInvalid => e
     @group = e.record
     render :new, status: :unprocessable_entity
@@ -78,7 +78,7 @@ class GroupsController < ApplicationController
   def update
     authorize @group.actor, policy_class: GroupPolicy
     if @group.update(group_params)
-      redirect_to group_path(@group), notice: "Group updated."
+      redirect_to group_path(@group), notice: t("flash.group_updated")
     else
       render :edit, status: :unprocessable_entity
     end
@@ -87,7 +87,7 @@ class GroupsController < ApplicationController
   def destroy
     authorize @group.actor, policy_class: GroupPolicy
     @group.actor.destroy
-    redirect_to groups_path, notice: "Group deleted."
+    redirect_to groups_path, notice: t("flash.group_deleted")
   end
 
   private

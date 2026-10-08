@@ -44,7 +44,7 @@ module FeatureGated
     destination = fallback.respond_to?(:call) ? instance_exec(&fallback) : public_send(fallback)
 
     respond_to do |format|
-      format.html { redirect_to destination, alert: "This feature is not available yet." }
+      format.html { redirect_to destination, alert: t("flash.feature_unavailable") }
       format.turbo_stream { head :not_found }
       format.any { head :not_found }
     end

@@ -24,7 +24,7 @@ class LikesController < ApplicationController
         format.html { redirect_back fallback_location: activities_path }
       end
     else
-      redirect_back fallback_location: activities_path, alert: "Unable to like this item."
+      redirect_back fallback_location: activities_path, alert: t("flash.unable_to_like")
     end
   end
 
@@ -42,7 +42,7 @@ class LikesController < ApplicationController
         format.html { redirect_back fallback_location: activities_path }
       end
     else
-      redirect_back fallback_location: activities_path, alert: "Unable to unlike this item."
+      redirect_back fallback_location: activities_path, alert: t("flash.unable_to_unlike")
     end
   end
 

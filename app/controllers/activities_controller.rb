@@ -87,7 +87,7 @@ class ActivitiesController < ApplicationController
           turbo_stream.replace("activity_form_container", partial: "activities/form", locals: { activity: @new_activity, clear_inputs: true })
         ]
       end
-      format.html { redirect_to @activity, notice: "Post created." }
+      format.html { redirect_to @activity, notice: t("flash.post_created") }
     end
   rescue ActiveRecord::RecordInvalid => e
     @activity = e.record.is_a?(Activity) ? e.record : @activity
@@ -108,7 +108,7 @@ class ActivitiesController < ApplicationController
     DestroyActivityJob.perform_later(@activity.id)
     respond_to do |format|
       format.turbo_stream { render turbo_stream: turbo_stream.remove(@activity) }
-      format.html { redirect_to activities_path, notice: "Activity deletion enqueued." }
+      format.html { redirect_to activities_path, notice: t("flash.activity_deletion_enqueued") }
     end
   end
 

@@ -94,7 +94,7 @@ class ApplicationController < ActionController::Base
 
   # Handles {Pundit::NotAuthorizedError}: flashes an alert and redirects back (or to root).
   def user_not_authorized
-    flash[:alert] = "You are not authorized to perform this action."
+    flash[:alert] = t("flash.not_authorized")
     redirect_to(request.referrer || root_path)
   end
 end

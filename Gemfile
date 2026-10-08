@@ -49,6 +49,10 @@ gem "lexxy", "~> 0.9"
 # Authentication
 gem "devise", "~> 4.9"
 
+# Localization — pt-BR
+gem "rails-i18n", "~> 8.0"
+gem "devise-i18n", "~> 1.13"
+
 # Authorization
 gem "pundit", "~> 2.4"
 

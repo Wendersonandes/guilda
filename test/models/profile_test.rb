@@ -33,7 +33,7 @@ class ProfileTest < ActiveSupport::TestCase
   test "validates presence of user" do
     profile = Profile.new
     assert_not profile.valid?
-    assert_includes profile.errors[:user], "must exist"
+    assert_includes profile.errors[:user], "é obrigatório(a)"
   end
 
   test "delegates name to actor" do
@@ -65,9 +65,9 @@ class ProfileTest < ActiveSupport::TestCase
   test "validates country, state, city when form_step is location" do
     profile = Profile.new(form_step: "location")
     assert_not profile.valid?
-    assert_includes profile.errors[:country], "can't be blank"
-    assert_includes profile.errors[:state], "can't be blank"
-    assert_includes profile.errors[:city], "can't be blank"
+    assert_includes profile.errors[:country], "não pode ficar em branco"
+    assert_includes profile.errors[:state], "não pode ficar em branco"
+    assert_includes profile.errors[:city], "não pode ficar em branco"
   end
 
   test "validates presence of at least one occupation when form_step is occupation" do
@@ -80,14 +80,14 @@ class ProfileTest < ActiveSupport::TestCase
     profile = Profile.new(wizard_complete: false)
     # user is required but let's test only our wizard fields
     profile.valid?
-    assert_not_includes profile.errors[:country], "can't be blank"
+    assert_not_includes profile.errors[:country], "não pode ficar em branco"
     assert_not_includes profile.errors[:occupation_list], "selecione pelo menos 1 categoria"
   end
 
   test "validates everything when wizard is complete" do
     profile = Profile.new(wizard_complete: true)
     profile.valid?
-    assert_includes profile.errors[:country], "can't be blank"
+    assert_includes profile.errors[:country], "não pode ficar em branco"
     assert_includes profile.errors[:occupation_list], "selecione pelo menos 1 categoria"
   end
 

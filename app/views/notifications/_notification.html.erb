@@ -21,7 +21,7 @@
           <%= link_to notification.message, notification.url, class: "hover:text-brand hover:underline font-medium break-words", data: { turbo: false } %>
         </p>
         <span class="text-[11px] font-medium text-zinc-400 mt-1 block">
-          <%= time_ago_in_words(notification.created_at) %> ago
+          <%= time_ago_in_words(notification.created_at) %>
         </span>
       </div>
     </div>

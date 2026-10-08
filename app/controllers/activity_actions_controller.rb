@@ -44,6 +44,6 @@ class ActivityActionsController < ApplicationController
   def set_ao
     @activity = Activity.find(params[:activity_id])
     @ao = @activity.direct_object
-    redirect_back fallback_location: activities_path, alert: "No object to act on." unless @ao
+    redirect_back fallback_location: activities_path, alert: t("flash.no_object_to_act_on") unless @ao
   end
 end

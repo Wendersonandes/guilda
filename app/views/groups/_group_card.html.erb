@@ -17,7 +17,7 @@
         </h3>
         <span class="text-[10px] font-semibold px-2 py-0.5 rounded-md inline-flex items-center gap-1 bg-stone-100 text-zinc-700 border border-stone-200">
           <i data-lucide="<%= group.public_group? ? 'globe' : 'lock' %>" class="w-2.5 h-2.5 text-zinc-400"></i>
-          <span><%= group.public_group? ? "Public" : "Private" %></span>
+          <span><%= group.public_group? ? t(".public") : t(".private") %></span>
         </span>
       </div>
       <% if group_actor.description.present? %>
@@ -25,7 +25,7 @@
       <% end %>
       <p class="text-xs text-zinc-400 font-medium flex items-center gap-1">
         <i data-lucide="users" class="w-3.5 h-3.5"></i>
-        <span><%= group_actor.sent_contacts.size %> members</span>
+        <span><%= group_actor.sent_contacts.size %> <%= t(".members") %></span>
       </p>
     </div>
   </div>
@@ -34,19 +34,19 @@
     <% if current_actor && current_actor != group_actor %>
       <% roles = @membership_map ? @membership_map[group_actor.id] || [] : group_actor.member_roles_for(current_actor) %>
       <% if roles.include?("owner") %>
-        <span class="text-xs font-semibold text-brand bg-brand/10 border border-brand/20 px-2.5 py-1 rounded-md">Owner</span>
+        <span class="text-xs font-semibold text-brand bg-brand/10 border border-brand/20 px-2.5 py-1 rounded-md"><%= t(".owner") %></span>
       <% elsif roles.any? %>
-        <span class="text-xs font-semibold text-zinc-700 bg-stone-100 border border-stone-200 px-2.5 py-1 rounded-md">Member</span>
+        <span class="text-xs font-semibold text-zinc-700 bg-stone-100 border border-stone-200 px-2.5 py-1 rounded-md"><%= t(".member") %></span>
       <% else %>
         <% if group.public_group? %>
           <%= button_to group_memberships_path(group), params: { actor_id: current_actor.id, role: "member" }, method: :post, class: "flex items-center gap-1.5 text-xs bg-white text-brand hover:bg-brand hover:text-white border border-stone-border px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer shadow-sm" do %>
             <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-            <span>Join</span>
+            <span><%= t(".join") %></span>
           <% end %>
         <% else %>
           <%= button_to group_memberships_path(group), params: { actor_id: current_actor.id }, method: :post, class: "flex items-center gap-1.5 text-xs bg-white hover:bg-stone-50 text-zinc-700 border border-stone-300 px-3 py-1.5 rounded-lg font-medium transition-colors cursor-pointer" do %>
             <i data-lucide="lock" class="w-3.5 h-3.5"></i>
-            <span>Request</span>
+            <span><%= t(".request") %></span>
           <% end %>
         <% end %>
       <% end %>

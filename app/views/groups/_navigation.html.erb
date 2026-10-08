@@ -10,18 +10,18 @@
   <div class="flex gap-1">
     <%= link_to group_path(@group), class: "flex items-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-md transition-all #{request.path == group_path(@group) ? 'bg-white text-brand shadow-sm border border-stone-200' : 'text-zinc-500 hover:text-charcoal'}" do %>
       <i data-lucide="message-square" class="w-4 h-4"></i>
-      <span>Posts</span>
+      <span><%= t(".posts") %></span>
     <% end %>
     
     <%= link_to group_memberships_path(@group), class: "flex items-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-md transition-all #{(request.path.start_with?(group_memberships_path(@group)) && !request.path.include?('/insights')) ? 'bg-white text-brand shadow-sm border border-stone-200' : 'text-zinc-500 hover:text-charcoal'}" do %>
       <i data-lucide="users" class="w-4 h-4"></i>
-      <span>Members (<%= total_members %>)</span>
+      <span><%= t(".members") %> (<%= total_members %>)</span>
     <% end %>
     
     <% if is_admin %>
       <%= link_to insights_group_memberships_path(@group), class: "flex items-center gap-1.5 px-4 py-2 text-sm font-semibold rounded-md transition-all #{request.path.include?('/insights') ? 'bg-white text-brand shadow-sm border border-stone-200' : 'text-zinc-500 hover:text-charcoal'}" do %>
         <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
-        <span>Insights</span>
+        <span><%= t(".insights") %></span>
       <% end %>
     <% end %>
   </div>
@@ -30,27 +30,27 @@
     <div class="pr-2 flex items-center">
       <% if is_member %>
         <% unless is_owner %>
-          <%= button_to group_membership_path(@group, current_actor, role: member_roles.first), method: :delete, data: { turbo_confirm: "Are you sure you want to leave #{@group.name}?" }, class: "flex items-center gap-1.5 text-xs bg-white hover:bg-stone-50 text-red-650 border border-stone-300 px-3 py-1.5 rounded-lg font-semibold transition-colors cursor-pointer" do %>
+          <%= button_to group_membership_path(@group, current_actor, role: member_roles.first), method: :delete, data: { turbo_confirm: t(".leave_confirm", group: @group.name) }, class: "flex items-center gap-1.5 text-xs bg-white hover:bg-stone-50 text-red-650 border border-stone-300 px-3 py-1.5 rounded-lg font-semibold transition-colors cursor-pointer" do %>
             <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
-            <span>Leave Group</span>
+            <span><%= t(".leave") %></span>
           <% end %>
         <% end %>
       <% else %>
         <% if @group.public_group? %>
           <%= button_to group_memberships_path(@group), params: { actor_id: current_actor.id, role: "member" }, method: :post, class: "flex items-center gap-1.5 text-xs bg-white text-brand hover:bg-brand hover:text-white border border-stone-border px-3 py-1.5 rounded-lg font-semibold transition-all cursor-pointer shadow-sm" do %>
             <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-            <span>Join Group</span>
+            <span><%= t(".join") %></span>
           <% end %>
         <% else %>
           <% if current_actor.contact_to(@group.actor).present? %>
             <span class="flex items-center gap-1.5 text-xs bg-stone-100 text-zinc-650 border border-stone-250 px-3 py-1.5 rounded-lg font-medium transition-colors">
               <i data-lucide="clock" class="w-3.5 h-3.5 text-zinc-400"></i>
-              <span>Request Pending</span>
+              <span><%= t(".request_pending") %></span>
             </span>
           <% else %>
             <%= button_to group_memberships_path(@group), params: { actor_id: current_actor.id }, method: :post, class: "flex items-center gap-1.5 text-xs bg-white hover:bg-stone-50 text-zinc-700 border border-stone-300 px-3 py-1.5 rounded-lg font-medium transition-colors cursor-pointer" do %>
               <i data-lucide="lock" class="w-3.5 h-3.5"></i>
-              <span>Request to Join</span>
+              <span><%= t(".request") %></span>
             <% end %>
           <% end %>
         <% end %>

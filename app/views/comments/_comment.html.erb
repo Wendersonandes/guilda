@@ -40,17 +40,17 @@
         <div class="flex flex-wrap items-center gap-x-2 mt-1 text-xs text-zinc-400">
           <%= link_to comment_activity.author.name, public_path_for(comment_activity.author), class: "font-semibold text-charcoal hover:text-brand hover:underline" %>
           <span>&middot;</span>
-          <span><%= time_ago_in_words(comment.created_at) %> ago</span>
+          <span><%= time_ago_in_words(comment.created_at) %></span>
           <% if comment.last_edited_at.present? %>
             <span>&middot;</span>
-            <span class="italic text-zinc-400" title="Edited at <%= l(comment.last_edited_at, format: :short) %>">edited</span>
+            <span class="italic text-zinc-400" title="<%= t(".edited_title", time: l(comment.last_edited_at, format: :short)) %>"><%= t(".edited") %></span>
           <% end %>
         </div>
 
         <!-- Body -->
         <div class="comment_collapsible mt-2 text-sm text-zinc-700 leading-relaxed">
           <% if comment.deleted? %>
-            <span class="text-zinc-400 italic font-medium">[deleted by author]</span>
+            <span class="text-zinc-400 italic font-medium"><%= t(".deleted") %></span>
           <% else %>
             <%= turbo_frame_tag dom_id(comment, :text) do %>
               <div>

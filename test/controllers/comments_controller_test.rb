@@ -46,8 +46,8 @@ class CommentsControllerTest < ActionDispatch::IntegrationTest
   test "GET flag_form renders inline flag form" do
     get flag_form_comment_path(@comment.short_id), as: :turbo_stream
     assert_response :success
-    assert_match "Reason", response.body
-    assert_match "Note", response.body
+    assert_match "Motivo", response.body
+    assert_match "Observação", response.body
   end
 
   test "POST flag creates Flag object with reason and note metadata" do

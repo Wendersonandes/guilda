@@ -1,9 +1,9 @@
-<%= content_for :title, "People & Groups" %>
+<%= content_for :title, t(".title") %>
 
 <div class="flex items-center justify-between">
   <div>
-    <h1 class="text-2xl font-bold text-gray-900 tracking-tight">People &amp; Groups</h1>
-    <p class="text-xs text-gray-500 mt-0.5">Browse profiles and communities on the platform</p>
+    <h1 class="text-2xl font-bold text-gray-900 tracking-tight"><%= t(".title") %></h1>
+    <p class="text-xs text-gray-500 mt-0.5"><%= t(".subtitle") %></p>
   </div>
 </div>
 
@@ -32,7 +32,7 @@
   </div>
   <% if @pagy.next %>
     <div class="flex justify-center mt-8">
-      <%= link_to "Load more", actors_path(page: @pagy.next), class: "text-sm text-blue-600 hover:text-blue-700 font-medium" %>
+      <%= link_to t(".load_more"), actors_path(page: @pagy.next), class: "text-sm text-blue-600 hover:text-blue-700 font-medium" %>
     </div>
   <% end %>
 <% else %>
@@ -40,7 +40,7 @@
     <div class="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-3 border border-gray-100">
       <i data-lucide="users" class="w-6 h-6 text-gray-400"></i>
     </div>
-    <h3 class="text-base font-semibold text-gray-900">No profiles yet</h3>
-    <p class="text-sm text-gray-500 mt-1 max-w-sm mx-auto">Profiles and groups will appear here once they are created.</p>
+    <h3 class="text-base font-semibold text-gray-900"><%= t(".empty_title") %></h3>
+    <p class="text-sm text-gray-500 mt-1 max-w-sm mx-auto"><%= t(".empty_subtitle") %></p>
   </div>
 <% end %>

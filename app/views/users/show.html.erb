@@ -1,6 +1,6 @@
-<%= content_for :title, "Account Settings" %>
+<%= content_for :title, t(".title") %>
 
-<h1 class="text-2xl font-serif font-bold text-charcoal tracking-tight mb-6">Account Settings</h1>
+<h1 class="text-2xl font-serif font-bold text-charcoal tracking-tight mb-6"><%= t(".title") %></h1>
 
 <div class="bg-white rounded-lg border border-stone-border divide-y divide-stone-100 overflow-hidden shadow-sm">
   <!-- Email Setting -->
@@ -10,13 +10,13 @@
         <i data-lucide="mail" class="w-5 h-5"></i>
       </div>
       <div>
-        <h3 class="text-sm font-semibold text-charcoal">Email Address</h3>
+        <h3 class="text-sm font-semibold text-charcoal"><%= t(".email") %></h3>
         <p class="text-sm text-zinc-500 mt-0.5"><%= current_user.email %></p>
       </div>
     </div>
     <%= link_to edit_account_path, class: "flex items-center gap-1 text-xs bg-white text-zinc-700 hover:bg-stone-50 font-semibold px-3 py-1.5 rounded-lg border border-stone-300 transition-colors shadow-sm cursor-pointer" do %>
       <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
-      <span>Edit</span>
+      <span><%= t(".edit") %></span>
     <% end %>
   </div>
 
@@ -28,18 +28,18 @@
           <i data-lucide="user" class="w-5 h-5"></i>
         </div>
         <div>
-          <h3 class="text-sm font-semibold text-charcoal">Public Profile</h3>
+          <h3 class="text-sm font-semibold text-charcoal"><%= t(".public_profile") %></h3>
           <p class="text-sm text-zinc-500 mt-0.5"><%= current_actor.name %></p>
         </div>
       </div>
       <div class="flex items-center gap-2">
         <%= link_to public_path_for(current_actor), class: "flex items-center gap-1 text-xs bg-white text-zinc-700 hover:bg-stone-50 font-semibold px-3 py-1.5 rounded-lg border border-stone-300 transition-colors shadow-sm cursor-pointer" do %>
           <i data-lucide="eye" class="w-3.5 h-3.5"></i>
-          <span>View</span>
+          <span><%= t(".view") %></span>
         <% end %>
         <%= link_to edit_my_profile_path, class: "flex items-center gap-1 text-xs bg-white text-zinc-700 hover:bg-stone-50 font-semibold px-3 py-1.5 rounded-lg border border-stone-300 transition-colors shadow-sm cursor-pointer" do %>
           <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
-          <span>Edit</span>
+          <span><%= t(".edit") %></span>
         <% end %>
       </div>
     </div>

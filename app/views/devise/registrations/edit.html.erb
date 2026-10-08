@@ -1,8 +1,8 @@
 <div class="max-w-md mx-auto mt-8">
   <div class="bg-white rounded-xl shadow-sm border border-gray-200/80 p-8 mb-6">
     <div class="text-center mb-6">
-      <h1 class="text-2xl font-bold text-gray-900">Edit account</h1>
-      <p class="text-sm text-gray-500 mt-1">Update your profile credentials</p>
+      <h1 class="text-2xl font-bold text-gray-900"><%= t("auth.registrations.edit.title") %></h1>
+      <p class="text-sm text-gray-500 mt-1"><%= t("auth.registrations.edit.subtitle") %></p>
     </div>
 
     <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
@@ -17,7 +17,7 @@
 
         <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
           <div class="bg-yellow-50 border border-yellow-200 rounded-lg px-3 py-2 text-sm text-yellow-800">
-            Waiting confirmation for: <strong><%= resource.unconfirmed_email %></strong>
+            <%= t("auth.registrations.edit.waiting_confirmation") %> <strong><%= resource.unconfirmed_email %></strong>
           </div>
         <% end %>
 
@@ -25,17 +25,17 @@
 
         <div>
           <%= f.label :password, class: "block text-sm font-medium text-gray-700 mb-1" %>
-          <span class="text-xs text-gray-400">Leave blank if you don't want to change it</span>
-          <%= f.password_field :password, autocomplete: "new-password", placeholder: "New password",
+          <span class="text-xs text-gray-400"><%= t("auth.registrations.edit.leave_blank") %></span>
+          <%= f.password_field :password, autocomplete: "new-password", placeholder: t("auth.registrations.edit.new_password"),
                 class: "mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" %>
           <% if @minimum_password_length %>
-            <p class="text-xs text-gray-400 mt-1"><%= @minimum_password_length %> characters minimum</p>
+            <p class="text-xs text-gray-400 mt-1"><%= t("auth.registrations.edit.password_minimum", count: @minimum_password_length) %></p>
           <% end %>
         </div>
 
         <div>
           <%= f.label :password_confirmation, class: "block text-sm font-medium text-gray-700 mb-1" %>
-          <%= f.password_field :password_confirmation, autocomplete: "new-password", placeholder: "Confirm new password",
+          <%= f.password_field :password_confirmation, autocomplete: "new-password", placeholder: t("auth.registrations.edit.confirm_new_password"),
                 class: "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" %>
         </div>
 
@@ -43,21 +43,21 @@
 
         <div>
           <%= f.label :current_password, class: "block text-sm font-medium text-gray-700 mb-1" %>
-          <span class="text-xs text-gray-400">We need your current password to confirm changes</span>
-          <%= f.password_field :current_password, autocomplete: "current-password", placeholder: "Current password",
+          <span class="text-xs text-gray-400"><%= t("auth.registrations.edit.current_password_hint") %></span>
+          <%= f.password_field :current_password, autocomplete: "current-password", placeholder: t("auth.registrations.edit.current_password"),
                 class: "mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" %>
         </div>
 
-        <%= f.submit "Update", class: "w-full bg-blue-600 text-white rounded-lg px-4 py-2.5 text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors cursor-pointer mt-2" %>
+        <%= f.submit t("auth.registrations.edit.submit"), class: "w-full bg-blue-600 text-white rounded-lg px-4 py-2.5 text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors cursor-pointer mt-2" %>
       </div>
     <% end %>
   </div>
 
   <div class="bg-white/95 rounded-xl shadow-sm border border-red-200 p-8">
-    <h2 class="text-lg font-semibold text-red-700 mb-2">Cancel my account</h2>
-    <p class="text-sm text-gray-500 mb-4">This action cannot be undone. Your profile and data will be permanently deleted.</p>
-    <%= button_to "Cancel my account", registration_path(resource_name),
-          data: { turbo_confirm: "Are you sure? This cannot be undone." },
+    <h2 class="text-lg font-semibold text-red-700 mb-2"><%= t("auth.registrations.edit.cancel_title") %></h2>
+    <p class="text-sm text-gray-500 mb-4"><%= t("auth.registrations.edit.cancel_description") %></p>
+    <%= button_to t("auth.registrations.edit.cancel_submit"), registration_path(resource_name),
+          data: { turbo_confirm: t("auth.registrations.edit.cancel_confirm") },
           method: :delete,
           class: "w-full bg-red-600 text-white rounded-lg px-4 py-2.5 text-sm font-medium hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors cursor-pointer" %>
   </div>

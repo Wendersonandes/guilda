@@ -2,12 +2,12 @@
   <% if comment_activity.current_user_flagged %>
     <%= button_to unflag_comment_path(comment.short_id), method: :post, class: "flex items-center gap-1 text-orange-500 hover:text-orange-600 bg-transparent border-0 cursor-pointer p-0 font-medium" do %>
       <i data-lucide="flag" class="w-3.5 h-3.5 fill-current"></i>
-      <span>Flagged</span>
+      <span><%= t(".flagged") %></span>
     <% end %>
   <% else %>
     <%= link_to flag_form_comment_path(comment.short_id), data: { turbo_frame: "modal" }, class: "flex items-center gap-1 text-gray-400 hover:text-orange-500" do %>
       <i data-lucide="flag" class="w-3.5 h-3.5"></i>
-      <span>Flag</span>
+      <span><%= t(".flag") %></span>
     <% end %>
   <% end %>
 <% end %>

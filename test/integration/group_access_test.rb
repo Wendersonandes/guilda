@@ -42,11 +42,11 @@ class GroupAccessTest < ActionDispatch::IntegrationTest
     assert_response :success
 
     # Should see lock screen
-    assert_match "Private Group", response.body
-    assert_match "Request to join", response.body
+    assert_match "Grupo privado", response.body
+    assert_match "Solicitar entrada", response.body
 
     # Should NOT see members count in content area
-    assert_no_match /No posts yet/, response.body
+    assert_no_match /Ainda sem publicações/, response.body
   end
 
   test "member of private group can view content" do
@@ -66,7 +66,7 @@ class GroupAccessTest < ActionDispatch::IntegrationTest
 
     get groups_path
     assert_response :success
-    assert_match "Join", response.body
+    assert_match "Entrar", response.body
   end
 
   test "public group index shows member badge for existing member" do
@@ -74,6 +74,6 @@ class GroupAccessTest < ActionDispatch::IntegrationTest
 
     get groups_path
     assert_response :success
-    assert_match "Member", response.body
+    assert_match "Proprietário", response.body
   end
 end

@@ -37,23 +37,23 @@ class AdminAccessTest < ActionDispatch::IntegrationTest
     ADMIN_PATHS.each do |path, name|
       get path
       assert_redirected_to root_path, "#{name} (#{path}) should deny non-admin"
-      assert_equal "You are not authorized to perform this action.", flash[:alert]
+      assert_equal "Você não tem permissão para executar esta ação.", flash[:alert]
     end
   end
 
   test "site admin can view admin index pages and see content" do
     sign_in @alice
     get admin_roles_path
-    assert_select "h1", text: "Platform Roles"
+    assert_select "h1", text: "Papéis da Plataforma"
 
     get admin_ties_path
-    assert_select "h1", text: "Ties"
+    assert_select "h1", text: "Vínculos"
 
     get admin_audiences_path
-    assert_select "h1", text: "Audiences"
+    assert_select "h1", text: "Audiências"
 
     get admin_permissions_path
-    assert_select "h1", text: "Permissions"
+    assert_select "h1", text: "Permissões"
   end
 
   test "non-admin visiting admin roles via direct path is blocked" do
@@ -74,14 +74,14 @@ class AdminAccessTest < ActionDispatch::IntegrationTest
 
     post admin_roles_path, params: { actor_id: @bob_actor.slug, to_role: "editor" }
     assert_response :redirect
-    assert_equal "Role assigned.", flash[:notice]
+    assert_equal "Papel atribuído.", flash[:notice]
 
     follow_redirect!
     assert_response :success
 
     patch admin_role_path(@bob_actor), params: { from_role: "editor", to_role: "member" }
     assert_response :redirect
-    assert_equal "Role updated.", flash[:notice]
+    assert_equal "Papel atualizado.", flash[:notice]
   end
 
   test "non-admin cannot create roles" do
@@ -89,7 +89,7 @@ class AdminAccessTest < ActionDispatch::IntegrationTest
 
     post admin_roles_path, params: { actor_id: @bob_actor.slug, to_role: "editor" }
     assert_redirected_to root_path
-    assert_equal "You are not authorized to perform this action.", flash[:alert]
+    assert_equal "Você não tem permissão para executar esta ação.", flash[:alert]
   end
 
   test "site admin can view tie details" do

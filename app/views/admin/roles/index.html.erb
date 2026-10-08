@@ -1,12 +1,12 @@
-<%= content_for :title, "Platform Roles" %>
+<%= content_for :title, "Papéis da Plataforma" %>
 
 <div class="max-w-3xl mx-auto space-y-6" data-controller="role-search">
   <div class="flex items-center justify-between">
     <div>
-      <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Platform Roles</h1>
+      <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Papéis da Plataforma</h1>
       <p class="text-xs text-gray-500 mt-0.5">
-        Manage global permissions for <strong><%= Site.instance.name %></strong>
-        &middot; <strong><%= @total_members %></strong> total members
+        Gerencie as permissões globais de <strong><%= Site.instance.name %></strong>
+        &middot; <strong><%= @total_members %></strong> membros no total
       </p>
     </div>
   </div>
@@ -15,13 +15,13 @@
   <div class="bg-gray-50/50 border border-gray-200/80 rounded-xl p-5 shadow-sm space-y-3">
     <h3 class="text-sm font-semibold text-gray-900 flex items-center gap-1.5">
       <i data-lucide="search" class="w-4 h-4 text-blue-600"></i>
-      <span>Find & Change User Role</span>
+      <span>Buscar e alterar papel do usuário</span>
     </h3>
     <div class="relative">
       <input type="text"
              data-role-search-target="query"
              data-action="input->role-search#search"
-             placeholder="Search platform members by name..."
+             placeholder="Buscar membros da plataforma por nome..."
              class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
              autocomplete="off">
       <div data-role-search-target="results"
@@ -35,24 +35,24 @@
       <div class="bg-white border border-gray-200 rounded-lg px-4 py-3 flex items-center justify-between shadow-sm">
         <div>
           <p class="text-sm font-semibold text-gray-900" data-role-search-target="actorName"></p>
-          <p class="text-xs text-gray-400 font-medium">Current role: <span class="font-bold text-gray-600" data-role-search-target="currentRoleLabel"></span></p>
+          <p class="text-xs text-gray-400 font-medium">Papel atual: <span class="font-bold text-gray-600" data-role-search-target="currentRoleLabel"></span></p>
         </div>
         <div class="flex items-center gap-2">
           <select data-role-search-target="newRole"
                   class="text-xs border border-gray-300 rounded px-2.5 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <option value="admin">Admin</option>
+            <option value="admin">Administrador</option>
             <option value="editor">Editor</option>
-            <option value="moderator">Moderator</option>
-            <option value="member">Member</option>
-            <option value="silenced">Silenced</option>
-            <option value="banned">Banned</option>
+            <option value="moderator">Moderador</option>
+            <option value="member">Membro</option>
+            <option value="silenced">Silenciado</option>
+            <option value="banned">Banido</option>
           </select>
           <button data-action="click->role-search#save"
                   data-role-search-target="saveBtn"
                   data-submit-url="<%= admin_roles_path %>/"
                   class="inline-flex items-center gap-1 text-xs bg-blue-600 hover:bg-blue-700 text-white font-medium px-3 py-1.5 rounded-md shadow-sm transition-colors cursor-pointer border-0">
             <i data-lucide="save" class="w-3.5 h-3.5"></i>
-            <span>Save</span>
+            <span>Salvar</span>
           </button>
         </div>
       </div>
@@ -60,11 +60,11 @@
   </div>
 
   <% sections = [
-       { label: "Admins",    items: @admins,    color: "bg-blue-50 text-blue-700 border-blue-100" },
-       { label: "Editors",   items: @editors,   color: "bg-gray-100 text-gray-700 border-gray-200" },
-       { label: "Moderators", items: @moderators, color: "bg-green-50 text-green-700 border-green-100" },
-       { label: "Silenced",  items: @silenced,  color: "bg-yellow-50 text-yellow-750 border-yellow-200/50" },
-       { label: "Banned",    items: @banned,    color: "bg-red-50 text-red-700 border-red-100" }
+       { role: "admin",     label: "Administradores", items: @admins,     color: "bg-blue-50 text-blue-700 border-blue-100" },
+       { role: "editor",    label: "Editores",        items: @editors,    color: "bg-gray-100 text-gray-700 border-gray-200" },
+       { role: "moderator", label: "Moderadores",     items: @moderators, color: "bg-green-50 text-green-700 border-green-100" },
+       { role: "silenced",  label: "Silenciados",     items: @silenced,   color: "bg-yellow-50 text-yellow-750 border-yellow-200/50" },
+       { role: "banned",    label: "Banidos",         items: @banned,     color: "bg-red-50 text-red-700 border-red-100" }
      ] %>
 
   <% sections.each do |section| %>
@@ -87,9 +87,9 @@
             </div>
             <div class="flex items-center gap-2">
               <%= form_with url: admin_role_path(actor), method: :patch, class: "flex items-center gap-1.5" do |f| %>
-                <%= f.hidden_field :from_role, value: section[:label].downcase.singularize %>
-                <%= f.select :to_role, [["Admin", "admin"], ["Editor", "editor"], ["Moderator", "moderator"], ["Member", "member"], ["Silenced", "silenced"], ["Banned", "banned"]], { selected: section[:label].downcase.singularize }, { class: "text-xs border border-gray-300 rounded px-2 py-1 bg-white focus:outline-none" } %>
-                <%= f.submit "Save", class: "text-xs bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1.2 rounded-md font-medium cursor-pointer border-0 shadow-sm transition-colors" %>
+                <%= f.hidden_field :from_role, value: section[:role] %>
+                <%= f.select :to_role, [["Administrador", "admin"], ["Editor", "editor"], ["Moderador", "moderator"], ["Membro", "member"], ["Silenciado", "silenced"], ["Banido", "banned"]], { selected: section[:role] }, { class: "text-xs border border-gray-300 rounded px-2 py-1 bg-white focus:outline-none" } %>
+                <%= f.submit "Salvar", class: "text-xs bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1.2 rounded-md font-medium cursor-pointer border-0 shadow-sm transition-colors" %>
               <% end %>
             </div>
           </div>
@@ -103,8 +103,8 @@
       <div class="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-3 border border-gray-100">
         <i data-lucide="shield-alert" class="w-6 h-6 text-gray-400"></i>
       </div>
-      <h3 class="text-base font-semibold text-gray-900">No special roles</h3>
-      <p class="text-sm text-gray-500 mt-1 max-w-sm mx-auto">All users currently hold standard member permissions.</p>
+      <h3 class="text-base font-semibold text-gray-900">Sem papéis especiais</h3>
+      <p class="text-sm text-gray-500 mt-1 max-w-sm mx-auto">Todos os usuários possuem as permissões padrão de membro.</p>
     </div>
   <% end %>
 </div>

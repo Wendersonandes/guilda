@@ -3,8 +3,8 @@
     <div class="w-12 h-12 bg-stone-100 text-brand rounded-full flex items-center justify-center mx-auto mb-3 border border-stone-border shadow-sm">
       <i data-lucide="key" class="w-6 h-6"></i>
     </div>
-    <h1 class="text-2xl font-serif font-bold text-charcoal tracking-tight">Forgot password?</h1>
-    <p class="text-sm text-zinc-500 mt-1 flex-wrap">Enter your email and we'll send reset instructions</p>
+    <h1 class="text-2xl font-serif font-bold text-charcoal tracking-tight"><%= t("auth.passwords.new.title") %></h1>
+    <p class="text-sm text-zinc-500 mt-1 flex-wrap"><%= t("auth.passwords.new.subtitle") %></p>
   </div>
 
   <div class="bg-white rounded-lg border border-stone-border p-6">
@@ -18,7 +18,7 @@
                 class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal transition-shadow" %>
         </div>
 
-        <%= f.submit "Send reset instructions", class: "w-full bg-charcoal hover:bg-zinc-800 text-white rounded-lg px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer mt-2" %>
+        <%= f.submit t("auth.passwords.new.submit"), class: "w-full bg-charcoal hover:bg-zinc-800 text-white rounded-lg px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer mt-2" %>
       </div>
     <% end %>
 

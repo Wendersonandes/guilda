@@ -104,6 +104,6 @@ class LikesControllerTest < ActionDispatch::IntegrationTest
       delete activity_like_path(@post_activity, like_activity)
     end
     assert_redirected_to root_path
-    assert_equal "You are not authorized to perform this action.", flash[:alert]
+    assert_equal "Você não tem permissão para executar esta ação.", flash[:alert]
   end
 end

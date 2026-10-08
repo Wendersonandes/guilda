@@ -141,7 +141,7 @@ class ActorTest < ActiveSupport::TestCase
     @bob_actor.avatar.attach(io: StringIO.new("data"), filename: "note.txt", content_type: "text/plain")
 
     assert_not @bob_actor.valid?
-    assert_includes @bob_actor.errors[:avatar], "must be a PNG, JPEG or WebP image"
+    assert_includes @bob_actor.errors[:avatar], "deve ser uma imagem PNG, JPEG ou WebP"
   end
 
   test "rejects image attachments larger than the limit" do
@@ -149,7 +149,7 @@ class ActorTest < ActiveSupport::TestCase
     @bob_actor.avatar.blob.define_singleton_method(:byte_size) { 6.megabytes }
 
     assert_not @bob_actor.valid?
-    assert_includes @bob_actor.errors[:avatar], "must be smaller than 5MB"
+    assert_includes @bob_actor.errors[:avatar], "deve ter no máximo 5MB"
   end
 
   test "accepts allowed image attachments" do

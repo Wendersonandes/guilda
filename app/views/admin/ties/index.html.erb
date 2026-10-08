@@ -1,9 +1,9 @@
-<%= content_for :title, "Ties" %>
+<%= content_for :title, "Vínculos" %>
 
 <div class="max-w-4xl mx-auto space-y-6">
   <div>
-    <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Ties</h1>
-    <p class="text-xs text-gray-500 mt-0.5">Active relationships and permissions established between actors</p>
+    <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Vínculos</h1>
+    <p class="text-xs text-gray-500 mt-0.5">Relações e permissões ativas estabelecidas entre atores</p>
   </div>
 
   <div class="bg-white rounded-xl border border-gray-200/80 shadow-sm overflow-hidden">
@@ -11,10 +11,10 @@
       <thead>
         <tr class="bg-gray-50/50 border-b border-gray-200">
           <th class="text-[10px] font-bold uppercase tracking-wider text-gray-400 p-4">ID</th>
-          <th class="text-[10px] font-bold uppercase tracking-wider text-gray-400 p-4">Sender</th>
-          <th class="text-[10px] font-bold uppercase tracking-wider text-gray-400 p-4">Receiver</th>
-          <th class="text-[10px] font-bold uppercase tracking-wider text-gray-400 p-4">Relation</th>
-          <th class="text-[10px] font-bold uppercase tracking-wider text-gray-400 p-4">Created</th>
+          <th class="text-[10px] font-bold uppercase tracking-wider text-gray-400 p-4">Remetente</th>
+          <th class="text-[10px] font-bold uppercase tracking-wider text-gray-400 p-4">Destinatário</th>
+          <th class="text-[10px] font-bold uppercase tracking-wider text-gray-400 p-4">Relação</th>
+          <th class="text-[10px] font-bold uppercase tracking-wider text-gray-400 p-4">Criado em</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-gray-100">
@@ -24,7 +24,7 @@
             <td class="p-4 text-sm font-semibold text-gray-950"><%= tie.sender.name %></td>
             <td class="p-4 text-sm font-semibold text-gray-950"><%= tie.receiver.name %></td>
             <td class="p-4 text-sm text-gray-600 font-medium"><%= tie.relation.name %></td>
-            <td class="p-4 text-xs text-gray-400 font-medium"><%= time_ago_in_words(tie.created_at) %> ago</td>
+            <td class="p-4 text-xs text-gray-400 font-medium"><%= time_ago_in_words(tie.created_at) %></td>
           </tr>
         <% end %>
       </tbody>

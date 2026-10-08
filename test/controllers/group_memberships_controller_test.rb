@@ -199,7 +199,7 @@ class GroupMembershipsControllerTest < ActionDispatch::IntegrationTest
     sign_in @bob
     post accept_invite_group_memberships_path(@group)
     assert_redirected_to group_memberships_path(@group)
-    assert_equal "No pending invite found.", flash[:alert]
+    assert_equal "Nenhum convite pendente encontrado.", flash[:alert]
   end
 
   test "duplicate self-join shows already a member notice" do
@@ -207,7 +207,7 @@ class GroupMembershipsControllerTest < ActionDispatch::IntegrationTest
     @group.actor.connect_to(@bob_actor, as: "member")
     post group_memberships_path(@group), params: { actor_id: @bob_actor.id }
     assert_redirected_to group_memberships_path(@group)
-    assert_equal "You are already a member.", flash[:notice]
+    assert_equal "Você já é membro.", flash[:notice]
   end
 
   test "duplicate private request shows already pending notice" do
@@ -216,7 +216,7 @@ class GroupMembershipsControllerTest < ActionDispatch::IntegrationTest
     @bob_actor.connect_to(@group.actor, as: "follow")
     post group_memberships_path(@group), params: { actor_id: @bob_actor.id }
     assert_redirected_to group_memberships_path(@group)
-    assert_equal "Your request is already pending.", flash[:notice]
+    assert_equal "Sua solicitação já está pendente.", flash[:notice]
   end
 
   private

@@ -1,4 +1,4 @@
-<nav class="bg-white border-b border-stone-border fixed top-0 left-0 right-0 z-50" data-controller="mobile-menu" aria-label="Global Navigation">
+<nav class="bg-white border-b border-stone-border fixed top-0 left-0 right-0 z-50" data-controller="mobile-menu" aria-label="<%= t(".aria_label") %>">
   <% if current_actor && feature_enabled?(:notifications) %>
     <%= turbo_stream_from current_actor, :notifications %>
   <% end %>
@@ -14,33 +14,33 @@
           <% if feature_enabled?(:social_feed) %>
             <%= link_to activities_path, class: "flex items-center gap-1.5 text-sm font-medium text-zinc-600 hover:text-brand transition-colors" do %>
               <i data-lucide="home" class="w-4 h-4"></i>
-              <span>Home</span>
+              <span><%= t(".home") %></span>
             <% end %>
           <% end %>
           <%= link_to profiles_path, class: "flex items-center gap-1.5 text-sm font-medium text-zinc-600 hover:text-brand transition-colors" do %>
             <i data-lucide="search" class="w-4 h-4"></i>
-            <span>Profiles</span>
+            <span><%= t(".profiles") %></span>
           <% end %>
           <% if feature_enabled?(:contacts) %>
             <%= link_to contacts_path, class: "flex items-center gap-1.5 text-sm font-medium text-zinc-600 hover:text-brand transition-colors" do %>
               <i data-lucide="users" class="w-4 h-4"></i>
-              <span>Contacts</span>
+              <span><%= t(".contacts") %></span>
             <% end %>
           <% end %>
           <% if feature_enabled?(:groups) %>
             <%= link_to groups_path, class: "flex items-center gap-1.5 text-sm font-medium text-zinc-600 hover:text-brand transition-colors" do %>
               <i data-lucide="layers" class="w-4 h-4"></i>
-              <span>Groups</span>
+              <span><%= t(".groups") %></span>
             <% end %>
           <% end %>
           <% if current_actor.can?(:read, :admin) %>
             <%= link_to admin_roles_path, class: "flex items-center gap-1.5 text-sm font-medium text-rose-600 hover:text-rose-700 transition-colors" do %>
               <i data-lucide="shield-alert" class="w-4 h-4"></i>
-              <span>Admin</span>
+              <span><%= t(".admin") %></span>
             <% end %>
             <%= link_to "/admin/flipper", class: "flex items-center gap-1.5 text-sm font-medium text-rose-600 hover:text-rose-700 transition-colors" do %>
               <i data-lucide="flag" class="w-4 h-4"></i>
-              <span>Flags</span>
+              <span><%= t(".flags") %></span>
             <% end %>
           <% end %>
         </div>
@@ -59,7 +59,7 @@
           <% end %>
         <% end %>
         <% if current_actor && feature_enabled?(:notifications) %>
-          <%= link_to notifications_path, class: "p-1.5 text-zinc-500 hover:text-brand transition-colors flex items-center mr-1", title: "Notifications" do %>
+          <%= link_to notifications_path, class: "p-1.5 text-zinc-500 hover:text-brand transition-colors flex items-center mr-1", title: t(".notifications") do %>
             <div class="relative">
               <i data-lucide="bell" class="w-4.5 h-4.5"></i>
               <%= render "shared/nav_notification_badge" %>
@@ -68,20 +68,20 @@
         <% end %>
         <%= link_to account_path, class: "flex items-center gap-1 text-sm text-zinc-500 hover:text-charcoal transition-colors" do %>
           <i data-lucide="settings" class="w-4 h-4"></i>
-          <span>Account</span>
+          <span><%= t(".account") %></span>
         <% end %>
         <%= button_to destroy_user_session_path, method: :delete, class: "flex items-center gap-1 text-sm text-zinc-500 hover:text-brand bg-transparent border-0 cursor-pointer transition-colors p-0 font-medium" do %>
           <i data-lucide="log-out" class="w-4 h-4"></i>
-          <span>Sign out</span>
+          <span><%= t(".sign_out") %></span>
         <% end %>
       <% else %>
         <%= link_to new_user_session_path, class: "flex items-center gap-1 text-sm font-medium text-zinc-600 hover:text-brand transition-colors" do %>
           <i data-lucide="log-in" class="w-4 h-4"></i>
-          <span>Sign in</span>
+          <span><%= t(".sign_in") %></span>
         <% end %>
         <%= link_to new_user_registration_path, class: "flex items-center gap-1.5 text-sm bg-brand hover:bg-brand-hover text-white px-3.5 py-1.5 rounded-lg font-medium transition-colors cursor-pointer" do %>
           <i data-lucide="user-plus" class="w-4 h-4"></i>
-          <span>Sign up</span>
+          <span><%= t(".sign_up") %></span>
         <% end %>
       <% end %>
     </div>
@@ -90,7 +90,7 @@
     <button type="button"
             data-action="click->mobile-menu#toggle"
             class="sm:hidden flex items-center justify-center w-9 h-9 rounded-lg hover:bg-stone-50 text-charcoal cursor-pointer transition-colors"
-            aria-label="Toggle navigation menu">
+            aria-label="<%= t(".toggle_menu") %>">
       <i data-lucide="menu" class="w-5 h-5"></i>
     </button>
   </div>
@@ -101,40 +101,40 @@
       <% if feature_enabled?(:social_feed) %>
         <%= link_to activities_path, class: "flex items-center gap-2 text-sm font-medium text-zinc-700 hover:text-brand py-1 transition-colors" do %>
           <i data-lucide="home" class="w-4 h-4"></i>
-          <span>Home</span>
+          <span><%= t(".home") %></span>
         <% end %>
       <% end %>
       <%= link_to profiles_path, class: "flex items-center gap-2 text-sm font-medium text-zinc-700 hover:text-brand py-1 transition-colors" do %>
         <i data-lucide="search" class="w-4 h-4"></i>
-        <span>Profiles</span>
+        <span><%= t(".profiles") %></span>
       <% end %>
       <% if feature_enabled?(:contacts) %>
         <%= link_to contacts_path, class: "flex items-center gap-2 text-sm font-medium text-zinc-700 hover:text-brand py-1 transition-colors" do %>
           <i data-lucide="users" class="w-4 h-4"></i>
-          <span>Contacts</span>
+          <span><%= t(".contacts") %></span>
         <% end %>
       <% end %>
       <% if feature_enabled?(:groups) %>
         <%= link_to groups_path, class: "flex items-center gap-2 text-sm font-medium text-zinc-700 hover:text-brand py-1 transition-colors" do %>
           <i data-lucide="layers" class="w-4 h-4"></i>
-          <span>Groups</span>
+          <span><%= t(".groups") %></span>
         <% end %>
       <% end %>
       <% if current_actor.can?(:read, :admin) %>
         <%= link_to admin_roles_path, class: "flex items-center gap-2 text-sm font-medium text-rose-600 hover:text-rose-700 py-1 transition-colors" do %>
           <i data-lucide="shield-alert" class="w-4 h-4"></i>
-          <span>Admin Area</span>
+          <span><%= t(".admin_area") %></span>
         <% end %>
         <%= link_to "/admin/flipper", class: "flex items-center gap-2 text-sm font-medium text-rose-600 hover:text-rose-700 py-1 transition-colors" do %>
           <i data-lucide="flag" class="w-4 h-4"></i>
-          <span>Feature Flags</span>
+          <span><%= t(".feature_flags") %></span>
         <% end %>
       <% end %>
       <% if feature_enabled?(:notifications) %>
         <%= link_to notifications_path, class: "flex items-center justify-between text-sm font-medium text-zinc-700 hover:text-brand py-1 transition-colors" do %>
           <div class="flex items-center gap-2">
             <i data-lucide="bell" class="w-4 h-4"></i>
-            <span>Notifications</span>
+            <span><%= t(".notifications") %></span>
           </div>
           <% unread_count = current_actor.notifications.unread.count %>
           <% if unread_count > 0 %>
@@ -158,20 +158,20 @@
       <% end %>
       <%= link_to account_path, class: "flex items-center gap-2 text-sm text-zinc-650 hover:text-charcoal py-1 transition-colors" do %>
         <i data-lucide="settings" class="w-4 h-4"></i>
-        <span>Account Settings</span>
+        <span><%= t(".account_settings") %></span>
       <% end %>
       <%= button_to destroy_user_session_path, method: :delete, class: "flex items-center gap-2 w-full text-left text-sm text-zinc-650 hover:text-brand bg-transparent border-0 cursor-pointer py-1 transition-colors font-medium" do %>
         <i data-lucide="log-out" class="w-4 h-4"></i>
-        <span>Sign out</span>
+        <span><%= t(".sign_out") %></span>
       <% end %>
     <% else %>
       <%= link_to new_user_session_path, class: "flex items-center gap-2 text-sm font-medium text-zinc-700 hover:text-brand py-1 transition-colors" do %>
         <i data-lucide="log-in" class="w-4 h-4"></i>
-        <span>Sign in</span>
+        <span><%= t(".sign_in") %></span>
       <% end %>
       <%= link_to new_user_registration_path, class: "flex items-center gap-2 text-sm font-semibold text-brand hover:text-brand-hover py-1 transition-colors" do %>
         <i data-lucide="user-plus" class="w-4 h-4"></i>
-        <span>Sign up</span>
+        <span><%= t(".sign_up") %></span>
       <% end %>
     <% end %>
   </div>

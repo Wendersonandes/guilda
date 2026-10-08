@@ -1,4 +1,4 @@
-<%= content_for :title, "#{@group.name} — Members" %>
+<%= content_for :title, "#{@group.name} — Membros" %>
 
 <%
   is_member = @member_roles.any?
@@ -18,14 +18,14 @@
     <div class="bg-stone-50 border border-stone-border rounded-lg p-5 space-y-3">
       <h3 class="text-sm font-semibold text-charcoal flex items-center gap-1.5">
         <i data-lucide="user-plus" class="w-4 h-4 text-brand"></i>
-        <span>Add Member</span>
+        <span>Adicionar membro</span>
       </h3>
       <div class="flex gap-2">
         <div class="relative flex-1">
           <input type="text"
                  data-member-search-target="query"
                  data-action="input->member-search#search"
-                 placeholder="Search colleagues by name..."
+                 placeholder="Buscar colegas por nome..."
                  class="w-full border border-stone-300 rounded-lg px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal transition-shadow"
                  autocomplete="off">
           <div data-member-search-target="results"
@@ -39,7 +39,7 @@
   <!-- Member Invites Pending -->
   <% if @is_admin && @pending_requests.any? %>
     <div class="space-y-3">
-      <h3 class="text-xs font-bold text-zinc-400 uppercase tracking-wider px-1">Pending Requests (<%= @pending_requests.count %>)</h3>
+      <h3 class="text-xs font-bold text-zinc-400 uppercase tracking-wider px-1">Solicitações pendentes (<%= @pending_requests.count %>)</h3>
       <div class="space-y-2">
         <% @pending_requests.each do |contact| %>
           <div class="flex items-center justify-between bg-stone-50 border border-stone-border rounded-lg p-4 shadow-sm">
@@ -53,17 +53,17 @@
               </div>
               <div>
                 <p class="text-sm font-semibold text-charcoal"><%= contact.sender.name %></p>
-                <p class="text-xs text-zinc-500">Requested to join</p>
+                <p class="text-xs text-zinc-500">Solicitou entrada</p>
               </div>
             </div>
             <div class="flex items-center gap-2">
               <%= button_to accept_invite_group_memberships_path(@group, contact_id: contact.id), method: :post, class: "text-xs bg-charcoal hover:bg-zinc-800 text-white px-3.5 py-1.5 rounded-lg font-semibold cursor-pointer border-0 shadow-sm transition-colors flex items-center gap-1" do %>
                 <i data-lucide="check" class="w-3.5 h-3.5"></i>
-                <span>Approve</span>
+                <span>Aprovar</span>
               <% end %>
               <%= button_to reject_invite_group_memberships_path(@group, contact_id: contact.id), method: :post, class: "text-xs bg-white hover:bg-stone-50 text-red-600 hover:text-red-700 px-3.5 py-1.5 rounded-lg font-medium cursor-pointer border border-stone-300 shadow-sm transition-colors flex items-center gap-1" do %>
                 <i data-lucide="x" class="w-3.5 h-3.5"></i>
-                <span>Reject</span>
+                <span>Recusar</span>
               <% end %>
             </div>
           </div>
@@ -75,7 +75,7 @@
   <!-- Owner List -->
   <% if @owners.any? %>
     <div class="space-y-3">
-      <h3 class="text-xs font-bold text-zinc-400 uppercase tracking-wider px-1">Owner (<%= @owners.count %>)</h3>
+      <h3 class="text-xs font-bold text-zinc-400 uppercase tracking-wider px-1">Proprietário (<%= @owners.count %>)</h3>
       <div class="space-y-2">
         <% @owners.each do |owner_actor| %>
           <div class="flex items-center justify-between bg-white border border-stone-border rounded-lg p-4 hover:shadow-sm transition-all duration-200">
@@ -89,7 +89,7 @@
               </div>
               <div>
                 <p class="text-sm font-semibold text-charcoal"><%= link_to owner_actor.name, public_path_for(owner_actor), class: "hover:text-brand transition-colors" %></p>
-                <p class="text-xs text-brand font-semibold">Owner</p>
+                <p class="text-xs text-brand font-semibold">Proprietário</p>
               </div>
             </div>
           </div>
@@ -100,7 +100,7 @@
 
   <!-- Admins List -->
   <div class="space-y-3">
-    <h3 class="text-xs font-bold text-zinc-400 uppercase tracking-wider px-1">Administrators (<%= @admins.count %>)</h3>
+    <h3 class="text-xs font-bold text-zinc-400 uppercase tracking-wider px-1">Administradores (<%= @admins.count %>)</h3>
     <div class="space-y-2">
       <% @admins.each do |admin_actor| %>
         <div class="flex items-center justify-between bg-white border border-stone-border rounded-lg p-4 hover:shadow-sm transition-all duration-200">
@@ -114,17 +114,17 @@
             </div>
             <div>
               <p class="text-sm font-semibold text-charcoal"><%= link_to admin_actor.name, public_path_for(admin_actor), class: "hover:text-brand transition-colors" %></p>
-              <p class="text-xs text-brand font-semibold">Admin</p>
+              <p class="text-xs text-brand font-semibold">Administrador</p>
             </div>
           </div>
           <% if @is_admin && admin_actor != @group.actor %>
             <div class="flex items-center gap-2">
               <%= form_with url: group_membership_path(@group, admin_actor), method: :patch, class: "flex items-center gap-1.5" do |f| %>
                 <%= f.hidden_field :from_role, value: "admin" %>
-                <%= f.select :to_role, [["Admin", "admin"], ["Moderator", "moderator"], ["Member", "member"], ["Silenced", "silenced"]], { selected: "admin" }, { class: "text-xs border border-stone-300 rounded-lg px-2.5 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-charcoal" } %>
-                <%= f.submit "Save", class: "text-xs bg-charcoal hover:bg-zinc-800 text-white px-2.5 py-1.5 rounded-lg font-semibold cursor-pointer border-0 shadow-sm transition-colors" %>
+                <%= f.select :to_role, [["Administrador", "admin"], ["Moderador", "moderator"], ["Membro", "member"], ["Silenciado", "silenced"]], { selected: "admin" }, { class: "text-xs border border-stone-300 rounded-lg px-2.5 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-charcoal" } %>
+                <%= f.submit "Salvar", class: "text-xs bg-charcoal hover:bg-zinc-800 text-white px-2.5 py-1.5 rounded-lg font-semibold cursor-pointer border-0 shadow-sm transition-colors" %>
               <% end %>
-              <%= button_to group_membership_path(@group, admin_actor, role: "admin"), method: :delete, data: { turbo_confirm: "Are you sure you want to remove #{admin_actor.name} from the group?" }, class: "text-xs text-zinc-400 hover:text-red-600 font-medium bg-transparent border-0 cursor-pointer transition-colors p-1" do %>
+              <%= button_to group_membership_path(@group, admin_actor, role: "admin"), method: :delete, data: { turbo_confirm: "Tem certeza de que deseja remover #{admin_actor.name} do grupo?" }, class: "text-xs text-zinc-400 hover:text-red-600 font-medium bg-transparent border-0 cursor-pointer transition-colors p-1" do %>
                 <i data-lucide="user-minus" class="w-4 h-4"></i>
               <% end %>
             </div>
@@ -136,7 +136,7 @@
 
   <!-- Moderators List -->
   <div class="space-y-3 pt-2">
-    <h3 class="text-xs font-bold text-zinc-400 uppercase tracking-wider px-1">Moderators (<%= @moderators.count %>)</h3>
+    <h3 class="text-xs font-bold text-zinc-400 uppercase tracking-wider px-1">Moderadores (<%= @moderators.count %>)</h3>
     <% if @moderators.any? %>
       <div class="space-y-2">
         <% @moderators.each do |mod_actor| %>
@@ -151,17 +151,17 @@
               </div>
               <div>
                 <p class="text-sm font-semibold text-charcoal"><%= link_to mod_actor.name, public_path_for(mod_actor), class: "hover:text-brand transition-colors" %></p>
-                <p class="text-xs text-zinc-650 font-semibold">Moderator</p>
+                <p class="text-xs text-zinc-650 font-semibold">Moderador</p>
               </div>
             </div>
             <% if @is_admin %>
               <div class="flex items-center gap-2">
                 <%= form_with url: group_membership_path(@group, mod_actor), method: :patch, class: "flex items-center gap-1.5" do |f| %>
                   <%= f.hidden_field :from_role, value: "moderator" %>
-                  <%= f.select :to_role, [["Admin", "admin"], ["Moderator", "moderator"], ["Member", "member"], ["Silenced", "silenced"]], { selected: "moderator" }, { class: "text-xs border border-stone-300 rounded-lg px-2.5 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-charcoal" } %>
-                  <%= f.submit "Save", class: "text-xs bg-charcoal hover:bg-zinc-800 text-white px-2.5 py-1.5 rounded-lg font-semibold cursor-pointer border-0 shadow-sm transition-colors" %>
+                  <%= f.select :to_role, [["Administrador", "admin"], ["Moderador", "moderator"], ["Membro", "member"], ["Silenciado", "silenced"]], { selected: "moderator" }, { class: "text-xs border border-stone-300 rounded-lg px-2.5 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-charcoal" } %>
+                  <%= f.submit "Salvar", class: "text-xs bg-charcoal hover:bg-zinc-800 text-white px-2.5 py-1.5 rounded-lg font-semibold cursor-pointer border-0 shadow-sm transition-colors" %>
                 <% end %>
-                <%= button_to group_membership_path(@group, mod_actor, role: "moderator"), method: :delete, data: { turbo_confirm: "Are you sure you want to remove #{mod_actor.name} from the group?" }, class: "text-xs text-zinc-400 hover:text-red-600 font-medium bg-transparent border-0 cursor-pointer transition-colors p-1" do %>
+                <%= button_to group_membership_path(@group, mod_actor, role: "moderator"), method: :delete, data: { turbo_confirm: "Tem certeza de que deseja remover #{mod_actor.name} do grupo?" }, class: "text-xs text-zinc-400 hover:text-red-600 font-medium bg-transparent border-0 cursor-pointer transition-colors p-1" do %>
                   <i data-lucide="user-minus" class="w-4 h-4"></i>
                 <% end %>
               </div>
@@ -171,14 +171,14 @@
       </div>
     <% else %>
       <div class="text-center py-8 bg-white border border-stone-border rounded-lg shadow-sm">
-        <p class="text-sm text-zinc-400 font-medium">No moderators assigned yet.</p>
+        <p class="text-sm text-zinc-400 font-medium">Nenhum moderador atribuído ainda.</p>
       </div>
     <% end %>
   </div>
 
   <!-- Members List -->
   <div class="space-y-3 pt-2">
-    <h3 class="text-xs font-bold text-zinc-400 uppercase tracking-wider px-1">Members (<%= @members.count %>)</h3>
+    <h3 class="text-xs font-bold text-zinc-400 uppercase tracking-wider px-1">Membros (<%= @members.count %>)</h3>
     <% if @members.any? %>
       <div class="space-y-2">
         <% @members.each do |member_actor| %>
@@ -193,17 +193,17 @@
               </div>
               <div>
                 <p class="text-sm font-semibold text-charcoal"><%= link_to member_actor.name, public_path_for(member_actor), class: "hover:text-brand transition-colors" %></p>
-                <p class="text-xs text-zinc-400 font-medium">Member</p>
+                <p class="text-xs text-zinc-400 font-medium">Membro</p>
               </div>
             </div>
             <% if @is_admin %>
               <div class="flex items-center gap-2">
                 <%= form_with url: group_membership_path(@group, member_actor), method: :patch, class: "flex items-center gap-1.5" do |f| %>
                   <%= f.hidden_field :from_role, value: "member" %>
-                  <%= f.select :to_role, [["Admin", "admin"], ["Moderator", "moderator"], ["Member", "member"], ["Silenced", "silenced"]], { selected: "member" }, { class: "text-xs border border-stone-300 rounded-lg px-2.5 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-charcoal" } %>
-                  <%= f.submit "Save", class: "text-xs bg-charcoal hover:bg-zinc-800 text-white px-2.5 py-1.5 rounded-lg font-semibold cursor-pointer border-0 shadow-sm transition-colors" %>
+                  <%= f.select :to_role, [["Administrador", "admin"], ["Moderador", "moderator"], ["Membro", "member"], ["Silenciado", "silenced"]], { selected: "member" }, { class: "text-xs border border-stone-300 rounded-lg px-2.5 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-charcoal" } %>
+                  <%= f.submit "Salvar", class: "text-xs bg-charcoal hover:bg-zinc-800 text-white px-2.5 py-1.5 rounded-lg font-semibold cursor-pointer border-0 shadow-sm transition-colors" %>
                 <% end %>
-                <%= button_to group_membership_path(@group, member_actor, role: "member"), method: :delete, data: { turbo_confirm: "Are you sure you want to remove #{member_actor.name} from the group?" }, class: "text-xs text-zinc-400 hover:text-red-650 font-medium bg-transparent border-0 cursor-pointer transition-colors p-1" do %>
+                <%= button_to group_membership_path(@group, member_actor, role: "member"), method: :delete, data: { turbo_confirm: "Tem certeza de que deseja remover #{member_actor.name} do grupo?" }, class: "text-xs text-zinc-400 hover:text-red-650 font-medium bg-transparent border-0 cursor-pointer transition-colors p-1" do %>
                   <i data-lucide="user-minus" class="w-4 h-4"></i>
                 <% end %>
               </div>
@@ -213,7 +213,7 @@
       </div>
     <% else %>
       <div class="text-center py-8 bg-white border border-stone-border rounded-lg shadow-sm">
-        <p class="text-sm text-zinc-400 font-medium">No other members in this group yet.</p>
+        <p class="text-sm text-zinc-400 font-medium">Ainda não há outros membros neste grupo.</p>
       </div>
     <% end %>
   </div>
@@ -221,7 +221,7 @@
   <% if @is_admin %>
     <!-- Silenced List -->
     <div class="space-y-3 pt-2">
-      <h3 class="text-xs font-bold text-zinc-400 uppercase tracking-wider px-1">Silenced (<%= @silenced.count %>)</h3>
+      <h3 class="text-xs font-bold text-zinc-400 uppercase tracking-wider px-1">Silenciados (<%= @silenced.count %>)</h3>
       <% if @silenced.any? %>
         <div class="space-y-2">
           <% @silenced.each do |silenced_actor| %>
@@ -236,16 +236,16 @@
                 </div>
                 <div>
                   <p class="text-sm font-semibold text-charcoal"><%= link_to silenced_actor.name, public_path_for(silenced_actor), class: "hover:text-brand transition-colors" %></p>
-                  <p class="text-xs text-red-650 font-semibold">Silenced</p>
+                  <p class="text-xs text-red-650 font-semibold">Silenciado</p>
                 </div>
               </div>
               <div class="flex items-center gap-2">
                 <%= form_with url: group_membership_path(@group, silenced_actor), method: :patch, class: "flex items-center gap-1.5" do |f| %>
                   <%= f.hidden_field :from_role, value: "silenced" %>
-                  <%= f.select :to_role, [["Admin", "admin"], ["Moderator", "moderator"], ["Member", "member"], ["Silenced", "silenced"]], { selected: "silenced" }, { class: "text-xs border border-stone-300 rounded-lg px-2.5 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-charcoal" } %>
-                  <%= f.submit "Save", class: "text-xs bg-charcoal hover:bg-zinc-800 text-white px-2.5 py-1.5 rounded-lg font-semibold cursor-pointer border-0 shadow-sm transition-colors" %>
+                  <%= f.select :to_role, [["Administrador", "admin"], ["Moderador", "moderator"], ["Membro", "member"], ["Silenciado", "silenced"]], { selected: "silenced" }, { class: "text-xs border border-stone-300 rounded-lg px-2.5 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-charcoal" } %>
+                  <%= f.submit "Salvar", class: "text-xs bg-charcoal hover:bg-zinc-800 text-white px-2.5 py-1.5 rounded-lg font-semibold cursor-pointer border-0 shadow-sm transition-colors" %>
                 <% end %>
-                <%= button_to group_membership_path(@group, silenced_actor, role: "silenced"), method: :delete, data: { turbo_confirm: "Are you sure you want to remove #{silenced_actor.name} from the group?" }, class: "text-xs text-zinc-400 hover:text-red-650 font-medium bg-transparent border-0 cursor-pointer transition-colors p-1" do %>
+                <%= button_to group_membership_path(@group, silenced_actor, role: "silenced"), method: :delete, data: { turbo_confirm: "Tem certeza de que deseja remover #{silenced_actor.name} do grupo?" }, class: "text-xs text-zinc-400 hover:text-red-650 font-medium bg-transparent border-0 cursor-pointer transition-colors p-1" do %>
                   <i data-lucide="user-minus" class="w-4 h-4"></i>
                 <% end %>
               </div>
@@ -254,7 +254,7 @@
         </div>
       <% else %>
         <div class="text-center py-8 bg-white border border-stone-border rounded-lg shadow-sm">
-          <p class="text-sm text-zinc-400 font-medium">No silenced members in this group.</p>
+          <p class="text-sm text-zinc-400 font-medium">Nenhum membro silenciado neste grupo.</p>
         </div>
       <% end %>
     </div>
@@ -265,13 +265,13 @@
   <% content_for :right_sidebar do %>
     <div class="bg-white rounded-lg border border-stone-border p-5 sticky top-20 space-y-4">
       <h3 class="text-sm font-semibold text-charcoal flex items-center justify-between pb-2 border-b border-stone-100">
-        <span>Members</span>
+        <span>Membros</span>
         <span class="text-zinc-400 font-normal text-xs">(<%= @owners.size + @admins.size + @moderators.size + @members.size + (@is_admin ? @silenced.size : 0) %>)</span>
       </h3>
 
       <% if @owners.any? %>
         <div class="space-y-1.5">
-          <span class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 block px-2">Owner</span>
+          <span class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 block px-2">Proprietário</span>
           <% @owners.each do |actor| %>
             <%= link_to public_path_for(actor), class: "flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-stone-50 transition-colors" do %>
               <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 overflow-hidden border border-stone-border">
@@ -282,7 +282,7 @@
                 <% end %>
               </div>
               <span class="flex-1 text-sm text-charcoal truncate font-medium"><%= actor.name %></span>
-              <span class="text-[9px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-semibold border border-brand/20 flex-shrink-0">Owner</span>
+              <span class="text-[9px] bg-brand/10 text-brand px-1.5 py-0.5 rounded font-semibold border border-brand/20 flex-shrink-0">Proprietário</span>
             <% end %>
           <% end %>
         </div>
@@ -290,7 +290,7 @@
 
       <% if @admins.any? %>
         <div class="space-y-1.5">
-          <span class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 block px-2">Admins</span>
+          <span class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 block px-2">Administradores</span>
           <% @admins.each do |actor| %>
             <%= link_to public_path_for(actor), class: "flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-stone-50 transition-colors" do %>
               <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 overflow-hidden border border-stone-border">
@@ -301,7 +301,7 @@
                 <% end %>
               </div>
               <span class="flex-1 text-sm text-charcoal truncate font-medium"><%= actor.name %></span>
-              <span class="text-[9px] bg-stone-100 text-zinc-700 px-1.5 py-0.5 rounded font-semibold border border-stone-200 flex-shrink-0">Admin</span>
+              <span class="text-[9px] bg-stone-100 text-zinc-700 px-1.5 py-0.5 rounded font-semibold border border-stone-200 flex-shrink-0">Administrador</span>
             <% end %>
           <% end %>
         </div>
@@ -309,7 +309,7 @@
 
       <% if @moderators.any? %>
         <div class="space-y-1.5">
-          <span class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 block px-2">Moderators</span>
+          <span class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 block px-2">Moderadores</span>
           <% @moderators.each do |actor| %>
             <%= link_to public_path_for(actor), class: "flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-stone-50 transition-colors" do %>
               <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 overflow-hidden border border-stone-border">
@@ -328,7 +328,7 @@
 
       <% if @members.any? %>
         <div class="space-y-1.5">
-          <span class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 block px-2">Members</span>
+          <span class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 block px-2">Membros</span>
           <% @members.first(12).each do |actor| %>
             <%= link_to public_path_for(actor), class: "flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-stone-50 transition-colors" do %>
               <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 overflow-hidden border border-stone-border">
@@ -342,14 +342,14 @@
             <% end %>
           <% end %>
           <% if @members.size > 12 %>
-            <p class="text-[10px] text-zinc-400 px-2 pt-1 font-medium">+<%= @members.size - 12 %> more members</p>
+            <p class="text-[10px] text-zinc-400 px-2 pt-1 font-medium">+<%= @members.size - 12 %> membros</p>
           <% end %>
         </div>
       <% end %>
 
       <% if @is_admin && @silenced.any? %>
         <div class="space-y-1.5">
-          <span class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 block px-2">Silenced</span>
+          <span class="text-[10px] uppercase font-bold tracking-wider text-zinc-400 block px-2">Silenciados</span>
           <% @silenced.each do |actor| %>
             <%= link_to public_path_for(actor), class: "flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-stone-50 transition-colors" do %>
               <div class="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 overflow-hidden border border-stone-border">
@@ -366,7 +366,7 @@
       <% end %>
 
       <%= link_to group_memberships_path(@group), class: "flex items-center justify-center gap-1.5 text-xs text-brand hover:text-brand-hover font-semibold mt-3 pt-3 border-t border-stone-100 transition-colors" do %>
-        <span>View all members</span>
+        <span>Ver todos os membros</span>
         <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
       <% end %>
     </div>

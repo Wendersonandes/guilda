@@ -92,7 +92,7 @@ class ContactsControllerTest < ActionDispatch::IntegrationTest
     @bob.connect_to(@alice, as: :friend)
     get pending_contacts_path
     assert_response :success
-    assert_match /Pending Requests/, response.body
+    assert_match /Solicitações pendentes/, response.body
     assert_match /#{@bob.name}/, response.body
   end
 

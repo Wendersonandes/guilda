@@ -5,23 +5,23 @@
       <%= turbo_frame_tag "groups_page_#{@pagy.next}", src: groups_path(page: @pagy.next), loading: :lazy, class: "space-y-4 block" do %>
         <div class="flex justify-center items-center py-6 gap-2 text-zinc-500">
           <div class="animate-spin rounded-full h-5 w-5 border-2 border-stone-200 border-t-brand"></div>
-          <span class="text-sm font-medium">Loading more groups...</span>
+          <span class="text-sm font-medium"><%= t(".loading") %></span>
         </div>
       <% end %>
     <% end %>
   <% end %>
 <% else %>
-  <%= content_for :title, "Groups" %>
+  <%= content_for :title, t(".title") %>
 
   <div class="flex items-center justify-between">
     <div>
-      <h1 class="text-2xl font-serif font-bold text-charcoal tracking-tight">Groups</h1>
-      <p class="text-xs text-zinc-500 mt-0.5">Explore or join organization communities</p>
+      <h1 class="text-2xl font-serif font-bold text-charcoal tracking-tight"><%= t(".title") %></h1>
+      <p class="text-xs text-zinc-500 mt-0.5"><%= t(".subtitle") %></p>
     </div>
     <% if current_actor %>
       <%= link_to new_group_path, class: "inline-flex items-center gap-1.5 text-xs bg-charcoal hover:bg-zinc-800 text-white font-medium px-3.5 py-2 rounded-lg transition-colors border-0 cursor-pointer shadow-sm" do %>
         <i data-lucide="plus" class="w-4 h-4"></i>
-        <span>New Group</span>
+        <span><%= t(".new") %></span>
       <% end %>
     <% end %>
   </div>
@@ -33,7 +33,7 @@
         <%= turbo_frame_tag "groups_page_#{@pagy.next}", src: groups_path(page: @pagy.next), loading: :lazy, class: "space-y-4 block" do %>
           <div class="flex justify-center items-center py-6 gap-2 text-zinc-500">
             <div class="animate-spin rounded-full h-5 w-5 border-2 border-stone-200 border-t-brand"></div>
-            <span class="text-sm font-medium">Loading more groups...</span>
+            <span class="text-sm font-medium"><%= t(".loading") %></span>
           </div>
         <% end %>
       <% end %>
@@ -43,8 +43,8 @@
       <div class="w-12 h-12 bg-stone-50 rounded-full flex items-center justify-center mx-auto mb-3 border border-stone-100">
         <i data-lucide="layers" class="w-6 h-6 text-zinc-400"></i>
       </div>
-      <h3 class="text-base font-semibold text-charcoal">No groups yet</h3>
-      <p class="text-sm text-zinc-500 mt-1 max-w-sm mx-auto">Be the first to start a group in this organization!</p>
+      <h3 class="text-base font-semibold text-charcoal"><%= t(".empty_title") %></h3>
+      <p class="text-sm text-zinc-500 mt-1 max-w-sm mx-auto"><%= t(".empty_subtitle") %></p>
     </div>
   <% end %>
 <% end %>

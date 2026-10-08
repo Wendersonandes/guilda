@@ -55,18 +55,18 @@ class GroupMembershipsController < ApplicationController
     if @member && @member != current_actor
       authorize @group_actor, :add_member?, policy_class: GroupPolicy
       @group_actor.connect_to(@member, as: params[:role] || "member")
-      redirect_to group_memberships_path(@group), notice: "Invite sent."
+      redirect_to group_memberships_path(@group), notice: t("flash.invite_sent")
     else
       @member = current_actor
       authorize @group_actor, :join?, policy_class: GroupPolicy
 
       if @group_actor.member_roles_for(@member).any?
-        return redirect_to group_memberships_path(@group), notice: "You are already a member."
+        return redirect_to group_memberships_path(@group), notice: t("flash.already_member")
       end
 
       existing = @member.contact_to(@group_actor)
       if existing&.established?
-        return redirect_to group_memberships_path(@group), notice: "Your request is already pending."
+        return redirect_to group_memberships_path(@group), notice: t("flash.request_already_pending")
       end
 
       ActiveRecord::Base.transaction do
@@ -78,9 +78,9 @@ class GroupMembershipsController < ApplicationController
       end
 
       if @group.public_group?
-        redirect_to group_memberships_path(@group), notice: "You joined the group."
+        redirect_to group_memberships_path(@group), notice: t("flash.joined_group")
       else
-        redirect_to group_memberships_path(@group), notice: "Request sent. Awaiting approval."
+        redirect_to group_memberships_path(@group), notice: t("flash.request_sent_pending")
       end
     end
   end
@@ -92,9 +92,9 @@ class GroupMembershipsController < ApplicationController
     invite = current_actor.received_contacts.pending.find_by(sender: @group_actor)
     if invite
       current_actor.connect_to(@group_actor, as: "follow")
-      redirect_to group_memberships_path(@group), notice: "Invite accepted."
+      redirect_to group_memberships_path(@group), notice: t("flash.invite_accepted")
     else
-      redirect_to group_memberships_path(@group), alert: "No pending invite found."
+      redirect_to group_memberships_path(@group), alert: t("flash.no_pending_invite")
     end
   end
 
@@ -105,9 +105,9 @@ class GroupMembershipsController < ApplicationController
     contact = current_actor.received_contacts.pending
                             .find_by(id: params[:contact_id], sender: @group_actor)
     if contact&.destroy
-      redirect_to group_memberships_path(@group), notice: "Invite declined."
+      redirect_to group_memberships_path(@group), notice: t("flash.invite_declined")
     else
-      redirect_to group_memberships_path(@group), alert: "Invite not found."
+      redirect_to group_memberships_path(@group), alert: t("flash.invite_not_found")
     end
   end
 
@@ -117,7 +117,7 @@ class GroupMembershipsController < ApplicationController
     authorize @group_actor, :add_member?, policy_class: GroupPolicy
     contact = @group_actor.received_contacts.pending.find(params[:contact_id])
     @group_actor.connect_to(contact.sender, as: params[:role] || "member")
-    redirect_to group_memberships_path(@group), notice: "Request approved."
+    redirect_to group_memberships_path(@group), notice: t("flash.request_approved")
   end
 
   # Admin rejects a pending join request, destroying the request contact
@@ -126,7 +126,7 @@ class GroupMembershipsController < ApplicationController
     authorize @group_actor, :add_member?, policy_class: GroupPolicy
     contact = @group_actor.received_contacts.pending.find(params[:contact_id])
     contact.destroy
-    redirect_to group_memberships_path(@group), notice: "Request rejected."
+    redirect_to group_memberships_path(@group), notice: t("flash.request_rejected")
   end
 
   # Changes a member's role from one relation to another, delegating to
@@ -138,7 +138,7 @@ class GroupMembershipsController < ApplicationController
       from: params[:from_role],
       to: params[:to_role]
     )
-    redirect_to group_memberships_path(@group), notice: "Role updated."
+    redirect_to group_memberships_path(@group), notice: t("flash.role_updated")
   end
 
   # Removes a member (or the current actor leaving). Authorization differs: leaving uses
@@ -217,6 +217,6 @@ class GroupMembershipsController < ApplicationController
   end
 
   def after_destroy_notice
-    @member == current_actor ? "You left the group." : "Member removed."
+    @member == current_actor ? t("flash.you_left_group") : t("flash.member_removed")
   end
 end

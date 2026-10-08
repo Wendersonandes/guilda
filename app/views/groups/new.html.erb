@@ -1,31 +1,31 @@
-<%= content_for :title, "New Group" %>
+<%= content_for :title, "Novo grupo" %>
 
 <div class="max-w-lg mx-auto space-y-6">
   <div class="flex items-center gap-2">
     <%= link_to groups_path, class: "text-gray-400 hover:text-gray-600 transition-colors" do %>
       <i data-lucide="arrow-left" class="w-5 h-5"></i>
     <% end %>
-    <span class="text-sm font-medium text-gray-500">Back to Groups</span>
+    <span class="text-sm font-medium text-gray-500">Voltar para grupos</span>
   </div>
 
-  <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Create a New Group</h1>
+  <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Criar um novo grupo</h1>
 
   <%= form_with model: @group, class: "bg-white rounded-xl border border-gray-200/80 p-6 shadow-sm space-y-5" do |f| %>
     <div class="space-y-1">
-      <%= f.label :privacy, "Privacy Level", class: "block text-sm font-medium text-gray-700" %>
-      <%= f.select :privacy, [["Public Group (anyone can join)", "public_group"], ["Private Group (requires approval)", "private_group"]], {}, 
+      <%= f.label :privacy, "Privacidade", class: "block text-sm font-medium text-gray-700" %>
+      <%= f.select :privacy, [["Grupo público (qualquer um pode entrar)", "public_group"], ["Grupo privado (requer aprovação)", "private_group"]], {}, 
             class: "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" %>
     </div>
 
     <%= f.fields_for :actor do |af| %>
       <div class="space-y-1">
         <%= af.label :name, class: "block text-sm font-medium text-gray-700" %>
-        <%= af.text_field :name, placeholder: "e.g. Design Team", class: "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" %>
+        <%= af.text_field :name, placeholder: "ex.: Equipe de Design", class: "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" %>
       </div>
 
       <div class="space-y-1">
         <%= af.label :description, class: "block text-sm font-medium text-gray-700" %>
-        <%= af.text_area :description, rows: 3, placeholder: "What is this group about?", class: "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" %>
+        <%= af.text_area :description, rows: 3, placeholder: "Sobre o que é este grupo?", class: "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" %>
       </div>
 
       <div class="space-y-1">
@@ -36,18 +36,18 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
         <%= render "shared/image_upload_field",
               form: af, attribute: :avatar, attachment: @group.actor.avatar,
-              label: "Group Avatar", preview_classes: "w-12 h-12 rounded-lg text-lg",
+              label: "Avatar do grupo", preview_classes: "w-12 h-12 rounded-lg text-lg",
               initials: (@group.name.presence || "G").first.upcase %>
 
         <%= render "shared/image_upload_field",
               form: af, attribute: :cover_image, attachment: @group.actor.cover_image,
-              label: "Cover Image", preview_classes: "w-12 h-8 rounded" %>
+              label: "Imagem de capa", preview_classes: "w-12 h-8 rounded" %>
       </div>
     <% end %>
 
     <div class="flex items-center justify-between border-t border-gray-100 pt-5 mt-2">
-      <%= link_to "Cancel", groups_path, class: "text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors" %>
-      <%= f.submit "Create Group", class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-sm cursor-pointer" %>
+      <%= link_to "Cancelar", groups_path, class: "text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors" %>
+      <%= f.submit "Criar grupo", class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-sm cursor-pointer" %>
     </div>
   <% end %>
 </div>

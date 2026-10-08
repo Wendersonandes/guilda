@@ -20,7 +20,7 @@ class UsersController < ApplicationController
     authorize @user
     if @user.update_with_password(user_params)
       bypass_sign_in(@user) if user_params[:password].present?
-      redirect_to account_path, notice: "Account updated."
+      redirect_to account_path, notice: t("flash.account_updated")
     else
       render :edit, status: :unprocessable_entity
     end

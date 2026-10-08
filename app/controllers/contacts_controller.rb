@@ -68,7 +68,7 @@ class ContactsController < ApplicationController
           redirect_to contacts_path, status: :see_other
         end
       end
-      format.html { redirect_to request.referer || contacts_path, notice: "Contact added as #{params[:as] || :friend}." }
+      format.html { redirect_to request.referer || contacts_path, notice: t("flash.contact_added") }
     end
   end
 
@@ -86,7 +86,7 @@ class ContactsController < ApplicationController
           redirect_to contacts_path, status: :see_other
         end
       end
-      format.html { redirect_to request.referer || contacts_path, notice: "Contact removed." }
+      format.html { redirect_to request.referer || contacts_path, notice: t("flash.contact_removed") }
     end
   end
 end

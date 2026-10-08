@@ -12,7 +12,7 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
   test "guest user should get the profiles directory at root" do
     get root_url
     assert_response :success
-    assert_select "h1", text: "Artists & Suppliers"
+    assert_select "h1", text: "Profissionais e Fornecedores"
   end
 
   test "guest user should get landing page at about path" do
@@ -25,7 +25,7 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     sign_in @user
     get root_url
     assert_response :success
-    assert_select "h1", text: "Artists & Suppliers"
+    assert_select "h1", text: "Profissionais e Fornecedores"
     assert_select "a[href=?]", account_path
   end
 end

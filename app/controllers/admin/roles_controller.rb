@@ -26,7 +26,7 @@ class Admin::RolesController < ApplicationController
     authorize @site_actor, policy_class: Admin::RolePolicy
     member = find_actor(params[:actor_id])
     GroupMembershipService.new(@site_actor, member).add(role: params[:to_role] || "member")
-    redirect_to admin_roles_path, notice: "Role assigned."
+    redirect_to admin_roles_path, notice: t("flash.role_assigned")
   end
 
   # Changes an actor's site role, delegating to {GroupMembershipService#change_role}.
@@ -38,7 +38,7 @@ class Admin::RolesController < ApplicationController
       from: params[:from_role],
       to: params[:to_role]
     )
-    redirect_to admin_roles_path, notice: "Role updated."
+    redirect_to admin_roles_path, notice: t("flash.role_updated")
   end
 
   private

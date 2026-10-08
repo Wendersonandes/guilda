@@ -19,7 +19,7 @@ class PermissionTest < ActiveSupport::TestCase
   test "validates presence of action" do
     permission = Permission.new(object: :activity)
     assert_not permission.valid?
-    assert_includes permission.errors[:action], "can't be blank"
+    assert_includes permission.errors[:action], "não pode ficar em branco"
   end
 
   test "action enum maps correctly" do
@@ -63,6 +63,6 @@ class PermissionTest < ActiveSupport::TestCase
     duplicate = Permission.new(action: :follow, object: nil)
 
     assert_not duplicate.valid?
-    assert_includes duplicate.errors[:object], "has already been taken"
+    assert_includes duplicate.errors[:object], "já está em uso"
   end
 end

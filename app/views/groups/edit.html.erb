@@ -1,19 +1,19 @@
-<%= content_for :title, "Edit #{@group.name}" %>
+<%= content_for :title, "Editar #{@group.name}" %>
 
 <div class="max-w-lg mx-auto space-y-6">
   <div class="flex items-center gap-2">
     <%= link_to group_path(@group), class: "text-gray-400 hover:text-gray-600 transition-colors" do %>
       <i data-lucide="arrow-left" class="w-5 h-5"></i>
     <% end %>
-    <span class="text-sm font-medium text-gray-500">Back to Group</span>
+    <span class="text-sm font-medium text-gray-500">Voltar para o grupo</span>
   </div>
 
-  <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Edit Group Settings</h1>
+  <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Editar configurações do grupo</h1>
 
   <%= form_with model: @group, class: "bg-white rounded-xl border border-gray-200/80 p-6 shadow-sm space-y-5" do |f| %>
     <div class="space-y-1">
-      <%= f.label :privacy, "Privacy Level", class: "block text-sm font-medium text-gray-700" %>
-      <%= f.select :privacy, [["Public Group (anyone can join)", "public_group"], ["Private Group (requires approval)", "private_group"]], {}, 
+      <%= f.label :privacy, "Privacidade", class: "block text-sm font-medium text-gray-700" %>
+      <%= f.select :privacy, [["Grupo público (qualquer um pode entrar)", "public_group"], ["Grupo privado (requer aprovação)", "private_group"]], {}, 
             class: "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow" %>
     </div>
 
@@ -37,19 +37,19 @@
         <!-- Avatar Upload -->
         <%= render "shared/image_upload_field",
               form: af, attribute: :avatar, attachment: @group.actor.avatar,
-              label: "Group Avatar", preview_classes: "w-12 h-12 rounded-lg text-lg",
+              label: "Avatar do grupo", preview_classes: "w-12 h-12 rounded-lg text-lg",
               initials: @group.name.first.upcase %>
 
         <!-- Cover Image Upload -->
         <%= render "shared/image_upload_field",
               form: af, attribute: :cover_image, attachment: @group.actor.cover_image,
-              label: "Cover Image", preview_classes: "w-12 h-8 rounded" %>
+              label: "Imagem de capa", preview_classes: "w-12 h-8 rounded" %>
       </div>
     <% end %>
 
     <div class="flex items-center justify-between border-t border-gray-100 pt-5 mt-2">
-      <%= link_to "Cancel", group_path(@group), class: "text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors" %>
-      <%= f.submit "Save changes", class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-sm cursor-pointer" %>
+      <%= link_to "Cancelar", group_path(@group), class: "text-sm font-medium text-gray-500 hover:text-gray-700 transition-colors" %>
+      <%= f.submit "Salvar alterações", class: "bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-sm cursor-pointer" %>
     </div>
   <% end %>
 </div>

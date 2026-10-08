@@ -42,7 +42,7 @@ class ActivitiesControllerTest < ActionDispatch::IntegrationTest
       }
     }
     assert_redirected_to activity_path(Activity.last)
-    assert_equal "Post created.", flash[:notice]
+    assert_equal "Publicação criada.", flash[:notice]
   end
 
   test "should destroy own activity" do
@@ -107,7 +107,7 @@ class ActivitiesControllerTest < ActionDispatch::IntegrationTest
       end
     end
     assert_redirected_to root_path
-    assert_equal "You are not authorized to perform this action.", flash[:alert]
+    assert_equal "Você não tem permissão para executar esta ação.", flash[:alert]
   end
 
   test "member should create post in group" do
@@ -125,7 +125,7 @@ class ActivitiesControllerTest < ActionDispatch::IntegrationTest
       }
     }
     assert_redirected_to activity_path(Activity.last)
-    assert_equal "Post created.", flash[:notice]
+    assert_equal "Publicação criada.", flash[:notice]
     assert_equal group_actor.id, Activity.last.owner_id
     assert_not Activity.last.public?
   end
@@ -153,7 +153,7 @@ class ActivitiesControllerTest < ActionDispatch::IntegrationTest
       }
     }
     assert_redirected_to root_path
-    assert_equal "You are not authorized to perform this action.", flash[:alert]
+    assert_equal "Você não tem permissão para executar esta ação.", flash[:alert]
   end
 
   test "member creates post in private group with restricted audience" do
@@ -173,7 +173,7 @@ class ActivitiesControllerTest < ActionDispatch::IntegrationTest
       }
     end
     assert_redirected_to activity_path(Activity.last)
-    assert_equal "Post created.", flash[:notice]
+    assert_equal "Publicação criada.", flash[:notice]
     assert_equal group_actor.id, Activity.last.owner_id
     assert_not Activity.last.public?
     # Audience should be the group's activity relations, not public
@@ -204,7 +204,7 @@ class ActivitiesControllerTest < ActionDispatch::IntegrationTest
       }
     }
     assert_redirected_to root_path
-    assert_equal "You are not authorized to perform this action.", flash[:alert]
+    assert_equal "Você não tem permissão para executar esta ação.", flash[:alert]
   end
 
   test "should create post activity via turbo stream" do
@@ -234,7 +234,7 @@ class ActivitiesControllerTest < ActionDispatch::IntegrationTest
     end
     assert_response :unprocessable_entity
     assert_match /turbo-stream action="replace" target="activity_form_container"/, response.body
-    assert_match /Validation failed: Text can&#39;t be blank/, response.body
+    assert_match /A validação falhou: Text não pode ficar em branco/, response.body
   end
 
   test "should get index without layout for turbo frame request" do
@@ -268,7 +268,7 @@ class ActivitiesControllerTest < ActionDispatch::IntegrationTest
 
     get flag_form_activity_path(activity), as: :turbo_stream
     assert_response :success
-    assert_match "Reason", response.body
+    assert_match "Motivo", response.body
   end
 
   test "POST flag creates Flag object for post" do

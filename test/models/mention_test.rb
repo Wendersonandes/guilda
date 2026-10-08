@@ -48,13 +48,13 @@ class MentionTest < ActiveSupport::TestCase
   test "should require activity_object" do
     mention = Mention.new(actor: @actor2)
     assert_not mention.valid?
-    assert_includes mention.errors[:activity_object], "must exist"
+    assert_includes mention.errors[:activity_object], "é obrigatório(a)"
   end
 
   test "should require actor" do
     mention = Mention.new(activity_object: @post.activity_object)
     assert_not mention.valid?
-    assert_includes mention.errors[:actor], "must exist"
+    assert_includes mention.errors[:actor], "é obrigatório(a)"
   end
 
   test "should enforce unique mention per activity_object" do

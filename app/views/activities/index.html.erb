@@ -5,7 +5,7 @@
       <%= turbo_frame_tag "activities_page_#{@pagy.next}", src: activities_path(page: @pagy.next), loading: :lazy, class: "space-y-4 block" do %>
         <div class="flex justify-center items-center py-6 gap-2 text-zinc-500">
           <div class="animate-spin rounded-full h-5 w-5 border-2 border-stone-200 border-t-brand"></div>
-          <span class="text-sm font-medium">Loading more feed...</span>
+          <span class="text-sm font-medium"><%= t(".loading") %></span>
         </div>
       <% end %>
     <% end %>
@@ -26,7 +26,7 @@
         <%= turbo_frame_tag "activities_page_#{@pagy.next}", src: activities_path(page: @pagy.next), loading: :lazy, class: "space-y-4 block" do %>
           <div class="flex justify-center items-center py-6 gap-2 text-zinc-500">
             <div class="animate-spin rounded-full h-5 w-5 border-2 border-stone-200 border-t-brand"></div>
-            <span class="text-sm font-medium">Loading more feed...</span>
+            <span class="text-sm font-medium"><%= t(".loading") %></span>
           </div>
         <% end %>
       <% end %>
@@ -35,8 +35,8 @@
         <div class="w-12 h-12 bg-stone-50 rounded-full flex items-center justify-center mx-auto mb-3 border border-stone-100">
           <i data-lucide="message-square" class="w-6 h-6 text-zinc-400"></i>
         </div>
-        <h3 class="text-base font-semibold text-charcoal">No activities yet</h3>
-        <p class="text-sm text-zinc-500 mt-1 max-w-sm mx-auto">Connect with others or join groups to see recent posts and updates here.</p>
+        <h3 class="text-base font-semibold text-charcoal"><%= t(".empty_title") %></h3>
+        <p class="text-sm text-zinc-500 mt-1 max-w-sm mx-auto"><%= t(".empty_subtitle") %></p>
       </div>
     <% end %>
   </div>

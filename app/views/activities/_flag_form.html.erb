@@ -5,7 +5,7 @@
     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-sm w-full border border-gray-250 dark:border-gray-700 overflow-hidden transform transition-all animate-zoom-in">
       <!-- Header -->
       <div class="px-5 py-4 border-b border-gray-150 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-900/50">
-        <h3 class="text-sm font-semibold text-gray-800 dark:text-white">Flag Post</h3>
+        <h3 class="text-sm font-semibold text-gray-800 dark:text-white"><%= t(".title") %></h3>
         <button type="button" data-action="click->modal#close" class="text-gray-400 hover:text-gray-500 cursor-pointer p-1">
           <i data-lucide="x" class="w-4 h-4"></i>
         </button>
@@ -13,18 +13,18 @@
       <!-- Body/Form -->
       <%= form_with url: flag_activity_path(activity), method: :post, class: "p-5 space-y-4" do |f| %>
         <div class="space-y-1.5 text-xs text-left">
-          <label class="block font-semibold text-gray-700 dark:text-gray-300">Reason</label>
-          <%= f.select :reason, [["Spam", "spam"], ["Harassment", "harassment"], ["Off-topic", "offtopic"], ["Inappropriate", "inappropriate"]], {}, class: "w-full rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-xs text-gray-900 dark:text-gray-100 outline-none" %>
+          <label class="block font-semibold text-gray-700 dark:text-gray-300"><%= t(".reason") %></label>
+          <%= f.select :reason, [[t("comments.flag_form.reasons.spam"), "spam"], [t("comments.flag_form.reasons.harassment"), "harassment"], [t("comments.flag_form.reasons.offtopic"), "offtopic"], [t("comments.flag_form.reasons.inappropriate"), "inappropriate"]], {}, class: "w-full rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-xs text-gray-900 dark:text-gray-100 outline-none" %>
         </div>
         <div class="space-y-1.5 text-xs text-left">
-          <label class="block font-semibold text-gray-700 dark:text-gray-300">Note (optional)</label>
-          <%= f.text_area :note, rows: 3, class: "w-full rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-xs text-gray-900 dark:text-gray-100 placeholder-gray-400 outline-none resize-none", placeholder: "Provide details about why you are flagging..." %>
+          <label class="block font-semibold text-gray-700 dark:text-gray-300"><%= t(".note") %></label>
+          <%= f.text_area :note, rows: 3, class: "w-full rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-xs text-gray-900 dark:text-gray-100 placeholder-gray-400 outline-none resize-none", placeholder: t(".note_placeholder") %>
         </div>
         <div class="flex justify-end gap-2 pt-2 text-xs">
           <button type="button" data-action="click->modal#close" class="px-3.5 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer">
-            Cancel
+            <%= t(".cancel") %>
           </button>
-          <%= f.submit "Submit Report", class: "px-3.5 py-1.5 bg-orange-500 text-white rounded-lg hover:bg-orange-600 font-semibold shadow-xs cursor-pointer" %>
+          <%= f.submit t(".submit"), class: "px-3.5 py-1.5 bg-orange-500 text-white rounded-lg hover:bg-orange-600 font-semibold shadow-xs cursor-pointer" %>
         </div>
       <% end %>
     </div>

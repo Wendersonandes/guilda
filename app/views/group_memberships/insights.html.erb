@@ -8,26 +8,26 @@
 <!-- Minimal Stats Cards -->
 <div class="grid grid-cols-3 gap-4">
   <div class="bg-white border border-gray-200/80 rounded-xl p-4 shadow-sm space-y-1">
-    <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400">New Members</span>
+    <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400">Novos membros</span>
     <div class="flex items-baseline gap-1">
       <p class="text-3xl font-bold text-blue-700">+<%= @stats[:new_members] %></p>
-      <span class="text-[10px] text-gray-500 font-medium">last 7d</span>
+      <span class="text-[10px] text-gray-500 font-medium">últimos 7d</span>
     </div>
   </div>
   
   <div class="bg-white border border-gray-200/80 rounded-xl p-4 shadow-sm space-y-1">
-    <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400">New Posts</span>
+    <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400">Novas publicações</span>
     <div class="flex items-baseline gap-1">
       <p class="text-3xl font-bold text-green-700"><%= @stats[:new_posts] %></p>
-      <span class="text-[10px] text-gray-500 font-medium">last 7d</span>
+      <span class="text-[10px] text-gray-500 font-medium">últimos 7d</span>
     </div>
   </div>
 
   <div class="bg-white border border-gray-200/80 rounded-xl p-4 shadow-sm space-y-1">
-    <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400">Active Users</span>
+    <span class="text-[10px] font-bold uppercase tracking-wider text-gray-400">Usuários ativos</span>
     <div class="flex items-baseline gap-1">
       <p class="text-3xl font-bold text-blue-900"><%= @stats[:active_members] %></p>
-      <span class="text-[10px] text-gray-500 font-medium">last 7d</span>
+      <span class="text-[10px] text-gray-500 font-medium">últimos 7d</span>
     </div>
   </div>
 </div>
@@ -36,7 +36,7 @@
 <div class="bg-white rounded-xl border border-gray-200/80 p-5 shadow-sm space-y-4">
   <h3 class="text-sm font-semibold text-gray-900 flex items-center gap-1.5 pb-1 border-b border-gray-50">
     <i data-lucide="trending-up" class="w-4 h-4 text-blue-600"></i>
-    <span>Member Growth (Daily)</span>
+    <span>Crescimento de membros (diário)</span>
   </h3>
   <% if @stats[:daily_members].any? %>
     <div class="space-y-3">
@@ -53,7 +53,7 @@
     </div>
   <% else %>
     <div class="text-center py-6">
-      <p class="text-xs text-gray-400">No growth registered in the last 7 days.</p>
+      <p class="text-xs text-gray-400">Nenhum crescimento registrado nos últimos 7 dias.</p>
     </div>
   <% end %>
 </div>
@@ -62,7 +62,7 @@
   <div class="bg-white rounded-xl border border-gray-200/80 p-5 shadow-sm space-y-4 sticky top-20">
     <h3 class="text-sm font-semibold text-gray-900 flex items-center gap-1.5 pb-1 border-b border-gray-50">
       <i data-lucide="award" class="w-4 h-4 text-blue-600"></i>
-      <span>Top Contributors (All-time)</span>
+      <span>Principais colaboradores (geral)</span>
     </h3>
     <% if @stats[:top_contributors].any? %>
       <div class="divide-y divide-gray-100">
@@ -80,13 +80,13 @@
             <div class="flex-1 min-w-0">
               <p class="text-sm font-medium text-gray-900 truncate"><%= link_to actor.name, public_path_for(actor), class: "hover:text-blue-600 transition-colors" %></p>
             </div>
-            <span class="text-xs font-semibold text-gray-500 bg-gray-50 border border-gray-200 px-2 py-1 rounded-md flex-shrink-0"><%= item[:count] %> posts</span>
+            <span class="text-xs font-semibold text-gray-500 bg-gray-50 border border-gray-200 px-2 py-1 rounded-md flex-shrink-0"><%= item[:count] %> publicações</span>
           </div>
         <% end %>
       </div>
     <% else %>
       <div class="text-center py-6">
-        <p class="text-xs text-gray-400">No posts published yet.</p>
+        <p class="text-xs text-gray-400">Ainda sem publicações.</p>
       </div>
     <% end %>
   </div>

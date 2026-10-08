@@ -1,0 +1,373 @@
+pt-BR:
+  hello: "Olá, mundo"
+
+  # === Core domain (models, notifiers, helpers) ===============================
+  notifications:
+    post_published:
+      message: "%{author} publicou um novo post."
+      default_message: "Um novo post foi publicado."
+    object_liked:
+      message: "%{author} curtiu sua publicação."
+      default_message: "Alguém curtiu sua publicação."
+    object_commented:
+      message: "%{author} comentou em sua publicação."
+      default_message: "Alguém comentou em sua publicação."
+    actor_mentioned:
+      post_message: "%{author} mencionou você em uma publicação."
+      comment_message: "%{author} mencionou você em um comentário."
+      default_message: "Alguém mencionou você."
+    new_follower:
+      message: "%{author} começou a seguir você."
+      default_message: "Alguém começou a seguir você."
+    index:
+      title: "Notificações"
+      mark_all_read: "Marcar todas como lidas"
+    list:
+      empty_title: "Ainda sem notificações"
+      empty_subtitle: "Quando você receber atualizações sobre suas publicações, comentários ou curtidas, elas aparecerão aqui."
+
+  activity:
+    description:
+      follow: "%{author} começou a seguir %{owner}"
+      make_friend: "%{author} e %{owner} agora são amigos"
+      join: "%{author} conectou-se com %{owner}"
+      like: "%{author} curtiu isto"
+      update: "%{author} atualizou o perfil"
+    audience:
+      public:
+        full: "Visível para todos"
+      visible:
+        full: "Visível para %{audience}"
+      hidden:
+        full: "Visível para %{audience}"
+
+  relation:
+    public:
+      name: "Público"
+    follow:
+      name: "Seguir"
+    custom:
+      name: "Personalizado"
+    reject:
+      name: "Recusar"
+    owner:
+      name: "Proprietário"
+    local_admin:
+      name: "Administrador"
+
+  # === Controller flash messages ==============================================
+  flash:
+    not_authorized: "Você não tem permissão para executar esta ação."
+    feature_unavailable: "Este recurso ainda não está disponível."
+    profile_updated: "Perfil atualizado."
+    profile_not_found: "Perfil não encontrado ao criar. Crie um perfil primeiro."
+    account_updated: "Conta atualizada."
+    post_created: "Publicação criada."
+    activity_deletion_enqueued: "Exclusão da publicação em andamento."
+    comment_parent_not_found: "Publicação de origem do comentário não encontrada."
+    no_object_to_act_on: "Nenhum objeto para esta ação."
+    group_created: "Grupo criado."
+    group_updated: "Grupo atualizado."
+    group_deleted: "Grupo excluído."
+    notifications_all_read: "Todas as notificações foram marcadas como lidas."
+    role_assigned: "Papel atribuído."
+    role_updated: "Papel atualizado."
+    invite_sent: "Convite enviado."
+    already_member: "Você já é membro."
+    request_already_pending: "Sua solicitação já está pendente."
+    joined_group: "Você entrou no grupo."
+    request_sent_pending: "Solicitação enviada. Aguardando aprovação."
+    invite_accepted: "Convite aceito."
+    no_pending_invite: "Nenhum convite pendente encontrado."
+    invite_declined: "Convite recusado."
+    invite_not_found: "Convite não encontrado."
+    request_approved: "Solicitação aprovada."
+    request_rejected: "Solicitação recusada."
+    member_removed: "Membro removido."
+    you_left_group: "Você saiu do grupo."
+    contact_added: "Contato adicionado."
+    contact_removed: "Contato removido."
+    unable_to_like: "Não foi possível curtir este item."
+    unable_to_unlike: "Não foi possível descurtir este item."
+
+  # === Activities / feed ======================================================
+  activities:
+    index:
+      loading: "Carregando mais publicações..."
+      empty_title: "Ainda sem atividades"
+      empty_subtitle: "Conecte-se com outras pessoas ou entre em grupos para ver publicações e atualizações recentes aqui."
+    show:
+      title: "Publicação"
+      back_to_feed: "Voltar ao feed"
+      comments: "Comentários"
+      add_comment: "Adicionar comentário"
+    form:
+      title_placeholder: "Título da sua publicação (opcional)"
+      body_placeholder: "O que você gostaria de compartilhar?"
+      cancel: "Cancelar"
+      submit: "Publicar"
+    new:
+      title: "Nova publicação"
+    drawer:
+      close_panel: "Fechar painel"
+      comments: "Comentários"
+      add_comment: "Adicionar comentário"
+    flag_form:
+      title: "Denunciar publicação"
+      reason: "Motivo"
+      note: "Observação (opcional)"
+      note_placeholder: "Descreva por que você está denunciando..."
+      cancel: "Cancelar"
+      submit: "Enviar denúncia"
+  activerecord:
+    attributes:
+      activity:
+        title: "Título"
+        body: "Corpo"
+
+  # === Account ================================================================
+  users:
+    show:
+      title: "Configurações da conta"
+      email: "Endereço de e-mail"
+      public_profile: "Perfil público"
+      view: "Ver"
+      edit: "Editar"
+    edit:
+      title: "Editar configurações da conta"
+      back: "Voltar para configurações da conta"
+      current_password: "Senha atual"
+      current_password_placeholder: "Obrigatória para confirmar as alterações"
+      new_password: "Nova senha"
+      new_password_placeholder: "Deixe em branco para manter a senha atual"
+      confirm_password: "Confirme a nova senha"
+      cancel: "Cancelar"
+      submit: "Salvar alterações"
+
+  # === Profile wizard =========================================================
+  profile_steps:
+    location:
+      country: "País"
+      state: "Estado"
+      city: "Cidade"
+      select: "Selecione"
+
+  # === Comments ===============================================================
+  comments:
+    comment:
+      edited: "editado"
+      edited_title: "Editado em %{time}"
+      deleted: "[excluído pelo autor]"
+    actions:
+      reply: "Responder"
+      edit: "Editar"
+      delete: "Excluir"
+      delete_confirm: "Tem certeza de que deseja excluir este comentário?"
+    form:
+      edit_placeholder: "Edite seu comentário..."
+      new_placeholder: "Escreva uma resposta ou comentário..."
+      update: "Atualizar"
+      comment: "Comentar"
+      cancel: "Cancelar"
+    flag_form:
+      title: "Denunciar comentário"
+      reason: "Motivo"
+      reasons:
+        spam: "Spam"
+        harassment: "Assédio"
+        offtopic: "Fora do tema"
+        inappropriate: "Inadequado"
+      note: "Observação (opcional)"
+      note_placeholder: "Descreva por que você está denunciando..."
+      cancel: "Cancelar"
+      submit: "Enviar denúncia"
+    flag_button:
+      flagged: "Denunciado"
+      flag: "Denunciar"
+
+  # === Groups =================================================================
+  groups:
+    index:
+      title: "Grupos"
+      subtitle: "Explore ou participe de comunidades"
+      new: "Novo grupo"
+      loading: "Carregando mais grupos..."
+      empty_title: "Ainda sem grupos"
+      empty_subtitle: "Seja o primeiro a criar um grupo!"
+    navigation:
+      posts: "Publicações"
+      members: "Membros"
+      insights: "Insights"
+      leave_confirm: "Tem certeza de que deseja sair de %{group}?"
+      leave: "Sair do grupo"
+      join: "Entrar no grupo"
+      request_pending: "Solicitação pendente"
+      request: "Solicitar entrada"
+    header:
+      public: "Público"
+      private: "Privado"
+      posts: "publicações"
+      members: "membros"
+      edit: "Editar grupo"
+      delete: "Excluir"
+      delete_confirm: "Tem certeza de que deseja excluir este grupo?"
+    group_card:
+      public: "Público"
+      private: "Privado"
+      owner: "Proprietário"
+      member: "Membro"
+      members: "membros"
+      join: "Entrar"
+      request: "Solicitar"
+
+  # === Contacts ===============================================================
+  contacts:
+    index:
+      title: "Contatos"
+      remove: "Remover contato"
+
+  # === Profiles / Actors ======================================================
+  profiles:
+    index:
+      title: "Profissionais e Fornecedores"
+      subtitle: "Descubra profissionais de curadoria, expografia, design, escrita de projetos e produção artística para montar sua equipe."
+      no_bio: "Nenhuma biografia informada."
+      posts: "publicações"
+      connections: "conexões"
+      view_profile: "Ver perfil"
+      empty_title: "Nenhum perfil encontrado"
+      empty_subtitle: "Tente refinar os termos da busca ou veja todos os profissionais cadastrados."
+    show:
+      posts: "publicações"
+      connections: "conexões"
+      no_posts_title: "Ainda sem publicações"
+      no_posts_subtitle: "Este perfil ainda não compartilhou atualizações ou publicações."
+  actors:
+    index:
+      title: "Pessoas e Grupos"
+      subtitle: "Explore perfis e comunidades na plataforma"
+      load_more: "Carregar mais"
+      empty_title: "Ainda sem perfis"
+      empty_subtitle: "Perfis e grupos aparecerão aqui assim que forem criados."
+    show:
+      posts: "publicações"
+      connections: "conexões"
+      no_posts_title: "Ainda sem publicações"
+      no_posts_subtitle: "Este perfil ainda não compartilhou atualizações ou publicações."
+
+  # === Shared UI ==============================================================
+  shared:
+    nav:
+      aria_label: "Navegação global"
+      home: "Início"
+      profiles: "Perfis"
+      contacts: "Contatos"
+      groups: "Grupos"
+      admin: "Admin"
+      admin_area: "Área administrativa"
+      flags: "Flags"
+      feature_flags: "Feature flags"
+      notifications: "Notificações"
+      account: "Conta"
+      account_settings: "Configurações da conta"
+      sign_in: "Entrar"
+      sign_up: "Criar conta"
+      sign_out: "Sair"
+      toggle_menu: "Alternar menu de navegação"
+    left_sidebar:
+      posts: "Publicações"
+      connections: "Conexões"
+      home: "Início"
+      profiles: "Perfis"
+      contacts: "Contatos"
+      groups: "Grupos"
+    right_sidebar:
+      suggestions_title: "Sugestões"
+      suggestions_subtitle: "Pessoas com quem você pode se conectar"
+    sidebar_pending_contacts:
+      title: "Solicitações pendentes"
+      subtitle: "Pessoas que querem se conectar com você"
+      wants_to_connect: "quer se conectar"
+      accept: "Aceitar"
+      decline: "Recusar"
+    sidebar_suggestions:
+      suggested: "Sugerido"
+      connect: "Conectar"
+    connection_button:
+      remove: "Remover contato"
+      connect: "Conectar"
+    activity:
+      via: "via"
+      in_reply_to: "em resposta a"
+    activity_actions:
+      trash: "Excluir"
+      flagged: "Denunciado"
+      flag: "Denunciar"
+      confirm_delete: "Tem certeza de que deseja excluir esta publicação?"
+
+  # === Authentication (Devise views) ==========================================
+  auth:
+    sessions:
+      new:
+        title: "Bem-vindo de volta"
+        subtitle: "Entre na sua conta Guilda"
+        keep_signed_in: "Manter conectado"
+        submit: "Entrar"
+    registrations:
+      new:
+        title: "Crie sua conta"
+        subtitle: "Comece a usar a Guilda hoje"
+        display_name: "Nome de exibição"
+        display_name_placeholder: "Seu nome ou usuário"
+        password_minimum: "%{count} caracteres no mínimo"
+        confirm_password: "Confirme a senha"
+        submit: "Criar conta"
+      edit:
+        title: "Editar conta"
+        subtitle: "Atualize as credenciais do seu perfil"
+        waiting_confirmation: "Aguardando confirmação para:"
+        leave_blank: "Deixe em branco se não quiser alterá-la"
+        new_password: "Nova senha"
+        password_minimum: "%{count} caracteres no mínimo"
+        confirm_new_password: "Confirme a nova senha"
+        current_password_hint: "Precisamos da sua senha atual para confirmar as alterações"
+        current_password: "Senha atual"
+        submit: "Atualizar"
+        cancel_title: "Cancelar minha conta"
+        cancel_description: "Esta ação não pode ser desfeita. Seu perfil e seus dados serão excluídos permanentemente."
+        cancel_submit: "Cancelar minha conta"
+        cancel_confirm: "Tem certeza? Esta ação não pode ser desfeita."
+    passwords:
+      new:
+        title: "Esqueceu a senha?"
+        subtitle: "Informe seu e-mail e enviaremos as instruções de redefinição"
+        submit: "Enviar instruções"
+      edit:
+        title: "Redefinir senha"
+        subtitle: "Informe sua nova senha abaixo"
+        new_password: "Nova senha"
+        confirm_new_password: "Confirme a nova senha"
+        submit: "Alterar minha senha"
+    confirmations:
+      new:
+        title: "Reenviar confirmação"
+        subtitle: "Receba um novo e-mail de confirmação"
+        submit: "Reenviar confirmação"
+    unlocks:
+      new:
+        title: "Reenviar desbloqueio"
+        subtitle: "Receba um novo e-mail de desbloqueio"
+        submit: "Reenviar desbloqueio"
+    shared:
+      links:
+        or: "ou"
+        sign_in: "Entrar"
+        sign_up: "Criar conta"
+        forgot_password: "Esqueceu a senha?"
+        resend_confirmation: "Reenviar confirmação"
+        resend_unlock: "Reenviar desbloqueio"
+        omniauth: "Entrar com %{provider}"
+      error_messages:
+        header: "Não foi possível salvar %{resource}:"
+
+

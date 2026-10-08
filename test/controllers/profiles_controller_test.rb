@@ -43,14 +43,14 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
   test "should get index when not signed in" do
     get profiles_path
     assert_response :success
-    assert_select "h1", "Artists & Suppliers"
+    assert_select "h1", "Profissionais e Fornecedores"
   end
 
   test "should get index when signed in" do
     sign_in @user
     get profiles_path
     assert_response :success
-    assert_select "h1", "Artists & Suppliers"
+    assert_select "h1", "Profissionais e Fornecedores"
   end
 
   test "should not include incomplete profiles in index" do

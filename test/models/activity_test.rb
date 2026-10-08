@@ -52,8 +52,8 @@ class ActivityTest < ActiveSupport::TestCase
   test "validates presence of author and owner" do
     activity = Activity.new(verb: :post)
     assert_not activity.valid?
-    assert_includes activity.errors[:author], "must exist"
-    assert_includes activity.errors[:owner], "must exist"
+    assert_includes activity.errors[:author], "é obrigatório(a)"
+    assert_includes activity.errors[:owner], "é obrigatório(a)"
   end
 
   test ".roots returns activities without parent" do
