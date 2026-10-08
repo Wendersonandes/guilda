@@ -20,11 +20,12 @@
                     }
                   } do |f| %>
       <div class="flex-1 w-full space-y-1.5">
-        <%= f.label :name_query, class: "block text-xs font-bold text-zinc-500 uppercase tracking-wider" do %>
-          <span class="flex items-center gap-1.5"><i data-lucide="search" class="w-3.5 h-3.5 text-zinc-400"></i> Buscar por nome</span>
+        <%= f.label :occupation, class: "block text-xs font-bold text-zinc-500 uppercase tracking-wider" do %>
+          <span class="flex items-center gap-1.5"><i data-lucide="briefcase" class="w-3.5 h-3.5 text-zinc-400"></i> Categoria Profissional</span>
         <% end %>
-        <%= f.text_field :name_query, value: params[:name_query], placeholder: "Buscar por nome ou biografia...",
-                         class: "w-full text-sm rounded-lg border border-stone-300 bg-white px-3.5 py-2 text-charcoal placeholder-zinc-400 focus:border-brand focus:ring-brand font-medium outline-none transition-shadow shadow-sm" %>
+        <%= f.select :occupation, options_for_select([["Todas as categorias", ""]] + @occupations, params[:occupation]), {},
+                     class: "w-full text-sm rounded-lg border border-stone-300 bg-white px-3.5 py-2 text-charcoal focus:border-brand focus:ring-brand font-medium outline-none transition-shadow shadow-sm",
+                     data: { action: "change->filter-form#submit" } %>
       </div>
 
       <div class="flex-1 w-full space-y-1.5">
@@ -37,15 +38,17 @@
       </div>
 
       <div class="flex-1 w-full space-y-1.5">
-        <%= f.label :occupation, class: "block text-xs font-bold text-zinc-500 uppercase tracking-wider" do %>
-          <span class="flex items-center gap-1.5"><i data-lucide="briefcase" class="w-3.5 h-3.5 text-zinc-400"></i> Categoria Profissional</span>
+        <%= f.label :availability, class: "block text-xs font-bold text-zinc-500 uppercase tracking-wider" do %>
+          <span class="flex items-center gap-1.5"><i data-lucide="clock" class="w-3.5 h-3.5 text-zinc-400"></i> Disponibilidade</span>
         <% end %>
-        <%= f.select :occupation, options_for_select([["Todas as categorias", ""]] + @occupations, params[:occupation]), {},
+        <%= f.select :availability,
+                     options_for_select([["Todas as disponibilidades", ""]] + Profile::AVAILABILITY_OPTIONS.map { |value, label| [label, value] }, params[:availability]),
+                     {},
                      class: "w-full text-sm rounded-lg border border-stone-300 bg-white px-3.5 py-2 text-charcoal focus:border-brand focus:ring-brand font-medium outline-none transition-shadow shadow-sm",
                      data: { action: "change->filter-form#submit" } %>
       </div>
 
-      <% if params[:name_query].present? || params[:city].present? || params[:occupation].present? %>
+      <% if params[:occupation].present? || params[:city].present? || params[:availability].present? %>
         <div class="w-full md:w-auto">
           <%= link_to profiles_path,
                       class: "flex items-center justify-center gap-1.5 text-xs font-semibold bg-stone-100 hover:bg-stone-200 text-zinc-700 px-4 py-2.5 rounded-lg border border-stone-300 transition-colors cursor-pointer h-[38px] box-border w-full",

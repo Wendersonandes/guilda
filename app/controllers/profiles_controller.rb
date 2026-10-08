@@ -23,16 +23,16 @@ class ProfilesController < ApplicationController
                        .where.not(id: current_actor&.actorable_id)
                        .order("actors.name ASC")
 
-    if params[:name_query].present?
-      @profiles = @profiles.where("actors.name ILIKE :q OR actors.description ILIKE :q", q: "%#{params[:name_query]}%")
+    if params[:occupation].present?
+      @profiles = @profiles.tagged_with(params[:occupation], on: :occupations)
     end
 
     if params[:city].present?
       @profiles = @profiles.where(city: params[:city])
     end
 
-    if params[:occupation].present?
-      @profiles = @profiles.tagged_with(params[:occupation], on: :occupations)
+    if params[:availability].present?
+      @profiles = @profiles.where(availability: params[:availability])
     end
 
     @pagy, @profiles = pagy(@profiles, limit: 12)

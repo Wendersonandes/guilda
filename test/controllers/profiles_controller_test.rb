@@ -64,14 +64,19 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_select "h2", text: /Bob Incomplete/, count: 0
   end
 
-  test "should filter profiles index by name query" do
+  test "should filter profiles index by availability" do
     sign_in @user
     other_user = users(:bob)
     other_actor = create_profile_for(other_user, name: "Diego Rocha")
-    
-    get profiles_path, params: { name_query: "Diego" }
+    other_actor.actorable.update!(availability: :freelance)
+
+    get profiles_path, params: { availability: "freelance" }
     assert_response :success
     assert_select "h2", text: /Diego Rocha/
+
+    get profiles_path, params: { availability: "full_time" }
+    assert_response :success
+    assert_select "h2", text: /Diego Rocha/, count: 0
   end
 
   test "should filter profiles index by city" do
