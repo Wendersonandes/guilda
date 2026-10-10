@@ -86,7 +86,9 @@ module My
     end
 
     def set_project
-      @project = current_profile.projects.friendly.find(params[:id])
+      @project = current_profile.projects
+                              .includes(:cover_attachment, project_images: { image_attachment: :blob })
+                              .friendly.find(params[:id])
     end
 
     def project_params

@@ -15,6 +15,6 @@ class ProjectsController < ApplicationController
   def show
     @project = Project.friendly.find(params[:id])
     authorize @project
-    @images = @project.project_images.ordered
+    @images = @project.project_images.includes(image_attachment: :blob).ordered
   end
 end
