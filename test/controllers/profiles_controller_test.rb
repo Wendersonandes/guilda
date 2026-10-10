@@ -150,4 +150,20 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_select "strong", text: "world"
     assert_no_match(%r{<script>alert}, response.body)
   end
+
+  test "shows the contact card of another profile to signed-in visitors" do
+    bob_user = users(:bob)
+    bob_actor = create_profile_for(bob_user, name: "Bob")
+    bob_actor.update!(email: "bob@example.com")
+    bob_actor.actorable.update!(mobile: "11987654321", instagram: "@bob", website: "https://bob.example.com")
+
+    sign_in @user
+
+    get profile_path(bob_actor)
+
+    assert_response :success
+    assert_match "bo***@example.com", response.body
+    assert_match "wa.me/5511987654321", response.body
+    assert_match "instagram.com/bob", response.body
+  end
 end

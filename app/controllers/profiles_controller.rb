@@ -86,7 +86,7 @@ class ProfilesController < ApplicationController
     params.require(:profile).permit(
       :birthday, :phone, :mobile,
       :address, :city, :state, :country, :zipcode,
-      :website, :organization, :availability,
+      :website, :organization, :availability, :instagram,
       actor_attributes: [ :id, :name, :description, :email, :avatar, :cover_image ],
       occupation_list: []
     )

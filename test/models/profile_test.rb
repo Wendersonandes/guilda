@@ -10,6 +10,7 @@ require "test_helper"
 #  birthday        :date
 #  city            :string
 #  country         :string
+#  instagram       :string
 #  mobile          :string
 #  organization    :string
 #  phone           :string
@@ -108,5 +109,35 @@ class ProfileTest < ActiveSupport::TestCase
   test "excludes unavailable from the filterable availability options" do
     assert_not Profile::FILTERABLE_AVAILABILITY_OPTIONS.key?("unavailable")
     assert_equal %w[full_time freelance], Profile::FILTERABLE_AVAILABILITY_OPTIONS.keys
+  end
+
+  test "normalizes and validates the brazilian mobile" do
+    profile = Profile.new(user: users(:alice), mobile: "(11) 98765-4321")
+    assert profile.valid?
+    assert_equal "11987654321", profile.mobile
+
+    profile.mobile = "1234"
+    assert_not profile.valid?
+    assert_includes profile.errors[:mobile], "deve estar no formato (DDD) 9XXXX-XXXX"
+  end
+
+  test "normalizes the instagram handle or url to the profile url" do
+    {
+      "@ana.silva" => "https://instagram.com/ana.silva",
+      "ana.silva" => "https://instagram.com/ana.silva",
+      "https://instagram.com/ana.silva/" => "https://instagram.com/ana.silva",
+      "instagram.com/ana.silva" => "https://instagram.com/ana.silva"
+    }.each do |input, expected|
+      profile = Profile.new(user: users(:alice), instagram: input)
+      profile.valid?
+      assert_equal expected, profile.instagram
+    end
+  end
+
+  test "rejects an invalid instagram" do
+    profile = Profile.new(user: users(:alice), instagram: "http://other.com/ana")
+
+    assert_not profile.valid?
+    assert_includes profile.errors[:instagram], "é inválido"
   end
 end

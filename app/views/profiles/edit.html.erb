@@ -157,11 +157,16 @@
       </div>
       <div class="space-y-1">
         <%= f.label :mobile, "Celular", class: "block text-xs font-medium text-zinc-500" %>
-        <%= f.text_field :mobile, class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal" %>
+        <%= f.text_field :mobile, value: br_phone_display(@profile.mobile), placeholder: "(11) 98765-4321", class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal" %>
       </div>
       <div class="col-span-2 space-y-1">
         <%= f.label :website, "Site", class: "block text-xs font-medium text-zinc-500" %>
         <%= f.text_field :website, placeholder: "https://example.com", class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal" %>
+      </div>
+      <div class="col-span-2 space-y-1">
+        <%= f.label :instagram, "Instagram", class: "block text-xs font-medium text-zinc-500" %>
+        <%= f.text_field :instagram, placeholder: "@seu-perfil ou https://instagram.com/seu-perfil", class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal" %>
+        <p class="text-[11px] text-zinc-400"><%= t(".instagram_hint") %></p>
       </div>
       <div class="col-span-2 space-y-1">
         <%= f.label :organization, "Organização", class: "block text-xs font-medium text-zinc-500" %>

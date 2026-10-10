@@ -8,6 +8,7 @@
 #  birthday        :date
 #  city            :string
 #  country         :string
+#  instagram       :string
 #  mobile          :string
 #  organization    :string
 #  phone           :string
@@ -55,6 +56,14 @@ class Profile < ApplicationRecord
   # search stays focused on professionals accepting work).
   FILTERABLE_AVAILABILITY_OPTIONS = AVAILABILITY_OPTIONS.except("unavailable").freeze
 
+  # Brazilian mobile: 2-digit area code + 9 digits (starting with 9).
+  BR_MOBILE_REGEX = /\A[1-9]{2}9[0-9]{8}\z/
+  # Instagram handle (without the leading @ or URL).
+  INSTAGRAM_HANDLE_REGEX = /\A[A-Za-z0-9._]{1,30}\z/
+  INSTAGRAM_BASE_URL = "https://instagram.com"
+
+  before_validation :normalize_contact_info
+
   def availability_label
     AVAILABILITY_OPTIONS[availability]
   end
@@ -67,6 +76,8 @@ class Profile < ApplicationRecord
   attr_accessor :form_step
 
   validates :user, presence: true
+  validate :mobile_format, if: -> { mobile.present? }
+  validate :instagram_format, if: -> { instagram.present? }
 
   FORM_STEPS = {
     location: [:country, :state, :city],
@@ -117,6 +128,31 @@ class Profile < ApplicationRecord
   end
 
   private
+
+  # Normalizes the contact fields before validation:
+  # * +mobile+ is stored as digits only (e.g. "11987654321").
+  # * +instagram+ is stored as the canonical profile URL (accepts @handle, handle or URL).
+  def normalize_contact_info
+    self.mobile = mobile.to_s.gsub(/\D/, "") if mobile.present?
+    self.instagram = normalize_instagram(instagram) if instagram.present?
+  end
+
+  def normalize_instagram(value)
+    handle = value.to_s.strip
+    handle = handle.sub(%r{\Ahttps?://(www\.)?instagram\.com/}i, "")
+    handle = handle.sub(%r{\A(www\.)?instagram\.com/}i, "")
+    handle = handle.delete_prefix("@").split(%r{[/?#]}).first.to_s
+    handle.present? ? "#{INSTAGRAM_BASE_URL}/#{handle}" : nil
+  end
+
+  def mobile_format
+    errors.add(:mobile, "deve estar no formato (DDD) 9XXXX-XXXX") unless mobile.match?(BR_MOBILE_REGEX)
+  end
+
+  def instagram_format
+    handle = instagram.sub("#{INSTAGRAM_BASE_URL}/", "")
+    errors.add(:instagram, "é inválido") unless handle.match?(INSTAGRAM_HANDLE_REGEX)
+  end
 
   def occupations_limit
     if occupation_list.size > 3

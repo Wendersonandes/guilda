@@ -242,6 +242,8 @@ pt-BR:
       connections: "conexões"
       no_posts_title: "Ainda sem publicações"
       no_posts_subtitle: "Este perfil ainda não compartilhou atualizações ou publicações."
+    edit:
+      instagram_hint: "Pode informar o @usuário ou a URL completa do perfil."
   actors:
     index:
       title: "Pessoas e Grupos"
@@ -286,6 +288,12 @@ pt-BR:
     right_sidebar:
       suggestions_title: "Sugestões"
       suggestions_subtitle: "Pessoas com quem você pode se conectar"
+    contact_card:
+      title: "Contato"
+      empty: "Sem informações de contato."
+      copied: "Copiado!"
+      copy_email: "Copiar e-mail"
+      whatsapp: "WhatsApp"
     sidebar_pending_contacts:
       title: "Solicitações pendentes"
       subtitle: "Pessoas que querem se conectar com você"
