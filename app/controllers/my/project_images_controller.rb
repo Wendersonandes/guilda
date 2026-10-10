@@ -1,4 +1,4 @@
-# Management of a {Project}'s gallery images ({ProjectImage}): upload, remove, reorder and set
+# Management of a {Project}'s gallery images ({ProjectImage}): remove, reorder and set
 # one as the project cover. Scoped to the current profile's projects.
 #
 # @see ProjectImage
@@ -11,18 +11,6 @@ module My
 
     before_action :ensure_profile!
     before_action :set_project
-
-    # POST /my/projects/:project_id/images
-    def create
-      authorize @project, :update?
-      image = @project.project_images.build(image: params.dig(:project_image, :image))
-
-      if image.save
-        redirect_to edit_my_project_path(@project), notice: t("flash.project_image_added")
-      else
-        redirect_to edit_my_project_path(@project), alert: image.errors.full_messages.to_sentence
-      end
-    end
 
     # DELETE /my/projects/:project_id/images/:id
     def destroy

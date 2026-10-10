@@ -13,7 +13,7 @@ Rails.application.routes.draw do
   namespace :my do
     resources :projects, only: [ :index, :new, :create, :edit, :update, :destroy ] do
       collection { patch :reorder }
-      resources :images, controller: "project_images", only: [ :create, :destroy ] do
+      resources :images, controller: "project_images", only: [ :destroy ] do
         collection { patch :reorder }
         member { post :cover }
       end

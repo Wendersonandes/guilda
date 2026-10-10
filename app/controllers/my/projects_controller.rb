@@ -30,6 +30,7 @@ module My
       authorize @project
 
       if @project.save
+        ingest_gallery
         redirect_to my_projects_path, notice: t("flash.project_created")
       else
         render :new, status: :unprocessable_entity
@@ -46,6 +47,7 @@ module My
       authorize @project
 
       if @project.update(project_params)
+        ingest_gallery
         redirect_to my_projects_path, notice: t("flash.project_updated")
       else
         render :edit, status: :unprocessable_entity
@@ -89,6 +91,18 @@ module My
 
     def project_params
       params.require(:project).permit(:title, :visibility, :about, :cover)
+    end
+
+    def gallery_signed_ids
+      Array(params.dig(:project, :gallery_signed_ids))
+    end
+
+    def ingest_gallery
+      result = ProjectImageIngestor.new(@project, gallery_signed_ids).call
+
+      if result[:skipped].positive?
+        flash[:alert] = t("flash.project_gallery_skipped", count: result[:skipped])
+      end
     end
   end
 end

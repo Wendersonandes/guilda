@@ -92,8 +92,10 @@ pt-BR:
     project_created: "Projeto criado."
     project_updated: "Projeto atualizado."
     project_deleted: "Projeto excluído."
-    project_image_added: "Imagem adicionada."
     project_image_removed: "Imagem removida."
+    project_gallery_skipped:
+      one: "1 imagem não foi adicionada (limite de 10 por projeto ou arquivo inválido)."
+      other: "%{count} imagens não foram adicionadas (limite de 10 por projeto ou arquivo inválido)."
     project_cover_set: "Capa atualizada."
     projects_require_profile: "Você precisa de um perfil para gerenciar projetos."
 
@@ -128,7 +130,7 @@ pt-BR:
         cover_hint: "Envie uma imagem ou defina uma da galeria."
         gallery: "Galeria"
         gallery_hint: "Até 10 imagens. Arraste para reordenar."
-        add_image: "Adicionar imagem"
+        gallery_upload_hint: "Você pode enviar várias imagens de uma vez. Restam %{count} vaga(s)."
         gallery_full: "Limite de 10 imagens atingido."
         set_cover: "Definir como capa"
         remove: "Remover"
