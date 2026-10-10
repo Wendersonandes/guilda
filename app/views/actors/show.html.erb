@@ -78,6 +78,12 @@
     </div>
   </div>
 
+  <% if @actor.actorable.is_a?(Profile) %>
+    <div class="lg:hidden">
+      <%= render "shared/contact_card", actor: @actor %>
+    </div>
+  <% end %>
+
   <% if feature_enabled?(:social_feed) %>
     <div class="space-y-4">
       <% if @activities.any? %>

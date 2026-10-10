@@ -1,7 +1,7 @@
 <%# locals: (actor:) %>
 <% profile = actor.actorable %>
 <% has_contact = actor.email.present? || profile.mobile.present? || profile.website.present? || profile.instagram.present? %>
-<div class="bg-white rounded-lg border border-stone-border p-5 sticky top-20 space-y-4">
+<div class="bg-white rounded-lg border border-stone-border p-5 space-y-4">
   <h3 class="text-sm font-semibold text-charcoal flex items-center gap-1.5">
     <i data-lucide="at-sign" class="w-4 h-4 text-brand"></i>
     <span><%= t(".title") %></span>

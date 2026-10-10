@@ -166,4 +166,32 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_match "wa.me/5511987654321", response.body
     assert_match "instagram.com/bob", response.body
   end
+
+  test "shows the contact card to signed-out visitors" do
+    bob_user = users(:bob)
+    bob_actor = create_profile_for(bob_user, name: "Bob")
+    bob_actor.update!(email: "bob@example.com")
+    bob_actor.actorable.update!(mobile: "11987654321", instagram: "@bob")
+
+    get profile_path(bob_actor)
+
+    assert_response :success
+    assert_match "bo***@example.com", response.body
+    assert_match "wa.me/5511987654321", response.body
+  end
+
+  test "shows suggestions only on the owner's own profile" do
+    bob_user = users(:bob)
+    bob_actor = create_profile_for(bob_user, name: "Bob")
+
+    sign_in @user
+
+    get profile_path(bob_actor)
+    assert_response :success
+    assert_no_match(/Sugestões/, response.body)
+
+    get profile_path(@actor)
+    assert_response :success
+    assert_match(/Sugestões/, response.body)
+  end
 end

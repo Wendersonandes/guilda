@@ -51,16 +51,19 @@
       <div class="container mx-auto px-5">
         <%= render "shared/flash" %>
         
-        <% if current_actor && !devise_controller? && !content_for?(:no_sidebar) %>
+        <% profile_page = controller_name == "actors" && action_name == "show" %>
+        <% if (current_actor || profile_page) && !devise_controller? && !content_for?(:no_sidebar) %>
           <div class="max-w-6xl mx-auto">
             <div class="grid grid-cols-12 gap-6">
               <!-- Left Column (Navigation) -->
-              <div class="hidden lg:block lg:col-span-3">
-                <%= content_for?(:left_sidebar) ? yield(:left_sidebar) : render("shared/left_sidebar") %>
-              </div>
+              <% if current_actor %>
+                <div class="hidden lg:block lg:col-span-3">
+                  <%= content_for?(:left_sidebar) ? yield(:left_sidebar) : render("shared/left_sidebar") %>
+                </div>
+              <% end %>
 
-              <!-- Center Column (Main Content - approx. 60% with sidebars) -->
-              <div class="col-span-12 lg:col-span-6 space-y-6">
+              <!-- Center Column (Main Content) -->
+              <div class="col-span-12 <%= current_actor ? 'lg:col-span-6' : 'lg:col-span-9' %> space-y-6">
                 <%= yield %>
               </div>
 
