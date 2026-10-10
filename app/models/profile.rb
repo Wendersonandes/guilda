@@ -43,12 +43,17 @@ class Profile < ApplicationRecord
   has_one :activity_object, as: :objectable, dependent: :destroy, autosave: true
   belongs_to :user
 
-  enum :availability, { full_time: 0, freelance: 1 }
+  enum :availability, { full_time: 0, freelance: 1, unavailable: 2 }
 
   AVAILABILITY_OPTIONS = {
     "full_time" => "Tempo integral",
-    "freelance" => "Freelance"
+    "freelance" => "Freelance",
+    "unavailable" => "Indisponível"
   }.freeze
+
+  # Availability options offered in the directory filter (excludes "unavailable", so the
+  # search stays focused on professionals accepting work).
+  FILTERABLE_AVAILABILITY_OPTIONS = AVAILABILITY_OPTIONS.except("unavailable").freeze
 
   def availability_label
     AVAILABILITY_OPTIONS[availability]

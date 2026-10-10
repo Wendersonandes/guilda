@@ -42,7 +42,7 @@
           <span class="flex items-center gap-1.5"><i data-lucide="clock" class="w-3.5 h-3.5 text-zinc-400"></i> Disponibilidade</span>
         <% end %>
         <%= f.select :availability,
-                     options_for_select([["Todas as disponibilidades", ""]] + Profile::AVAILABILITY_OPTIONS.map { |value, label| [label, value] }, params[:availability]),
+                     options_for_select([["Todas as disponibilidades", ""]] + Profile::FILTERABLE_AVAILABILITY_OPTIONS.map { |value, label| [label, value] }, params[:availability]),
                      {},
                      class: "w-full text-sm rounded-lg border border-stone-300 bg-white px-3.5 py-2 text-charcoal focus:border-brand focus:ring-brand font-medium outline-none transition-shadow shadow-sm",
                      data: { action: "change->filter-form#submit" } %>
@@ -104,8 +104,8 @@
                   <% if profile.occupations.any? || profile.availability.present? %>
                     <div class="flex flex-wrap items-center gap-1.5 mt-2">
                       <% if profile.availability.present? %>
-                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
-                          <i data-lucide="clock" class="w-3 h-3 text-emerald-600"></i>
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium <%= profile.unavailable? ? 'bg-stone-100 text-zinc-600 border border-stone-200' : 'bg-emerald-50 text-emerald-700 border border-emerald-200' %>">
+                          <i data-lucide="clock" class="w-3 h-3 <%= profile.unavailable? ? 'text-zinc-400' : 'text-emerald-600' %>"></i>
                           <%= profile.availability_label %>
                         </span>
                       <% end %>

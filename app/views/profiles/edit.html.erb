@@ -139,10 +139,7 @@
     <div class="space-y-1">
       <%= f.label :availability, "Disponibilidade para contratação", class: "block text-xs font-medium text-zinc-500" %>
       <%= f.select :availability,
-            options_for_select([
-              ["Tempo integral (full_time)", "full_time"],
-              ["Freelance (freelance)", "freelance"]
-            ], @profile.availability),
+            options_for_select(Profile::AVAILABILITY_OPTIONS.map { |value, label| [label, value] }, @profile.availability),
             { include_blank: "Selecione a disponibilidade" },
             { class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal" } %>
     </div>

@@ -99,5 +99,14 @@ class ProfileTest < ActiveSupport::TestCase
     profile.availability = :freelance
     assert profile.freelance?
     assert_equal "Freelance", profile.availability_label
+
+    profile.availability = :unavailable
+    assert profile.unavailable?
+    assert_equal "Indisponível", profile.availability_label
+  end
+
+  test "excludes unavailable from the filterable availability options" do
+    assert_not Profile::FILTERABLE_AVAILABILITY_OPTIONS.key?("unavailable")
+    assert_equal %w[full_time freelance], Profile::FILTERABLE_AVAILABILITY_OPTIONS.keys
   end
 end
