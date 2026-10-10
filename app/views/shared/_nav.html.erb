@@ -50,14 +50,6 @@
     <!-- Desktop Menu -->
     <div class="hidden sm:flex items-center gap-5">
       <% if user_signed_in? %>
-        <% if current_actor %>
-          <%= link_to public_path_for(current_actor), class: "flex items-center gap-1.5 text-sm font-semibold text-charcoal hover:text-brand transition-colors" do %>
-            <div class="w-6 h-6 rounded-full bg-stone-100 flex items-center justify-center text-charcoal text-xs font-bold border border-stone-border">
-              <%= current_actor.name.first.upcase %>
-            </div>
-            <span class="max-w-[120px] truncate"><%= current_actor.name %></span>
-          <% end %>
-        <% end %>
         <% if current_actor && feature_enabled?(:notifications) %>
           <%= link_to notifications_path, class: "p-1.5 text-zinc-500 hover:text-brand transition-colors flex items-center mr-1", title: t(".notifications") do %>
             <div class="relative">
@@ -66,13 +58,44 @@
             </div>
           <% end %>
         <% end %>
-        <%= link_to account_path, class: "flex items-center gap-1 text-sm text-zinc-500 hover:text-charcoal transition-colors" do %>
-          <i data-lucide="settings" class="w-4 h-4"></i>
-          <span><%= t(".account") %></span>
-        <% end %>
-        <%= button_to destroy_user_session_path, method: :delete, class: "flex items-center gap-1 text-sm text-zinc-500 hover:text-brand bg-transparent border-0 cursor-pointer transition-colors p-0 font-medium" do %>
-          <i data-lucide="log-out" class="w-4 h-4"></i>
-          <span><%= t(".sign_out") %></span>
+        <% if current_actor %>
+          <div class="relative"
+               data-controller="dropdown"
+               data-action="click@window->dropdown#hideOnClickOutside keydown@window->dropdown#hideOnEscape">
+            <button type="button"
+                    data-dropdown-target="button"
+                    data-action="click->dropdown#toggle"
+                    aria-haspopup="menu"
+                    aria-expanded="false"
+                    class="flex items-center gap-1.5 text-sm font-semibold text-charcoal hover:text-brand transition-colors cursor-pointer bg-transparent border-0 p-0">
+              <div class="w-6 h-6 rounded-full bg-stone-100 flex items-center justify-center text-charcoal text-xs font-bold border border-stone-border">
+                <%= current_actor.name.first.upcase %>
+              </div>
+              <span class="max-w-[120px] truncate"><%= current_actor.name %></span>
+              <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-zinc-400"></i>
+            </button>
+
+            <div data-dropdown-target="menu" role="menu"
+                 class="hidden absolute right-0 mt-2 w-52 bg-white border border-stone-border rounded-lg shadow-md py-1 z-50">
+              <%= link_to public_path_for(current_actor), role: "menuitem", class: "flex items-center gap-2 px-3 py-2 text-sm text-zinc-700 hover:bg-stone-50 transition-colors" do %>
+                <i data-lucide="user" class="w-4 h-4 text-zinc-400"></i>
+                <span><%= t(".view_profile") %></span>
+              <% end %>
+              <%= link_to account_path, role: "menuitem", class: "flex items-center gap-2 px-3 py-2 text-sm text-zinc-700 hover:bg-stone-50 transition-colors" do %>
+                <i data-lucide="settings" class="w-4 h-4 text-zinc-400"></i>
+                <span><%= t(".account") %></span>
+              <% end %>
+              <%= link_to edit_my_profile_path, role: "menuitem", class: "flex items-center gap-2 px-3 py-2 text-sm text-zinc-700 hover:bg-stone-50 transition-colors" do %>
+                <i data-lucide="edit-3" class="w-4 h-4 text-zinc-400"></i>
+                <span><%= t(".edit_profile") %></span>
+              <% end %>
+              <div class="border-t border-stone-100 my-1"></div>
+              <%= button_to destroy_user_session_path, method: :delete, role: "menuitem", class: "flex items-center gap-2 w-full text-left px-3 py-2 text-sm text-zinc-700 hover:bg-stone-50 hover:text-brand bg-transparent border-0 cursor-pointer transition-colors" do %>
+                <i data-lucide="log-out" class="w-4 h-4 text-zinc-400"></i>
+                <span><%= t(".sign_out") %></span>
+              <% end %>
+            </div>
+          </div>
         <% end %>
       <% else %>
         <%= link_to new_user_session_path, class: "flex items-center gap-1 text-sm font-medium text-zinc-600 hover:text-brand transition-colors" do %>
@@ -155,6 +178,10 @@
           </div>
           <span><%= current_actor.name %></span>
         <% end %>
+      <% end %>
+      <%= link_to edit_my_profile_path, class: "flex items-center gap-2 text-sm text-zinc-650 hover:text-charcoal py-1 transition-colors" do %>
+        <i data-lucide="edit-3" class="w-4 h-4"></i>
+        <span><%= t(".edit_profile") %></span>
       <% end %>
       <%= link_to account_path, class: "flex items-center gap-2 text-sm text-zinc-650 hover:text-charcoal py-1 transition-colors" do %>
         <i data-lucide="settings" class="w-4 h-4"></i>

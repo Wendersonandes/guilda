@@ -270,6 +270,8 @@ pt-BR:
       notifications: "Notificações"
       account: "Conta"
       account_settings: "Configurações da conta"
+      edit_profile: "Editar Perfil"
+      view_profile: "Ver Perfil"
       sign_in: "Entrar"
       sign_up: "Criar conta"
       sign_out: "Sair"

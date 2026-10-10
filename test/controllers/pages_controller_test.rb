@@ -27,5 +27,6 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "h1", text: "Profissionais e Fornecedores"
     assert_select "a[href=?]", account_path
+    assert_select "a[href=?]", edit_my_profile_path
   end
 end
