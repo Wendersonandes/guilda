@@ -8,5 +8,12 @@ Lexxy.configure({
     attachments: false,
     markdown: false,
     headings: []
+  },
+  // Project "About" uses the full-ish editor: headings + inline formatting, no attachments
+  // (images live in the project gallery).
+  project: {
+    attachments: false,
+    markdown: true,
+    headings: [ "h2", "h3" ]
   }
 })

@@ -42,6 +42,7 @@
 class Profile < ApplicationRecord
   has_one :actor, as: :actorable, dependent: :destroy, autosave: true
   has_one :activity_object, as: :objectable, dependent: :destroy, autosave: true
+  has_many :projects, dependent: :destroy, inverse_of: :profile
   belongs_to :user
 
   enum :availability, { full_time: 0, freelance: 1, unavailable: 2 }

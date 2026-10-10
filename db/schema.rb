@@ -10,9 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_10_142429) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_10_190510) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "action_text_rich_texts", force: :cascade do |t|
+    t.text "body"
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.bigint "record_id", null: false
+    t.string "record_type", null: false
+    t.datetime "updated_at", null: false
+    t.index ["record_type", "record_id", "name"], name: "index_action_text_rich_texts_uniqueness", unique: true
+  end
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
@@ -270,6 +280,28 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_10_142429) do
     t.index ["user_id"], name: "index_profiles_on_user_id"
   end
 
+  create_table "project_images", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "position", default: 0, null: false
+    t.bigint "project_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["project_id", "position"], name: "index_project_images_on_project_id_and_position"
+    t.index ["project_id"], name: "index_project_images_on_project_id"
+  end
+
+  create_table "projects", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "position", default: 0, null: false
+    t.bigint "profile_id", null: false
+    t.string "slug", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.integer "visibility", default: 0, null: false
+    t.index ["profile_id", "position"], name: "index_projects_on_profile_id_and_position"
+    t.index ["profile_id"], name: "index_projects_on_profile_id"
+    t.index ["slug"], name: "index_projects_on_slug", unique: true
+  end
+
   create_table "relation_permissions", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.bigint "permission_id", null: false
@@ -522,6 +554,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_10_142429) do
   add_foreign_key "mentions", "activity_objects", on_delete: :cascade
   add_foreign_key "mentions", "actors", on_delete: :cascade
   add_foreign_key "profiles", "users", on_delete: :restrict
+  add_foreign_key "project_images", "projects", on_delete: :cascade
+  add_foreign_key "projects", "profiles", on_delete: :cascade
   add_foreign_key "relation_permissions", "permissions", on_delete: :cascade
   add_foreign_key "relation_permissions", "relations", on_delete: :cascade
   add_foreign_key "relations", "actors", on_delete: :restrict

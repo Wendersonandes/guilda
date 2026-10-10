@@ -89,6 +89,52 @@ pt-BR:
     contact_removed: "Contato removido."
     unable_to_like: "Não foi possível curtir este item."
     unable_to_unlike: "Não foi possível descurtir este item."
+    project_created: "Projeto criado."
+    project_updated: "Projeto atualizado."
+    project_deleted: "Projeto excluído."
+    project_image_added: "Imagem adicionada."
+    project_image_removed: "Imagem removida."
+    project_cover_set: "Capa atualizada."
+    projects_require_profile: "Você precisa de um perfil para gerenciar projetos."
+
+  # === Projects (portfolio) ===================================================
+  projects:
+    visibilities:
+      draft: "Rascunho"
+      public: "Público"
+      private: "Privado"
+    show:
+      about: "Sobre o projeto"
+      images: "Imagens"
+      back: "Voltar"
+  my:
+    projects:
+      index:
+        title: "Meus Projetos"
+        new: "Novo projeto"
+        empty: "Você ainda não cadastrou nenhum projeto."
+        edit: "Editar"
+        delete: "Excluir"
+        delete_confirm: "Tem certeza de que deseja excluir este projeto?"
+      new:
+        title: "Novo projeto"
+      edit:
+        title: "Editar projeto"
+      form:
+        title: "Título"
+        visibility: "Visibilidade"
+        about: "Sobre o projeto"
+        cover: "Imagem de capa"
+        cover_hint: "Envie uma imagem ou defina uma da galeria."
+        gallery: "Galeria"
+        gallery_hint: "Até 10 imagens. Arraste para reordenar."
+        add_image: "Adicionar imagem"
+        gallery_full: "Limite de 10 imagens atingido."
+        set_cover: "Definir como capa"
+        remove: "Remover"
+        remove_confirm: "Remover esta imagem?"
+        save: "Salvar projeto"
+        cancel: "Cancelar"
 
   # === Activities / feed ======================================================
   activities:
@@ -254,6 +300,7 @@ pt-BR:
     show:
       posts: "publicações"
       connections: "conexões"
+      projects_title: "Projetos"
       no_posts_title: "Ainda sem publicações"
       no_posts_subtitle: "Este perfil ainda não compartilhou atualizações ou publicações."
 
@@ -274,6 +321,7 @@ pt-BR:
       account_settings: "Configurações da conta"
       edit_profile: "Editar Perfil"
       view_profile: "Ver Perfil"
+      my_projects: "Meus Projetos"
       sign_in: "Entrar"
       sign_up: "Criar conta"
       sign_out: "Sair"

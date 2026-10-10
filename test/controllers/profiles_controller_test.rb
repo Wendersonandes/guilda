@@ -194,4 +194,19 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match(/Sugestões/, response.body)
   end
+
+  test "shows public projects on the profile and hides drafts from visitors" do
+    @actor.actorable.projects.create!(title: "Projeto Público", about: "<p>S</p>", visibility: :public)
+    @actor.actorable.projects.create!(title: "Projeto Rascunho", about: "<p>S</p>", visibility: :draft)
+
+    get profile_path(@actor)
+    assert_response :success
+    assert_match "Projeto Público", response.body
+    assert_no_match(/Projeto Rascunho/, response.body)
+
+    sign_in @user
+    get profile_path(@actor)
+    assert_response :success
+    assert_match "Projeto Rascunho", response.body
+  end
 end

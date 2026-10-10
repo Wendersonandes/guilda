@@ -67,5 +67,11 @@ class ActorsController < ApplicationController
                                         .roots.recent
                                         .includes(:owner, { author: :avatar_attachment }, :user_author, { activity_objects: { mentions: :actor } }, { parent: :author })
     @pagy, @activities = pagy(@activities)
+
+    if @actor.actorable.is_a?(Profile)
+      projects = @actor.actorable.projects
+      projects = projects.publicly_visible unless @actor == current_actor
+      @projects = projects.ordered
+    end
   end
 end

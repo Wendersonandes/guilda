@@ -7,6 +7,18 @@ Rails.application.routes.draw do
   resource :my_profile, path: "my/profile", only: [ :show, :edit, :update ], controller: "profiles"
   resources :profiles, only: [ :index ]
   resources :profiles, only: [ :show ], controller: "actors"
+
+  # Portfolio — projetos do perfil (público via slug)
+  resources :projects, only: [ :show ]
+  namespace :my do
+    resources :projects, only: [ :index, :new, :create, :edit, :update, :destroy ] do
+      collection { patch :reorder }
+      resources :images, controller: "project_images", only: [ :create, :destroy ] do
+        collection { patch :reorder }
+        member { post :cover }
+      end
+    end
+  end
   resources :groups do
     resources :memberships, only: [ :index, :create, :update, :destroy ], controller: "group_memberships" do
       collection do

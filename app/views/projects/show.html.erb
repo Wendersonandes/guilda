@@ -1,0 +1,34 @@
+<%= content_for :title, @project.title %>
+
+<div class="max-w-3xl mx-auto space-y-6">
+  <div class="bg-white rounded-lg border border-stone-border overflow-hidden">
+    <% cover = @project.cover_or_first %>
+    <% if cover&.attached? %>
+      <%= image_tag cover.variant(:thumb), class: "w-full h-56 sm:h-72 object-cover" %>
+    <% end %>
+    <div class="p-6 space-y-2">
+      <h1 class="text-2xl sm:text-3xl font-serif font-bold text-charcoal tracking-tight leading-tight"><%= @project.title %></h1>
+      <p class="text-xs font-medium text-zinc-400">
+        <%= link_to @project.profile.name, public_path_for(@project.profile.actor), class: "hover:text-brand transition-colors" %>
+      </p>
+    </div>
+  </div>
+
+  <% if @project.about.to_plain_text.present? %>
+    <div class="bg-white rounded-lg border border-stone-border p-6 space-y-3">
+      <h2 class="text-xs font-semibold uppercase tracking-wider text-zinc-400"><%= t(".about") %></h2>
+      <div class="lexxy-content text-sm text-zinc-700"><%= @project.about %></div>
+    </div>
+  <% end %>
+
+  <% if @images.any? %>
+    <div class="space-y-3">
+      <h2 class="text-xs font-semibold uppercase tracking-wider text-zinc-400 px-1"><%= t(".images") %></h2>
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <% @images.each do |image| %>
+          <%= image_tag image.image.variant(:thumb), class: "w-full h-40 object-cover rounded-lg border border-stone-border" %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>

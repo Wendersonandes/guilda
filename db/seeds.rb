@@ -11,10 +11,11 @@ end
 
 tables = %w[
   active_storage_attachments active_storage_blobs active_storage_variant_records
+  action_text_rich_texts
   activities activity_actions activity_object_activities activity_object_audiences
   activity_objects actors audiences comments contacts flags friendly_id_slugs
   groups mentions noticed_events noticed_notifications permissions posts profiles
-  relation_permissions relations sites taggings tags ties users
+  projects project_images relation_permissions relations sites taggings tags ties users
 ]
 ActiveRecord::Base.connection.execute("TRUNCATE TABLE #{tables.join(', ')} RESTART IDENTITY CASCADE")
 

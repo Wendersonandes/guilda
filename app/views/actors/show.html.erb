@@ -84,6 +84,31 @@
     </div>
   <% end %>
 
+  <% if feature_enabled?(:projects) && @projects.present? %>
+    <section class="space-y-4">
+      <h2 class="text-xs font-semibold uppercase tracking-wider text-zinc-400 px-1"><%= t(".projects_title") %></h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <% @projects.each do |project| %>
+          <%= link_to project_path(project), class: "group bg-white rounded-lg border border-stone-border overflow-hidden hover:shadow-sm transition-all duration-200" do %>
+            <div class="h-32 bg-stone-50 overflow-hidden">
+              <% cover = project.cover_or_first %>
+              <% if cover&.attached? %>
+                <%= image_tag cover.variant(:thumb), class: "w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-200" %>
+              <% end %>
+            </div>
+            <div class="p-4">
+              <h3 class="font-serif font-bold text-charcoal truncate"><%= project.title %></h3>
+              <p class="text-xs text-zinc-500 line-clamp-2 mt-1 min-h-[2rem]"><%= truncate(project.about.to_plain_text, length: 120) %></p>
+              <% if @actor == current_actor %>
+                <span class="inline-block mt-2 text-[10px] font-medium px-1.5 py-0.5 rounded bg-stone-100 text-zinc-600 border border-stone-200"><%= project.visibility_label %></span>
+              <% end %>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+
   <% if feature_enabled?(:social_feed) %>
     <div class="space-y-4">
       <% if @activities.any? %>

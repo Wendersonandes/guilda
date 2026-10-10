@@ -81,6 +81,12 @@
                 <i data-lucide="user" class="w-4 h-4 text-zinc-400"></i>
                 <span><%= t(".view_profile") %></span>
               <% end %>
+              <% if feature_enabled?(:projects) %>
+                <%= link_to my_projects_path, role: "menuitem", class: "flex items-center gap-2 px-3 py-2 text-sm text-zinc-700 hover:bg-stone-50 transition-colors" do %>
+                  <i data-lucide="folder" class="w-4 h-4 text-zinc-400"></i>
+                  <span><%= t(".my_projects") %></span>
+                <% end %>
+              <% end %>
               <%= link_to account_path, role: "menuitem", class: "flex items-center gap-2 px-3 py-2 text-sm text-zinc-700 hover:bg-stone-50 transition-colors" do %>
                 <i data-lucide="settings" class="w-4 h-4 text-zinc-400"></i>
                 <span><%= t(".account") %></span>
@@ -182,6 +188,12 @@
       <%= link_to edit_my_profile_path, class: "flex items-center gap-2 text-sm text-zinc-650 hover:text-charcoal py-1 transition-colors" do %>
         <i data-lucide="edit-3" class="w-4 h-4"></i>
         <span><%= t(".edit_profile") %></span>
+      <% end %>
+      <% if feature_enabled?(:projects) %>
+        <%= link_to my_projects_path, class: "flex items-center gap-2 text-sm text-zinc-650 hover:text-charcoal py-1 transition-colors" do %>
+          <i data-lucide="folder" class="w-4 h-4"></i>
+          <span><%= t(".my_projects") %></span>
+        <% end %>
       <% end %>
       <%= link_to account_path, class: "flex items-center gap-2 text-sm text-zinc-650 hover:text-charcoal py-1 transition-colors" do %>
         <i data-lucide="settings" class="w-4 h-4"></i>
