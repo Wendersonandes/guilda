@@ -71,7 +71,7 @@ class ActorsController < ApplicationController
     if @actor.actorable.is_a?(Profile)
       projects = @actor.actorable.projects
       projects = projects.publicly_visible unless @actor == current_actor
-      @projects = projects.ordered
+      @projects = projects.with_cover_or_first.includes(:rich_text_about).ordered
     end
   end
 end

@@ -15,7 +15,7 @@ module My
     # GET /my/projects
     def index
       authorize Project, :index?
-      @projects = policy_scope(current_profile.projects).ordered
+      @projects = policy_scope(current_profile.projects).with_cover_or_first.ordered
     end
 
     # GET /my/projects/new

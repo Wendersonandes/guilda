@@ -60,6 +60,9 @@ class Project < ApplicationRecord
   # Projects in display order.
   scope :ordered, -> { order(:position, :id) }
 
+  # Eager loads the associations used by {#cover_or_first} (cover + first gallery image).
+  scope :with_cover_or_first, -> { with_attached_cover.includes(project_images: { image_attachment: :blob }) }
+
   # Publicly visible projects.
   scope :publicly_visible, -> { where(visibility: self.visibilities[:public]) }
 
