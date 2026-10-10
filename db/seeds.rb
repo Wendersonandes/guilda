@@ -1,5 +1,7 @@
 puts "Seeding Guilda core..."
-ActiveJob::Base.queue_adapter = :inline
+# Async adapter runs jobs in-process (no Solid Queue tables needed) and supports scheduled
+# jobs (`wait:`), which the inline adapter does not.
+ActiveJob::Base.queue_adapter = :async
 
 # Clear database and reset cached singletons
 puts "  Cleaning database..."
@@ -50,6 +52,9 @@ users_data = [
     city: "São Paulo",
     state: "SP",
     website: "https://anasilva.art.br",
+    mobile: "11987654321",
+    instagram: "anasilva",
+    availability: "freelance",
     description: "Artista visual contemporânea focada em pintura a óleo de grande formato e instalações urbanas. Graduada em Belas Artes pela USP.",
     occupations: ["Design de Portfólio"]
   },
@@ -59,6 +64,9 @@ users_data = [
     city: "Rio de Janeiro",
     state: "RJ",
     website: "https://brunocostaexpografia.com",
+    mobile: "21987654321",
+    instagram: "brunocosta.expografia",
+    availability: "full_time",
     description: "Arquiteto e expógrafo com 10 anos de experiência desenhando fluxos e espaços expositivos para museus e galerias.",
     occupations: ["Expografia", "Montador de Exposições"]
   },
@@ -68,6 +76,9 @@ users_data = [
     city: "Belo Horizonte",
     state: "MG",
     website: "https://carlamendescultura.com",
+    mobile: "31987654321",
+    instagram: "carlamendescultura",
+    availability: "freelance",
     description: "Especialista em redação de projetos culturais para leis de incentivo (Rouanet/ProAC) e editais públicos.",
     occupations: ["Escrita de Projetos", "Prestação de Contas", "Produtora Cultural"]
   },
@@ -77,6 +88,9 @@ users_data = [
     city: "São Paulo",
     state: "SP",
     website: "https://diegorochafoto.myportfolio.com",
+    mobile: "11912345678",
+    instagram: "diegorochafoto",
+    availability: "full_time",
     description: "Fotógrafo especializado em registrar exposições, montagens e catálogo de obras de arte com fidelidade de cor.",
     occupations: ["Assessoria de Comunicação"]
   },
@@ -86,6 +100,9 @@ users_data = [
     city: "Curitiba",
     state: "PR",
     website: "https://elisatorreslogistica.com.br",
+    mobile: "41987654321",
+    instagram: "elisatorreslog",
+    availability: "unavailable",
     description: "Logística especializada em artes visuais. Transporte seguro de acervo, embalagem climatizada e laudo de estado para obras.",
     occupations: ["Transporte de Obras", "Produção de Exposições"]
   }
@@ -107,11 +124,15 @@ users_data.each do |data|
     city: data[:city],
     state: data[:state],
     website: data[:website],
+    mobile: data[:mobile],
+    instagram: data[:instagram],
+    availability: data[:availability],
     occupation_list: data[:occupations],
     wizard_complete: true
   )
   profile.actor.update!(
-    description: data[:description]
+    description: data[:description],
+    email: data[:email]
   )
 
   users[data[:name].split.first.downcase.to_sym] = user
