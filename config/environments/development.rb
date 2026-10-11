@@ -72,13 +72,23 @@ Rails.application.configure do
     Bullet.bullet_logger = true
     Bullet.console = true
     Bullet.rails_logger = true
-    
+
     # Safelist conditional associations that may not be accessed in all contexts to prevent false-positive AVOID alerts
     Bullet.add_safelist type: :unused_eager_loading, class_name: "Activity", association: :user_author
     Bullet.add_safelist type: :unused_eager_loading, class_name: "Activity", association: :parent
     Bullet.add_safelist type: :unused_eager_loading, class_name: "Activity", association: :likes
     Bullet.add_safelist type: :unused_eager_loading, class_name: "Activity", association: :owner
     Bullet.add_safelist type: :unused_eager_loading, class_name: "ActivityObject", association: :received_actions
+
+    # Project covers: cover_or_first falls back to the first gallery image, so the eager-loaded
+    # side that is not reached for a given dataset is flagged as unused.
+    Bullet.add_safelist type: :unused_eager_loading, class_name: "Project", association: :project_images
+    Bullet.add_safelist type: :unused_eager_loading, class_name: "Project", association: :cover_attachment
+    Bullet.add_safelist type: :unused_eager_loading, class_name: "ProjectImage", association: :image_attachment
+    Bullet.add_safelist type: :unused_eager_loading, class_name: "ActiveStorage::Attachment", association: :blob
+    Bullet.add_safelist type: :unused_eager_loading, class_name: "ActiveStorage::Blob", association: :variant_records
+    Bullet.add_safelist type: :unused_eager_loading, class_name: "ActiveStorage::Blob", association: :preview_image_attachment
+    Bullet.add_safelist type: :unused_eager_loading, class_name: "ActiveStorage::VariantRecord", association: :image_attachment
   end
 
   # Raises error for missing translations.
