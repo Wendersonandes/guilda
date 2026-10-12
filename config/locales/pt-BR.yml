@@ -339,8 +339,10 @@ pt-BR:
       suggestions_title: "Sugestões"
       suggestions_subtitle: "Pessoas com quem você pode se conectar"
     contact_card:
-      title: "Contato"
-      empty: "Sem informações de contato."
+      title: "Entre em contato com este profissional"
+      own_title: "Suas informações de contato"
+      empty: "Este profissional ainda não informou formas de contato."
+      own_empty: "Você ainda não cadastrou formas de contato."
       copied: "Copiado!"
       copy_email: "Copiar e-mail"
       whatsapp: "WhatsApp"
