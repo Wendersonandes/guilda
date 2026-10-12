@@ -5,8 +5,10 @@ class ActorsControllerTest < ActionDispatch::IntegrationTest
     seed_permissions_and_relations
     @alice = users(:alice)
     @alice_actor = create_profile_for(@alice, name: "Alice")
+    @alice_actor.actorable.update!(mobile: "11999999999")
     @bob = users(:bob)
     @bob_actor = create_profile_for(@bob, name: "Bob")
+    @bob_actor.actorable.update!(mobile: "11999999999")
   end
 
   test "contact card invites to contact another professional" do
@@ -17,6 +19,12 @@ class ActorsControllerTest < ActionDispatch::IntegrationTest
     assert_no_match I18n.t("shared.contact_card.own_title"), response.body
   end
 
+  test "whatsapp link prefills the guest message with the professional's name" do
+    get profile_path(@bob_actor)
+
+    assert_match %r{wa\.me/5511999999999\?text=Ol%C3%A1%2C%20Bob}, response.body
+  end
+
   test "contact card shows the owner's contact info on their own profile" do
     sign_in @alice
 
@@ -25,5 +33,13 @@ class ActorsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match I18n.t("shared.contact_card.own_title"), response.body
     assert_no_match I18n.t("shared.contact_card.title"), response.body
+  end
+
+  test "whatsapp link prefills the signed-in sender's message" do
+    sign_in @alice
+
+    get profile_path(@bob_actor)
+
+    assert_match %r{\?text=Ol%C3%A1%2C%20Bob%21%20Sou%20Alice}, response.body
   end
 end

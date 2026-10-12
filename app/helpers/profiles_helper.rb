@@ -17,13 +17,16 @@ module ProfilesHelper
   # Builds a WhatsApp (wa.me) link for a Brazilian number.
   #
   # @param value [String, nil] the number (with or without country code).
+  # @param text [String, nil] optional prefilled message.
   # @return [String, nil]
-  def whatsapp_url(value)
+  def whatsapp_url(value, text: nil)
     digits = value.to_s.gsub(/\D/, "")
     return nil if digits.blank?
 
     digits = "55#{digits}" if digits.length == 11
-    "https://wa.me/#{digits}"
+    url = "https://wa.me/#{digits}"
+    url += "?text=#{ERB::Util.url_encode(text)}" if text.present?
+    url
   end
 
   # Canonical Instagram profile URL for a handle, @handle or URL.

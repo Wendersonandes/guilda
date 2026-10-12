@@ -346,6 +346,8 @@ pt-BR:
       copied: "Copiado!"
       copy_email: "Copiar e-mail"
       whatsapp: "WhatsApp"
+      whatsapp_message: "Olá, %{name}! Vi seu perfil na Guilda e gostaria de conversar."
+      whatsapp_message_from: "Olá, %{name}! Sou %{sender} e vi seu perfil na Guilda. Gostaria de conversar."
     sidebar_pending_contacts:
       title: "Solicitações pendentes"
       subtitle: "Pessoas que querem se conectar com você"
