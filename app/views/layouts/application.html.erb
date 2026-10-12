@@ -55,14 +55,12 @@
           <div class="max-w-6xl mx-auto">
             <div class="grid grid-cols-12 gap-6">
               <!-- Left Column (Navigation) -->
-              <% if current_actor %>
-                <div class="hidden lg:block lg:col-span-3">
-                  <%= content_for?(:left_sidebar) ? yield(:left_sidebar) : render("shared/left_sidebar") %>
-                </div>
-              <% end %>
+              <div class="hidden lg:block lg:col-span-3">
+                <%= content_for?(:left_sidebar) ? yield(:left_sidebar) : render("shared/left_sidebar") %>
+              </div>
 
               <!-- Center Column (Main Content) -->
-              <div class="col-span-12 <%= current_actor ? 'lg:col-span-6' : 'lg:col-span-9' %> space-y-6">
+              <div class="col-span-12 lg:col-span-6 space-y-6">
                 <%= yield %>
               </div>
 

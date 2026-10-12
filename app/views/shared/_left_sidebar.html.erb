@@ -67,4 +67,38 @@
       <% end %>
     </div>
   </div>
+<% else %>
+  <div class="space-y-6 sticky top-20">
+    <!-- Brand Card -->
+    <div class="bg-white rounded-lg border border-stone-border p-5 text-center">
+      <div class="w-12 h-12 mx-auto rounded-full bg-stone-100 flex items-center justify-center border border-stone-border mb-3">
+        <i data-lucide="activity" class="w-6 h-6 text-brand"></i>
+      </div>
+      <h2 class="font-serif font-bold text-charcoal text-base">Guilda</h2>
+      <p class="text-[11px] text-zinc-400 leading-relaxed mt-1"><%= t(".guest_blurb") %></p>
+    </div>
+
+    <!-- Public Navigation List -->
+    <div class="bg-white rounded-lg border border-stone-border p-3 space-y-1">
+      <% is_profiles = controller_name == 'profiles' && action_name == 'index' %>
+      <% is_groups = controller_name == 'groups' && action_name == 'index' %>
+
+      <%= link_to profiles_path, class: "flex items-center gap-2.5 px-3 py-2 text-sm font-semibold rounded-lg transition-colors #{is_profiles ? 'bg-stone-100 text-charcoal' : 'text-zinc-600 hover:bg-stone-50'}" do %>
+        <i data-lucide="search" class="w-4 h-4 <%= is_profiles ? 'text-brand' : 'text-zinc-400' %>"></i>
+        <span><%= t(".profiles") %></span>
+      <% end %>
+
+      <% if feature_enabled?(:groups) %>
+        <%= link_to groups_path, class: "flex items-center gap-2.5 px-3 py-2 text-sm font-semibold rounded-lg transition-colors #{is_groups ? 'bg-stone-100 text-charcoal' : 'text-zinc-650 hover:bg-stone-50'}" do %>
+          <i data-lucide="layers" class="w-4 h-4 <%= is_groups ? 'text-brand' : 'text-zinc-400' %>"></i>
+          <span><%= t(".groups") %></span>
+        <% end %>
+      <% end %>
+
+      <%= link_to about_path, class: "flex items-center gap-2.5 px-3 py-2 text-sm font-semibold rounded-lg text-zinc-600 hover:bg-stone-50 transition-colors" do %>
+        <i data-lucide="info" class="w-4 h-4 text-zinc-400"></i>
+        <span><%= t(".about") %></span>
+      <% end %>
+    </div>
+  </div>
 <% end %>

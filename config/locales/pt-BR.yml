@@ -335,6 +335,8 @@ pt-BR:
       profiles: "Perfis"
       contacts: "Contatos"
       groups: "Grupos"
+      about: "Sobre"
+      guest_blurb: "A plataforma de trabalho das artes visuais no Brasil."
     right_sidebar:
       suggestions_title: "Sugestões"
       suggestions_subtitle: "Pessoas com quem você pode se conectar"
