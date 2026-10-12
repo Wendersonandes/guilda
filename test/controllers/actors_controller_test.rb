@@ -25,6 +25,12 @@ class ActorsControllerTest < ActionDispatch::IntegrationTest
     assert_match %r{wa\.me/5511999999999\?text=Ol%C3%A1%2C%20Bob}, response.body
   end
 
+  test "guest sees the sign-up call to action in the sidebar" do
+    get profile_path(@bob_actor)
+
+    assert_match I18n.t("shared.right_sidebar.guest_title"), response.body
+  end
+
   test "contact card shows the owner's contact info on their own profile" do
     sign_in @alice
 
@@ -41,5 +47,13 @@ class ActorsControllerTest < ActionDispatch::IntegrationTest
     get profile_path(@bob_actor)
 
     assert_match %r{\?text=Ol%C3%A1%2C%20Bob%21%20Sou%20Alice}, response.body
+  end
+
+  test "signed-in visitor does not see the sign-up call to action" do
+    sign_in @alice
+
+    get profile_path(@bob_actor)
+
+    assert_no_match I18n.t("shared.right_sidebar.guest_title"), response.body
   end
 end

@@ -338,6 +338,10 @@ pt-BR:
     right_sidebar:
       suggestions_title: "Sugestões"
       suggestions_subtitle: "Pessoas com quem você pode se conectar"
+      guest_title: "Faça parte da Guilda"
+      guest_subtitle: "Crie sua conta para publicar seu portfólio, conectar-se a profissionais e montar equipes."
+      guest_sign_up: "Criar conta"
+      guest_sign_in: "Já tenho conta — entrar"
     contact_card:
       title: "Entre em contato com este profissional"
       own_title: "Suas informações de contato"

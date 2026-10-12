@@ -51,8 +51,7 @@
       <div class="container mx-auto px-5">
         <%= render "shared/flash" %>
         
-        <% profile_page = controller_name == "actors" && action_name == "show" %>
-        <% if (current_actor || profile_page) && !devise_controller? && !content_for?(:no_sidebar) %>
+        <% if !devise_controller? && !content_for?(:no_sidebar) %>
           <div class="max-w-6xl mx-auto">
             <div class="grid grid-cols-12 gap-6">
               <!-- Left Column (Navigation) -->

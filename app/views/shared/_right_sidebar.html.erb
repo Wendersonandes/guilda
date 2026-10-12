@@ -3,6 +3,20 @@
     <%= render "shared/contact_card", actor: @actor %>
   <% end %>
 
+  <% unless current_actor %>
+    <div class="bg-white rounded-lg border border-stone-border p-5 space-y-3">
+      <h3 class="text-sm font-semibold text-charcoal flex items-center gap-1.5">
+        <i data-lucide="user-plus" class="w-4 h-4 text-brand"></i>
+        <span><%= t(".guest_title") %></span>
+      </h3>
+      <p class="text-xs text-zinc-500 leading-relaxed"><%= t(".guest_subtitle") %></p>
+      <%= link_to t(".guest_sign_up"), new_user_registration_path,
+            class: "block text-center bg-brand hover:bg-brand-hover text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer" %>
+      <%= link_to t(".guest_sign_in"), new_user_session_path,
+            class: "block text-center text-xs font-medium text-zinc-500 hover:text-charcoal transition-colors" %>
+    </div>
+  <% end %>
+
   <% if current_actor && (!@actor || @actor == current_actor) %>
     <div class="bg-white rounded-lg border border-stone-border p-5 flex flex-col gap-5">
       <% if feature_enabled?(:contacts) %>
