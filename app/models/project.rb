@@ -2,14 +2,14 @@
 #
 # Table name: projects
 #
-#  id          :bigint           not null, primary key
-#  position    :integer          default(0), not null
-#  slug        :string           not null
-#  title       :string           not null
-#  visibility  :integer          default(0), not null
-#  created_at  :datetime         not null
-#  updated_at  :datetime         not null
-#  profile_id  :bigint           not null
+#  id         :bigint           not null, primary key
+#  position   :integer          default(0), not null
+#  slug       :string           not null
+#  title      :string           not null
+#  visibility :integer          default("draft"), not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  profile_id :bigint           not null
 #
 # Indexes
 #

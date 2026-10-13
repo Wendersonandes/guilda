@@ -46,6 +46,16 @@ class ProfileTest < ActiveSupport::TestCase
     assert_equal alice, profile.user
   end
 
+  test "occupation options use generic names and carry an icon and description" do
+    names = Profile::OCCUPATIONS.map { |occupation| occupation["name"] }
+
+    assert_includes names, "Montagem de Exposições"
+    assert_includes names, "Produção Cultural"
+    assert_not_includes names, "Montador de Exposições"
+    assert_not_includes names, "Produtora Cultural"
+    assert Profile::OCCUPATIONS.all? { |o| o["icon"].present? && o["description"].present? }
+  end
+
   test "ProfileCreation creates Actor and ActivityObject in transaction" do
     alice = users(:alice)
 

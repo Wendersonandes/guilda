@@ -124,21 +124,8 @@
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      <% 
-        icon_mapping = {
-          "Escrita de Projetos" => "pen-tool",
-          "Expografia" => "layers",
-          "Prestação de Contas" => "file-spreadsheet",
-          "Montador de Exposições" => "hammer",
-          "Transporte de Obras" => "truck",
-          "Design de Portfólio" => "image",
-          "Produção de Exposições" => "component",
-          "Produtora Cultural" => "briefcase",
-          "Assessoria de Comunicação" => "megaphone"
-        }
-      %>
       <% (@occupations || []).each do |occupation| %>
-        <% icon_name = icon_mapping[occupation["name"]] || "star" %>
+        <% icon_name = occupation["icon"] || "star" %>
         <div class="p-6 bg-white border border-stone-border rounded-xl hover:shadow-md transition-shadow duration-250 flex flex-col gap-4">
           <div class="w-10 h-10 rounded-lg bg-gallery flex items-center justify-center text-brand shrink-0">
             <i data-lucide="<%= icon_name %>" class="w-5 h-5"></i>

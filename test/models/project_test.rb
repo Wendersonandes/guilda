@@ -1,5 +1,28 @@
 require "test_helper"
 
+# == Schema Information
+#
+# Table name: projects
+#
+#  id         :bigint           not null, primary key
+#  position   :integer          default(0), not null
+#  slug       :string           not null
+#  title      :string           not null
+#  visibility :integer          default("draft"), not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  profile_id :bigint           not null
+#
+# Indexes
+#
+#  index_projects_on_profile_id               (profile_id)
+#  index_projects_on_profile_id_and_position  (profile_id,position)
+#  index_projects_on_slug                     (slug) UNIQUE
+#
+# Foreign Keys
+#
+#  fk_rails_...  (profile_id => profiles.id) ON DELETE => cascade
+#
 class ProjectTest < ActiveSupport::TestCase
   setup do
     seed_permissions_and_relations

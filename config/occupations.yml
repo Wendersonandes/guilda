@@ -1,19 +1,28 @@
 occupations:
   - name: Escrita de Projetos
+    icon: pen-tool
     description: "Desenvolvimento e formatação de propostas para editais, leis de incentivo e patrocínios."
   - name: Expografia
+    icon: layers
     description: "Concepção do espaço, mobiliário, percurso e iluminação para apresentação de obras em exposições."
   - name: Prestação de Contas
+    icon: file-spreadsheet
     description: "Organização financeira, controle e comprovação das despesas executadas em projetos culturais."
-  - name: Montador de Exposições
-    description: "Profissional especializado no manuseio técnico, instalação e fixação de obras de arte e estruturas."
+  - name: Montagem de Exposições
+    icon: hammer
+    description: "Manuseio técnico, instalação e fixação de obras de arte e estruturas."
   - name: Transporte de Obras
+    icon: truck
     description: "Logística especializada, embalagem e manuseio seguro de acervos e obras de arte (Fine Art)."
   - name: Design de Portfólio
+    icon: image
     description: "Criação e diagramação visual de materiais de apresentação e currículos para artistas e projetos."
   - name: Produção de Exposições
+    icon: component
     description: "Coordenação prática, logística e acompanhamento de todas as etapas de montagem e exibição."
-  - name: Produtora Cultural
+  - name: Produção Cultural
+    icon: briefcase
     description: "Gestão, planejamento, captação de recursos e realização executiva de projetos e eventos culturais."
   - name: Assessoria de Comunicação
+    icon: megaphone
     description: "Estratégia de divulgação, relacionamento com a imprensa e gestão da comunicação de projetos culturais."

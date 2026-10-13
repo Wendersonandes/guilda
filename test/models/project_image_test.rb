@@ -1,5 +1,24 @@
 require "test_helper"
 
+# == Schema Information
+#
+# Table name: project_images
+#
+#  id         :bigint           not null, primary key
+#  position   :integer          default(0), not null
+#  created_at :datetime         not null
+#  updated_at :datetime         not null
+#  project_id :bigint           not null
+#
+# Indexes
+#
+#  index_project_images_on_project_id               (project_id)
+#  index_project_images_on_project_id_and_position  (project_id,position)
+#
+# Foreign Keys
+#
+#  fk_rails_...  (project_id => projects.id) ON DELETE => cascade
+#
 class ProjectImageTest < ActiveSupport::TestCase
   setup do
     seed_permissions_and_relations

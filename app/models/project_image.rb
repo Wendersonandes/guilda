@@ -10,8 +10,8 @@
 #
 # Indexes
 #
-#  index_project_images_on_project_id                (project_id)
-#  index_project_images_on_project_id_and_position   (project_id,position)
+#  index_project_images_on_project_id               (project_id)
+#  index_project_images_on_project_id_and_position  (project_id,position)
 #
 # Foreign Keys
 #

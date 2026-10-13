@@ -69,7 +69,7 @@ users_data = [
     instagram: "brunocosta.expografia",
     availability: "full_time",
     description: "Arquiteto e expógrafo com 10 anos de experiência desenhando fluxos e espaços expositivos para museus e galerias.",
-    occupations: ["Expografia", "Montador de Exposições"]
+    occupations: ["Expografia", "Montagem de Exposições"]
   },
   {
     email: "carla@example.com",
@@ -81,7 +81,7 @@ users_data = [
     instagram: "carlamendescultura",
     availability: "freelance",
     description: "Especialista em redação de projetos culturais para leis de incentivo (Rouanet/ProAC) e editais públicos.",
-    occupations: ["Escrita de Projetos", "Prestação de Contas", "Produtora Cultural"]
+    occupations: ["Escrita de Projetos", "Prestação de Contas", "Produção Cultural"]
   },
   {
     email: "diego@example.com",
