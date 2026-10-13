@@ -48,8 +48,14 @@
     </div>
 
     <!-- Desktop Menu -->
-    <div class="hidden sm:flex items-center gap-5">
+    <div class="hidden sm:flex items-center gap-4">
       <% if user_signed_in? %>
+        <% if current_actor && feature_enabled?(:projects) && current_actor.actorable.is_a?(Profile) %>
+          <%= link_to new_my_project_path, class: "inline-flex items-center gap-1.5 text-xs bg-charcoal text-white hover:bg-zinc-800 font-medium px-3 py-1.5 rounded-lg transition-colors shadow-sm" do %>
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+            <span><%= t(".new_project") %></span>
+          <% end %>
+        <% end %>
         <% if current_actor && feature_enabled?(:notifications) %>
           <%= link_to notifications_path, class: "p-1.5 text-zinc-500 hover:text-brand transition-colors flex items-center mr-1", title: t(".notifications") do %>
             <div class="relative">
@@ -190,6 +196,12 @@
         <span><%= t(".edit_profile") %></span>
       <% end %>
       <% if feature_enabled?(:projects) %>
+        <% if current_actor&.actorable.is_a?(Profile) %>
+          <%= link_to new_my_project_path, class: "flex items-center gap-2 text-sm text-brand font-medium hover:text-brand-hover py-1 transition-colors" do %>
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            <span><%= t(".new_project") %></span>
+          <% end %>
+        <% end %>
         <%= link_to my_projects_path, class: "flex items-center gap-2 text-sm text-zinc-650 hover:text-charcoal py-1 transition-colors" do %>
           <i data-lucide="folder" class="w-4 h-4"></i>
           <span><%= t(".my_projects") %></span>

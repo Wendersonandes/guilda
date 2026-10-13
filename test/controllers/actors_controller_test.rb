@@ -56,4 +56,26 @@ class ActorsControllerTest < ActionDispatch::IntegrationTest
 
     assert_no_match I18n.t("shared.right_sidebar.guest_title"), response.body
   end
+
+  test "profile owner sees edit profile action and global new project in nav" do
+    sign_in @alice
+
+    get profile_path(@alice_actor)
+
+    assert_response :success
+    assert_match I18n.t("actors.show.edit_profile"), response.body
+    assert_match I18n.t("shared.nav.new_project"), response.body
+    assert_match I18n.t("actors.show.tab_portfolio"), response.body
+    assert_match I18n.t("actors.show.tab_activity"), response.body
+  end
+
+  test "visitor sees connection button instead of owner edit profile" do
+    sign_in @alice
+
+    get profile_path(@bob_actor)
+
+    assert_response :success
+    assert_no_match I18n.t("actors.show.edit_profile"), response.body
+    assert_match I18n.t("shared.connection_button.connect"), response.body
+  end
 end
