@@ -44,6 +44,12 @@ module My
       assert_select "div.grid.grid-cols-12", count: 0
     end
 
+    test "the wizard uses independently scrollable panes" do
+      get new_my_project_path
+
+      assert_select "[class*='lg:overflow-y-auto']", count: 2
+    end
+
     test "renders the edit form with the gallery" do
       project = @alice.actorable.projects.create!(title: "Meu Projeto", about: "<p>Sobre</p>")
 

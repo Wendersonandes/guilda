@@ -1,8 +1,9 @@
 <% content_for :no_sidebar, true %>
 <%= content_for :title, t(".title") %>
 
-<div class="space-y-6" data-controller="project-wizard project-preview">
-  <div class="flex items-start justify-between gap-4">
+<div class="space-y-6 lg:flex lg:h-[calc(100vh-8rem)] lg:flex-col"
+     data-controller="project-wizard project-preview">
+  <div class="flex items-start justify-between gap-4 lg:flex-none">
     <div>
       <h1 class="text-2xl font-serif font-bold text-charcoal tracking-tight"><%= t(".title") %></h1>
       <p class="text-sm text-zinc-500 mt-0.5"><%= t(".subtitle") %></p>
@@ -10,13 +11,13 @@
     <%= link_to t(".cancel"), my_projects_path, class: "text-sm font-medium text-zinc-500 hover:text-charcoal transition-colors flex-shrink-0" %>
   </div>
 
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-    <div>
+  <div class="grid grid-cols-1 gap-8 lg:flex lg:flex-1 lg:min-h-0">
+    <div class="lg:flex-1 lg:min-h-0 lg:overflow-y-auto lg:pr-2">
       <%= render "wizard", project: @project %>
     </div>
 
-    <div class="hidden lg:block">
-      <div class="sticky top-20 space-y-3">
+    <div class="hidden lg:block lg:flex-1 lg:min-h-0 lg:overflow-y-auto lg:pl-2">
+      <div class="space-y-3 lg:pb-4">
         <p class="text-xs font-semibold uppercase tracking-wider text-zinc-400 px-1"><%= t(".preview_label") %></p>
         <%= render "projects/project", project: @project, images: [], preview: true %>
       </div>

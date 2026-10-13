@@ -13,7 +13,7 @@
   <% end %>
 
   <!-- Tabs -->
-  <div class="border-b border-stone-200">
+  <div class="border-b border-stone-200 lg:sticky lg:top-0 lg:z-10 lg:bg-gallery">
     <nav class="-mb-px flex gap-6 overflow-x-auto" aria-label="<%= t(".progress_label") %>">
       <% steps.each_with_index do |label, index| %>
         <button type="button"
@@ -103,7 +103,7 @@
   </div>
 
   <!-- Navigation -->
-  <div class="flex items-center justify-between border-t border-stone-100 pt-5">
+  <div class="flex items-center justify-between border-t border-stone-100 pt-5 lg:sticky lg:bottom-0 lg:z-10 lg:bg-gallery lg:pb-4">
     <button type="button"
             data-project-wizard-target="previousButton"
             data-action="project-wizard#previous"
