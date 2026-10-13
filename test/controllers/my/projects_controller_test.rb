@@ -93,6 +93,19 @@ module My
       assert_equal blobs[1].id, project.cover.blob.id
     end
 
+    test "preserves the selected gallery order" do
+      blobs = 3.times.map { |i| image_blob("ordem-#{i}.png") }
+      ordered = [ blobs[2], blobs[0], blobs[1] ]
+
+      post my_projects_path, params: {
+        project: { title: "Ordem", about: "<p>Sobre</p>", gallery_signed_ids: ordered.map(&:signed_id) }
+      }
+
+      project = Project.find_by(title: "Ordem")
+
+      assert_equal ordered.map(&:id), project.project_images.ordered.map { |image| image.image.blob.id }
+    end
+
     test "ignores gallery signed ids beyond the limit and warns" do
       project = @alice.actorable.projects.create!(title: "Meu Projeto", about: "<p>Sobre</p>")
       Project::MAX_IMAGES.times { |i| project.project_images.create!(image: image_blob("fill-#{i}.png")) }

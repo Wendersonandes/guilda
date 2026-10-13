@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 // Mirrors the new-project form into the live preview (title, description, cover and gallery
 // images). Images are previewed locally via object URLs until the form is submitted; the cover
-// is chosen among the selected gallery images.
+// is marked among the selected gallery images (falling back to the first when none is marked).
 export default class extends Controller {
   static targets = [
     "titleInput", "galleryInput", "coverIndexInput", "thumbnails", "galleryEmpty",
@@ -13,7 +13,7 @@ export default class extends Controller {
   connect() {
     this.urls = new Map()
     this.files = []
-    this.selectedCoverIndex = null
+    this.coverFile = null
     this.titlePlaceholder = this.hasTitleTextTarget ? this.titleTextTarget.textContent : ""
 
     this.editor = this.element.querySelector("lexxy-editor")
@@ -48,32 +48,48 @@ export default class extends Controller {
   galleryChanged() {
     this.revokeUrls()
     this.files = Array.from(this.galleryInputTarget.files || [])
-    this.selectedCoverIndex = null
-    this.coverIndexInputTarget.value = ""
+    this.coverFile = null
     this.renderGallery()
   }
 
   selectCover(event) {
-    this.selectedCoverIndex = parseInt(event.currentTarget.dataset.index, 10)
-    this.coverIndexInputTarget.value = this.selectedCoverIndex
+    const file = this.files[parseInt(event.currentTarget.dataset.index, 10)]
+    this.coverFile = this.coverFile === file ? null : file
+    this.renderGallery()
+  }
+
+  galleryReordered() {
+    const order = Array.from(this.thumbnailsTarget.children).map((child) => parseInt(child.dataset.id, 10))
+    const reordered = order.map((index) => this.files[index]).filter(Boolean)
+    if (reordered.length !== this.files.length) return
+
+    this.files = reordered
+    this.syncInputFiles()
     this.renderGallery()
   }
 
   renderGallery() {
     const hasFiles = this.files.length > 0
+    const markedIndex = this.coverIndex()
 
     if (this.hasGalleryEmptyTarget) this.galleryEmptyTarget.classList.toggle("hidden", hasFiles)
+    this.coverIndexInputTarget.value = markedIndex === null ? "" : markedIndex
 
     this.thumbnailsTarget.innerHTML = ""
     this.files.forEach((file, index) => {
+      const marked = index === markedIndex
       const wrapper = document.createElement("div")
-      wrapper.className = "relative rounded-lg overflow-hidden border border-stone-border"
-      if (index === this.activeCoverIndex()) wrapper.classList.add("ring-2", "ring-brand")
+      wrapper.dataset.id = index
+      wrapper.className = "relative rounded-lg overflow-hidden border border-stone-border cursor-grab"
+      if (marked) wrapper.classList.add("ring-2", "ring-brand")
       wrapper.innerHTML = `
-        <img src="${this.urlFor(file)}" class="w-full h-24 object-cover" alt="">
+        <img src="${this.urlFor(file)}" class="w-full h-24 object-cover pointer-events-none" alt="">
         <button type="button" data-action="project-preview#selectCover" data-index="${index}"
                 title="${this.coverLabel}" aria-label="${this.coverLabel}"
-                class="absolute top-1 right-1 flex items-center justify-center w-6 h-6 rounded-full bg-black/50 text-white/90 hover:text-white cursor-pointer">
+                aria-pressed="${marked}"
+                class="absolute top-1 right-1 flex items-center justify-center w-6 h-6 rounded-full cursor-pointer ${
+                  marked ? "bg-brand text-white" : "bg-black/50 text-white/90 hover:text-white"
+                }">
           <i data-lucide="star" class="w-3.5 h-3.5"></i>
         </button>`
       this.thumbnailsTarget.appendChild(wrapper)
@@ -93,8 +109,7 @@ export default class extends Controller {
   }
 
   updatePreviewCover() {
-    const index = this.activeCoverIndex()
-    const file = index === null ? null : this.files[index]
+    const file = this.coverFile || this.files[0] || null
 
     if (file) {
       this.coverTarget.src = this.urlFor(file)
@@ -106,9 +121,18 @@ export default class extends Controller {
     }
   }
 
-  activeCoverIndex() {
-    if (this.files.length === 0) return null
-    return this.selectedCoverIndex === null ? 0 : this.selectedCoverIndex
+  // Index of the image explicitly marked as cover, or null when none is marked.
+  coverIndex() {
+    if (!this.coverFile) return null
+    const index = this.files.indexOf(this.coverFile)
+    return index === -1 ? null : index
+  }
+
+  syncInputFiles() {
+    if (!this.hasGalleryInputTarget) return
+    const dataTransfer = new DataTransfer()
+    this.files.forEach((file) => dataTransfer.items.add(file))
+    this.galleryInputTarget.files = dataTransfer.files
   }
 
   get coverLabel() {

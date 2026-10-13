@@ -143,6 +143,7 @@ pt-BR:
         cover_hint: "Clique na estrela de uma imagem para usá-la como destaque do projeto."
         set_cover: "Definir como imagem de destaque"
         no_images: "Nenhuma imagem selecionada ainda."
+        reorder_hint: "Arraste as imagens para reordenar."
         publish_title: "Publicação"
         publish_intro: "Escolha como deseja salvar o projeto. Você poderá alterar isso depois."
         draft_label: "Rascunho"

@@ -68,7 +68,12 @@
       <p class="text-sm font-medium text-charcoal"><%= t(".cover_label") %></p>
       <p class="text-xs text-zinc-400"><%= t(".cover_hint") %></p>
       <p data-project-preview-target="galleryEmpty" class="text-xs text-zinc-400 italic"><%= t(".no_images") %></p>
-      <div data-project-preview-target="thumbnails" class="grid grid-cols-3 gap-3"></div>
+      <div data-project-preview-target="thumbnails"
+           data-controller="sortable"
+           data-sortable-filter-value="button"
+           data-action="sortable:end->project-preview#galleryReordered"
+           class="grid grid-cols-3 gap-3"></div>
+      <p class="text-xs text-zinc-400"><%= t(".reorder_hint") %></p>
     </div>
   </div>
 
