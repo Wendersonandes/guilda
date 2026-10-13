@@ -2,7 +2,7 @@
   <% if current_actor && feature_enabled?(:notifications) %>
     <%= turbo_stream_from current_actor, :notifications %>
   <% end %>
-  <div class="container mx-auto px-5 flex items-center justify-between h-14">
+  <div class="max-w-6xl mx-auto px-5 flex items-center justify-between h-14">
     <div class="flex items-center gap-8">
       <%= link_to root_path, class: "flex items-center gap-2 font-bold text-base text-charcoal tracking-tight hover:opacity-90 transition-opacity" do %>
         <i data-lucide="activity" class="w-5 h-5 text-brand"></i>

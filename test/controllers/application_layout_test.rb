@@ -45,4 +45,19 @@ class ApplicationLayoutTest < ActionDispatch::IntegrationTest
     assert_no_match I18n.t("shared.left_sidebar.guest_blurb"), response.body
     assert_no_match I18n.t("shared.right_sidebar.guest_title"), response.body
   end
+
+  test "standard pages use the uniform max-w-6xl band" do
+    sign_in @alice
+
+    get activities_path
+
+    assert_select "div[data-layout-band].max-w-6xl"
+  end
+
+  test "full-width pages skip the max-w-6xl band but keep the padding" do
+    get about_path
+
+    assert_select "div[data-layout-band].px-5"
+    assert_select "div[data-layout-band].max-w-6xl", count: 0
+  end
 end
