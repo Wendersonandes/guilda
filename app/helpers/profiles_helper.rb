@@ -7,8 +7,9 @@ module ProfilesHelper
   # @return [String]
   def br_phone_display(value)
     digits = value.to_s.gsub(/\D/, "")
+    digits = digits.delete_prefix("55") if digits.length == 13 && digits.start_with?("55")
     case digits.length
-    when 11 then "(#{digits[0, 2]}) #{digits[2, 7]}-#{digits[7, 4]}"
+    when 11 then "(#{digits[0, 2]}) #{digits[2, 5]}-#{digits[7, 4]}"
     when 10 then "(#{digits[0, 2]}) #{digits[2, 4]}-#{digits[6, 4]}"
     else value.to_s
     end

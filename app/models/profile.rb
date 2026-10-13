@@ -131,11 +131,18 @@ class Profile < ApplicationRecord
   private
 
   # Normalizes the contact fields before validation:
-  # * +mobile+ is stored as digits only (e.g. "11987654321").
+  # * +mobile+ is stored as digits only (e.g. "11987654321"), dropping an optional "55" country
+  #   code when present.
   # * +instagram+ is stored as the canonical profile URL (accepts @handle, handle or URL).
   def normalize_contact_info
-    self.mobile = mobile.to_s.gsub(/\D/, "") if mobile.present?
+    self.mobile = normalize_mobile(mobile) if mobile.present?
     self.instagram = normalize_instagram(instagram) if instagram.present?
+  end
+
+  def normalize_mobile(value)
+    digits = value.to_s.gsub(/\D/, "")
+    digits = digits.delete_prefix("55") if digits.length == 13 && digits.start_with?("55")
+    digits
   end
 
   def normalize_instagram(value)

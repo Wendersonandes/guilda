@@ -29,4 +29,21 @@ class ProfilesHelperTest < ActionView::TestCase
     assert_not_includes whatsapp_url("11999999999", text: nil), "?text="
     assert_not_includes whatsapp_url("11999999999", text: ""), "?text="
   end
+
+  test "formats an 11-digit mobile without dropping digits" do
+    assert_equal "(11) 98765-4321", br_phone_display("11987654321")
+    assert_equal "11987654321", br_phone_display("11987654321").gsub(/\D/, "")
+  end
+
+  test "formats a 10-digit landline" do
+    assert_equal "(11) 3265-4321", br_phone_display("1132654321")
+  end
+
+  test "drops the 55 country code before formatting a mobile" do
+    assert_equal "(11) 98765-4321", br_phone_display("5511987654321")
+  end
+
+  test "returns the original value when it cannot be formatted" do
+    assert_equal "abc", br_phone_display("abc")
+  end
 end

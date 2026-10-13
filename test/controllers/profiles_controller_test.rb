@@ -40,6 +40,15 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_equal "freelance", @actor.profile.reload.availability
   end
 
+  test "should save the mobile from the formatted field value" do
+    sign_in @user
+
+    patch my_profile_path, params: { profile: { mobile: "(11) 98765-4321" } }
+
+    assert_redirected_to profile_path(@actor)
+    assert_equal "11987654321", @actor.profile.reload.mobile
+  end
+
   test "should get index when not signed in" do
     get profiles_path
     assert_response :success

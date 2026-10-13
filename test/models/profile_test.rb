@@ -131,6 +131,12 @@ class ProfileTest < ActiveSupport::TestCase
     assert_includes profile.errors[:mobile], "deve estar no formato (DDD) 9XXXX-XXXX"
   end
 
+  test "drops the 55 country code from the mobile" do
+    profile = Profile.new(user: users(:alice), mobile: "+55 (11) 98765-4321")
+    assert profile.valid?
+    assert_equal "11987654321", profile.mobile
+  end
+
   test "normalizes the instagram handle or url to the profile url" do
     {
       "@ana.silva" => "https://instagram.com/ana.silva",
