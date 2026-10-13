@@ -99,8 +99,12 @@ module My
       Array(params.dig(:project, :gallery_signed_ids))
     end
 
+    def cover_index
+      params.dig(:project, :cover_index).presence&.to_i
+    end
+
     def ingest_gallery
-      result = ProjectImageIngestor.new(@project, gallery_signed_ids).call
+      result = ProjectImageIngestor.new(@project, gallery_signed_ids, cover_index: cover_index).call
 
       if result[:skipped].positive?
         flash[:alert] = t("flash.project_gallery_skipped", count: result[:skipped])

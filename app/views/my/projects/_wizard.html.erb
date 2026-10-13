@@ -1,0 +1,131 @@
+<%# locals: (project:) %>
+<%
+  steps = [ t(".step_info"), t(".step_gallery"), t(".step_publish") ]
+  gallery_slots = Project::MAX_IMAGES - project.project_images.size
+%>
+<%= form_with model: [ :my, project ], class: "space-y-6" do |f| %>
+  <% if project.errors.any? %>
+    <div class="bg-red-50 border border-red-100 text-red-700 p-4 rounded-lg text-sm space-y-1">
+      <% project.errors.full_messages.each do |msg| %>
+        <div><%= msg %></div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <!-- Tabs -->
+  <div class="border-b border-stone-200">
+    <nav class="-mb-px flex gap-6 overflow-x-auto" aria-label="<%= t(".progress_label") %>">
+      <% steps.each_with_index do |label, index| %>
+        <button type="button"
+                data-project-wizard-target="tab"
+                data-action="project-wizard#goTo"
+                data-index="<%= index %>"
+                class="pb-4 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap border-transparent text-zinc-500 cursor-pointer">
+          <span class="flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold bg-stone-100 text-zinc-500">
+            <%= index + 1 %>
+          </span>
+          <span><%= label %></span>
+        </button>
+      <% end %>
+    </nav>
+  </div>
+
+  <!-- Step 1 — Information -->
+  <div data-project-wizard-target="step" class="bg-white rounded-lg border border-stone-border p-6 space-y-5">
+    <div class="space-y-1">
+      <%= f.label :title, t(".project_title"), class: "block text-sm font-medium text-charcoal" %>
+      <%= f.text_field :title,
+            data: { project_preview_target: "titleInput", action: "input->project-preview#titleChanged keydown.enter->project-wizard#preventEnter" },
+            class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal" %>
+    </div>
+
+    <div class="space-y-1">
+      <%= f.label :about, t(".about"), class: "block text-sm font-medium text-charcoal" %>
+      <%= f.rich_text_area :about, preset: "project", class: "lexxy-content block w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-charcoal" %>
+      <p class="text-xs text-zinc-400 leading-relaxed"><%= t(".about_hint") %></p>
+    </div>
+  </div>
+
+  <!-- Step 2 — Gallery & cover -->
+  <div data-project-wizard-target="step" class="hidden bg-white rounded-lg border border-stone-border p-6 space-y-5">
+    <div class="space-y-2">
+      <%= label_tag :project_gallery, t(".gallery"), class: "block text-sm font-medium text-charcoal" %>
+      <% if gallery_slots.positive? %>
+        <%= file_field_tag "project[gallery_signed_ids][]", id: "project_gallery", multiple: true, direct_upload: true,
+              accept: "image/png,image/jpeg,image/webp",
+              data: { project_preview_target: "galleryInput", action: "change->project-preview#galleryChanged" },
+              class: "w-full text-xs text-zinc-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border file:border-stone-300 file:text-xs file:font-semibold file:bg-stone-50 file:text-zinc-700 hover:file:bg-stone-100 cursor-pointer" %>
+        <p class="text-xs text-zinc-400"><%= t(".gallery_hint", count: gallery_slots) %></p>
+      <% else %>
+        <p class="text-xs text-zinc-400"><%= t(".gallery_full") %></p>
+      <% end %>
+    </div>
+
+    <%= hidden_field_tag "project[cover_index]", "",
+          data: { project_preview_target: "coverIndexInput", cover_label: t(".set_cover") } %>
+
+    <div class="space-y-2">
+      <p class="text-sm font-medium text-charcoal"><%= t(".cover_label") %></p>
+      <p class="text-xs text-zinc-400"><%= t(".cover_hint") %></p>
+      <p data-project-preview-target="galleryEmpty" class="text-xs text-zinc-400 italic"><%= t(".no_images") %></p>
+      <div data-project-preview-target="thumbnails" class="grid grid-cols-3 gap-3"></div>
+    </div>
+  </div>
+
+  <!-- Step 3 — Publish -->
+  <div data-project-wizard-target="step" class="hidden bg-white rounded-lg border border-stone-border p-6 space-y-5">
+    <div class="space-y-1">
+      <h3 class="text-sm font-semibold text-charcoal"><%= t(".publish_title") %></h3>
+      <p class="text-sm text-zinc-500"><%= t(".publish_intro") %></p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div class="rounded-lg border border-stone-border p-4 space-y-1">
+        <p class="text-sm font-semibold text-charcoal flex items-center gap-1.5">
+          <i data-lucide="lock" class="w-4 h-4 text-zinc-400"></i>
+          <span><%= t(".draft_label") %></span>
+        </p>
+        <p class="text-xs text-zinc-500"><%= t(".draft_hint") %></p>
+      </div>
+      <div class="rounded-lg border border-stone-border p-4 space-y-1">
+        <p class="text-sm font-semibold text-charcoal flex items-center gap-1.5">
+          <i data-lucide="globe" class="w-4 h-4 text-brand"></i>
+          <span><%= t(".public_label") %></span>
+        </p>
+        <p class="text-xs text-zinc-500"><%= t(".public_hint") %></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <div class="flex items-center justify-between border-t border-stone-100 pt-5">
+    <button type="button"
+            data-project-wizard-target="previousButton"
+            data-action="project-wizard#previous"
+            class="hidden text-sm font-medium text-zinc-500 hover:text-charcoal transition-colors cursor-pointer">
+      <%= t(".previous") %>
+    </button>
+
+    <div class="flex items-center gap-3 ml-auto">
+      <button type="button"
+              data-project-wizard-target="nextButton"
+              data-action="project-wizard#next"
+              class="bg-charcoal hover:bg-zinc-800 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer">
+        <%= t(".next") %>
+      </button>
+
+      <div data-project-wizard-target="submitActions" class="hidden">
+        <div class="flex items-center gap-3">
+          <button type="submit" name="project[visibility]" value="draft"
+                  class="bg-white hover:bg-stone-50 text-zinc-700 border border-stone-300 px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer">
+            <%= t(".save_draft") %>
+          </button>
+          <button type="submit" name="project[visibility]" value="public"
+                  class="bg-brand hover:bg-brand-hover text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer">
+            <%= t(".publish") %>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

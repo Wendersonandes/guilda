@@ -28,6 +28,22 @@ module My
       assert_select "input[type=file][name='project[gallery_signed_ids][]'][multiple]"
     end
 
+    test "renders the wizard with tabs, preview and publish actions" do
+      get new_my_project_path
+
+      assert_response :success
+      assert_select "div[data-controller~='project-wizard'][data-controller~='project-preview']"
+      assert_select "[data-project-preview-target='titleText']"
+      assert_select "button[name='project[visibility]'][value='draft']"
+      assert_select "button[name='project[visibility]'][value='public']"
+    end
+
+    test "the wizard page is full width without the sidebar frame" do
+      get new_my_project_path
+
+      assert_select "div.grid.grid-cols-12", count: 0
+    end
+
     test "renders the edit form with the gallery" do
       project = @alice.actorable.projects.create!(title: "Meu Projeto", about: "<p>Sobre</p>")
 
@@ -56,6 +72,25 @@ module My
       end
 
       assert_redirected_to my_projects_path
+    end
+
+    test "creates a public project when publishing" do
+      post my_projects_path, params: { project: { title: "Público", about: "<p>Sobre</p>", visibility: "public" } }
+
+      assert_predicate Project.find_by(title: "Público"), :visibility_public?
+    end
+
+    test "sets the cover from the selected gallery image" do
+      blobs = 2.times.map { |i| image_blob("capa-#{i}.png") }
+
+      post my_projects_path, params: {
+        project: { title: "Com capa", about: "<p>Sobre</p>", gallery_signed_ids: blobs.map(&:signed_id), cover_index: "1" }
+      }
+
+      project = Project.find_by(title: "Com capa")
+
+      assert project.cover.attached?
+      assert_equal blobs[1].id, project.cover.blob.id
     end
 
     test "ignores gallery signed ids beyond the limit and warns" do

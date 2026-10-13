@@ -1,0 +1,39 @@
+<%# locals: (project:, images:, preview: false) %>
+<div class="space-y-6">
+  <div class="bg-white rounded-lg border border-stone-border overflow-hidden">
+    <% if preview %>
+      <img data-project-preview-target="cover" src="" alt="" class="hidden w-full h-56 sm:h-72 object-cover">
+      <div data-project-preview-target="coverPlaceholder" class="w-full h-56 sm:h-72 bg-stone-50 border-b border-stone-border flex items-center justify-center text-zinc-300">
+        <i data-lucide="image" class="w-8 h-8"></i>
+      </div>
+    <% else %>
+      <% cover = project.cover_or_first %>
+      <% if cover&.attached? %>
+        <%= image_tag cover.variant(:thumb), class: "w-full h-56 sm:h-72 object-cover" %>
+      <% end %>
+    <% end %>
+
+    <div class="p-6 space-y-2">
+      <h1 class="text-2xl sm:text-3xl font-serif font-bold text-charcoal tracking-tight leading-tight">
+        <span data-project-preview-target="titleText" class="<%= "text-zinc-300" if project.title.blank? %>"><%= project.title.presence || t("projects.show.untitled") %></span>
+      </h1>
+      <p class="text-xs font-medium text-zinc-400">
+        <%= link_to project.profile.name, public_path_for(project.profile.actor), class: "hover:text-brand transition-colors" %>
+      </p>
+    </div>
+  </div>
+
+  <div data-project-preview-target="aboutSection" class="bg-white rounded-lg border border-stone-border p-6 space-y-3 <%= "hidden" if project.about.to_plain_text.blank? %>">
+    <h2 class="text-xs font-semibold uppercase tracking-wider text-zinc-400"><%= t("projects.show.about") %></h2>
+    <div data-project-preview-target="about" class="lexxy-content text-sm text-zinc-700"><%= project.about if project.about.to_plain_text.present? %></div>
+  </div>
+
+  <div data-project-preview-target="gallerySection" class="space-y-3 <%= "hidden" if images.blank? %>">
+    <h2 class="text-xs font-semibold uppercase tracking-wider text-zinc-400 px-1"><%= t("projects.show.images") %></h2>
+    <div data-project-preview-target="gallery" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+      <% images.each do |image| %>
+        <%= image_tag image.image.variant(:thumb), class: "w-full h-40 object-cover rounded-lg border border-stone-border" %>
+      <% end %>
+    </div>
+  </div>
+</div>

@@ -109,6 +109,7 @@ pt-BR:
       about: "Sobre o projeto"
       images: "Imagens"
       back: "Voltar"
+      untitled: "Sem título"
   my:
     projects:
       index:
@@ -120,8 +121,38 @@ pt-BR:
         delete_confirm: "Tem certeza de que deseja excluir este projeto?"
       new:
         title: "Novo projeto"
+        subtitle: "Monte seu projeto passo a passo e acompanhe o preview em tempo real."
+        cancel: "Cancelar"
+        preview_label: "Pré-visualização"
       edit:
         title: "Editar projeto"
+      wizard:
+        progress_label: "Progresso"
+        step_info: "Informações"
+        step_gallery: "Galeria"
+        step_publish: "Publicação"
+        project_title: "Título"
+        about: "Descrição do projeto"
+        about_hint: "Faça um breve resumo do projeto: ano e local de execução e, principalmente, qual foi o seu papel na execução."
+        gallery: "Galeria de imagens"
+        gallery_hint:
+          one: "Você pode enviar várias imagens de uma vez. Resta %{count} vaga."
+          other: "Você pode enviar várias imagens de uma vez. Restam %{count} vagas."
+        gallery_full: "Limite de 10 imagens atingido."
+        cover_label: "Imagem de destaque"
+        cover_hint: "Clique na estrela de uma imagem para usá-la como destaque do projeto."
+        set_cover: "Definir como imagem de destaque"
+        no_images: "Nenhuma imagem selecionada ainda."
+        publish_title: "Publicação"
+        publish_intro: "Escolha como deseja salvar o projeto. Você poderá alterar isso depois."
+        draft_label: "Rascunho"
+        draft_hint: "Apenas você verá o projeto enquanto ele não for publicado."
+        public_label: "Público"
+        public_hint: "O projeto ficará visível para todos na sua página."
+        previous: "Anterior"
+        next: "Próxima"
+        save_draft: "Salvar como rascunho"
+        publish: "Publicar projeto"
       form:
         title: "Título"
         visibility: "Visibilidade"
