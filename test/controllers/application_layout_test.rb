@@ -54,10 +54,9 @@ class ApplicationLayoutTest < ActionDispatch::IntegrationTest
     assert_select "div[data-layout-band].max-w-6xl"
   end
 
-  test "full-width pages skip the max-w-6xl band but keep the padding" do
+  test "sidebar-less pages share the same max-w-6xl band as the navbar" do
     get about_path
 
-    assert_select "div[data-layout-band].px-5"
-    assert_select "div[data-layout-band].max-w-6xl", count: 0
+    assert_select "div[data-layout-band].max-w-6xl"
   end
 end

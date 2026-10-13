@@ -48,23 +48,23 @@
   <body id="body" class="h-full bg-gallery text-charcoal font-sans antialiased">
     <%= render "shared/nav" %>
     <main class="min-h-screen pt-20 pb-12">
-      <div class="px-5 <%= "max-w-6xl mx-auto" unless content_for?(:full_width) %>" data-layout-band>
+      <div class="max-w-6xl mx-auto px-5" data-layout-band>
         <%= render "shared/flash" %>
 
         <% if !devise_controller? && !content_for?(:no_sidebar) %>
           <div class="grid grid-cols-12 gap-6">
             <!-- Left Column (Navigation) -->
-            <div class="hidden lg:block lg:col-span-2">
+            <div class="hidden lg:block lg:col-span-3">
               <%= content_for?(:left_sidebar) ? yield(:left_sidebar) : render("shared/left_sidebar") %>
             </div>
 
             <!-- Center Column (Main Content) -->
-            <div class="col-span-12 lg:col-span-8 space-y-6">
+            <div class="col-span-12 lg:col-span-6 space-y-6">
               <%= yield %>
             </div>
 
             <!-- Right Column (Suggestions / Info) -->
-            <div class="hidden lg:block lg:col-span-2">
+            <div class="hidden lg:block lg:col-span-3">
               <%= content_for?(:right_sidebar) ? yield(:right_sidebar) : render("shared/right_sidebar") %>
             </div>
           </div>
