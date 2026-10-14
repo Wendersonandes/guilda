@@ -135,9 +135,12 @@ pt-BR:
         about: "Descrição do projeto"
         about_hint: "Faça um breve resumo do projeto: ano e local de execução e, principalmente, qual foi o seu papel na execução."
         gallery: "Galeria de imagens"
+        dropzone_title: "Arraste suas fotos aqui ou clique para selecionar"
+        dropzone_subtitle: "Formatos PNG, JPEG ou WebP (máximo 10 imagens no projeto)"
+        dropzone_button: "Selecionar fotos"
         gallery_hint:
-          one: "Você pode enviar várias imagens de uma vez. Resta %{count} vaga."
-          other: "Você pode enviar várias imagens de uma vez. Restam %{count} vagas."
+          one: "Resta %{count} vaga para imagem neste projeto."
+          other: "Restam %{count} vagas para imagens neste projeto."
         gallery_full: "Limite de 10 imagens atingido."
         cover_label: "Imagem de destaque"
         cover_hint: "Clique na estrela de uma imagem para usá-la como destaque do projeto."
@@ -152,6 +155,7 @@ pt-BR:
         public_hint: "O projeto ficará visível para todos na sua página."
         previous: "Anterior"
         next: "Próxima"
+        save_project: "Salvar projeto"
         save_draft: "Salvar como rascunho"
         publish: "Publicar projeto"
       form:

@@ -8,18 +8,34 @@
       <h1 class="text-2xl font-serif font-bold text-charcoal tracking-tight"><%= t(".title") %></h1>
       <p class="text-sm text-zinc-500 mt-0.5"><%= t(".subtitle") %></p>
     </div>
-    <%= link_to t(".cancel"), my_projects_path, class: "text-sm font-medium text-zinc-500 hover:text-charcoal transition-colors flex-shrink-0" %>
+    <%= link_to my_projects_path, class: "inline-flex items-center gap-1.5 text-sm font-medium text-zinc-500 hover:text-charcoal hover:bg-white transition-colors px-3 py-1.5 rounded-lg border border-transparent hover:border-stone-200 flex-shrink-0" do %>
+      <i data-lucide="x" class="w-4 h-4"></i>
+      <span><%= t(".cancel") %></span>
+    <% end %>
   </div>
 
   <div class="grid grid-cols-1 gap-8 lg:flex lg:flex-1 lg:min-h-0">
-    <div class="lg:flex-1 lg:min-h-0 lg:overflow-y-auto lg:pr-2">
+    <!-- Form Wizard Column -->
+    <div class="lg:flex-1 lg:min-h-0 lg:overflow-y-auto lg:pr-3">
       <%= render "wizard", project: @project %>
     </div>
 
-    <div class="hidden lg:block lg:flex-1 lg:min-h-0 lg:overflow-y-auto lg:pl-2">
+    <!-- Live Preview Column -->
+    <div class="hidden lg:block lg:flex-1 lg:min-h-0 lg:overflow-y-auto lg:pl-3">
       <div class="space-y-3 lg:pb-4">
-        <p class="text-xs font-semibold uppercase tracking-wider text-zinc-400 px-1"><%= t(".preview_label") %></p>
-        <%= render "projects/project", project: @project, images: [], preview: true %>
+        <div class="flex items-center justify-between px-1">
+          <p class="text-xs font-semibold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
+            <i data-lucide="eye" class="w-3.5 h-3.5 text-zinc-400"></i>
+            <span><%= t(".preview_label") %></span>
+          </p>
+          <span class="inline-flex items-center gap-1 text-[10px] font-medium text-zinc-500 bg-stone-100 border border-stone-200/80 px-2 py-0.5 rounded-full">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+            <span><%= t(".preview_live_badge", default: "Ao vivo") %></span>
+          </span>
+        </div>
+        <div class="rounded-xl border border-stone-200/80 bg-stone-50/60 p-3 sm:p-4">
+          <%= render "projects/project", project: @project, images: [], preview: true %>
+        </div>
       </div>
     </div>
   </div>

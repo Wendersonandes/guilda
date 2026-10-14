@@ -41,14 +41,46 @@ export default class extends Controller {
 
     this.tabTargets.forEach((tab, index) => {
       const active = index === this.indexValue
-      tab.classList.toggle("border-brand", active)
-      tab.classList.toggle("text-brand", active)
-      tab.classList.toggle("border-transparent", !active)
-      tab.classList.toggle("text-zinc-500", !active)
+      const completed = index < this.indexValue
+
+      tab.classList.toggle("border-charcoal", active)
+      tab.classList.toggle("text-charcoal", active)
+      tab.classList.toggle("font-semibold", active)
+
+      tab.classList.toggle("border-stone-300", completed)
+      tab.classList.toggle("text-zinc-700", completed)
+
+      tab.classList.toggle("border-transparent", !active && !completed)
+      tab.classList.toggle("text-zinc-400", !active && !completed)
+
+      const badge = tab.querySelector("[data-badge]")
+      if (badge) {
+        if (active) {
+          badge.className = "flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold bg-charcoal text-white transition-colors"
+        } else if (completed) {
+          badge.className = "flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold bg-stone-200 text-charcoal transition-colors"
+        } else {
+          badge.className = "flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold bg-stone-100 text-zinc-400 transition-colors"
+        }
+      }
     })
 
-    this.previousButtonTarget.classList.toggle("hidden", this.indexValue === 0)
-    this.nextButtonTarget.classList.toggle("hidden", this.indexValue === this.lastIndex)
-    this.submitActionsTarget.classList.toggle("hidden", this.indexValue !== this.lastIndex)
+    const isFirst = this.indexValue === 0
+    const isLast = this.indexValue === this.lastIndex
+
+    if (this.hasPreviousButtonTarget) {
+      this.previousButtonTarget.classList.toggle("hidden", isFirst)
+      this.previousButtonTarget.style.display = isFirst ? "none" : ""
+    }
+
+    if (this.hasNextButtonTarget) {
+      this.nextButtonTarget.classList.toggle("hidden", isLast)
+      this.nextButtonTarget.style.display = isLast ? "none" : ""
+    }
+
+    if (this.hasSubmitActionsTarget) {
+      this.submitActionsTarget.classList.toggle("hidden", !isLast)
+      this.submitActionsTarget.style.display = isLast ? "" : "none"
+    }
   }
 }

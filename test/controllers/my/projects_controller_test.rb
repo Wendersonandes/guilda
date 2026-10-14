@@ -33,9 +33,9 @@ module My
 
       assert_response :success
       assert_select "div[data-controller~='project-wizard'][data-controller~='project-preview']"
-      assert_select "[data-project-preview-target='titleText']"
-      assert_select "button[name='project[visibility]'][value='draft']"
-      assert_select "button[name='project[visibility]'][value='public']"
+      assert_select "input[type=radio][name='project[visibility]'][value='draft']"
+      assert_select "input[type=radio][name='project[visibility]'][value='public']"
+      assert_select "input[type=submit][value='Salvar projeto']"
     end
 
     test "the wizard page is full width without the sidebar frame" do
