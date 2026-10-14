@@ -56,6 +56,8 @@ module My
       get edit_my_project_path(project)
 
       assert_response :success
+      assert_select "label[data-controller='dropzone']"
+      assert_select "input[type=file][name='project[gallery_signed_ids][]'][multiple]"
     end
 
     test "creates a project" do
@@ -64,6 +66,15 @@ module My
       end
 
       assert_redirected_to my_projects_path
+    end
+
+    test "renders flash messages with the auto-dismiss controller" do
+      post my_projects_path, params: { project: { title: "Projeto Flash", visibility: "draft", about: "<p>Sobre</p>" } }
+      follow_redirect!
+
+      assert_response :success
+      assert_select "div[data-controller='flash'][data-flash-timeout-value='4000']"
+      assert_select "button[data-action='flash#dismiss']"
     end
 
     test "creates a project with gallery images from signed ids" do
@@ -131,6 +142,8 @@ module My
       end
 
       assert_response :unprocessable_entity
+      assert_select "div[data-controller='flash'][role='alert']"
+      assert_select "button[data-action='flash#dismiss']"
     end
 
     test "reorders projects" do

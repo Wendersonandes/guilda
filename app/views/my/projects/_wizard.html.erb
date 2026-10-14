@@ -5,14 +5,26 @@
 %>
 <%= form_with model: [ :my, project ], class: "space-y-6" do |f| %>
   <% if project.errors.any? %>
-    <div class="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg text-sm space-y-1">
-      <div class="font-semibold flex items-center gap-1.5">
-        <i data-lucide="alert-circle" class="w-4 h-4 text-red-600"></i>
-        <span><%= t("errors.messages.not_saved", count: project.errors.count, resource: project.class.model_name.human.downcase, default: "Verifique os erros abaixo:") %></span>
+    <div data-controller="flash"
+         data-flash-timeout-value="5000"
+         data-action="mouseenter->flash#pause mouseleave->flash#resume"
+         class="flex items-start justify-between gap-3 bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg text-sm shadow-sm transition-all duration-300 ease-out"
+         role="alert">
+      <div class="space-y-1 min-w-0">
+        <div class="font-semibold flex items-center gap-1.5">
+          <i data-lucide="alert-circle" class="w-4 h-4 text-red-600 flex-shrink-0"></i>
+          <span><%= t("errors.messages.not_saved", count: project.errors.count, resource: project.class.model_name.human.downcase, default: "Verifique os erros abaixo:") %></span>
+        </div>
+        <% project.errors.full_messages.each do |msg| %>
+          <div class="pl-5 text-xs"><%= msg %></div>
+        <% end %>
       </div>
-      <% project.errors.full_messages.each do |msg| %>
-        <div class="pl-5 text-xs"><%= msg %></div>
-      <% end %>
+      <button type="button"
+              data-action="flash#dismiss"
+              class="p-1 -mr-1 rounded-md text-red-500 hover:text-red-700 hover:bg-red-100 transition-colors cursor-pointer flex-shrink-0"
+              aria-label="<%= t('common.close', default: 'Fechar') %>">
+        <i data-lucide="x" class="w-3.5 h-3.5"></i>
+      </button>
     </div>
   <% end %>
 
@@ -24,6 +36,7 @@
                 data-project-wizard-target="tab"
                 data-action="project-wizard#goTo"
                 data-index="<%= index %>"
+                data-step-title="<%= label %>"
                 class="pb-3 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer <%= index == 0 ? 'border-charcoal text-charcoal font-semibold' : 'border-transparent text-zinc-400' %>">
           <span data-badge class="flex items-center justify-center w-5 h-5 rounded-full text-[10px] font-bold <%= index == 0 ? 'bg-charcoal text-white' : 'bg-stone-100 text-zinc-400' %> transition-colors">
             <%= index + 1 %>
@@ -60,7 +73,10 @@
       </div>
 
       <% if gallery_slots.positive? %>
-        <label for="project_gallery" class="relative flex flex-col items-center justify-center p-6 sm:p-8 rounded-lg border-2 border-dashed border-stone-300 hover:border-charcoal bg-stone-50/50 hover:bg-stone-50 cursor-pointer transition-all group text-center">
+        <label for="project_gallery"
+               data-controller="dropzone"
+               data-action="dragover->dropzone#dragOver dragleave->dropzone#dragLeave drop->dropzone#drop"
+               class="relative flex flex-col items-center justify-center p-6 sm:p-8 rounded-lg border-2 border-dashed border-stone-200 hover:border-charcoal bg-stone-50/50 hover:bg-stone-50 cursor-pointer transition-all group text-center">
           <div class="w-10 h-10 rounded-full bg-white border border-stone-200 flex items-center justify-center text-zinc-500 group-hover:text-charcoal group-hover:border-stone-400 transition-colors mb-3 shadow-xs">
             <i data-lucide="upload-cloud" class="w-5 h-5"></i>
           </div>
@@ -73,7 +89,7 @@
 
           <%= file_field_tag "project[gallery_signed_ids][]", id: "project_gallery", multiple: true, direct_upload: true,
                 accept: "image/png,image/jpeg,image/webp",
-                data: { project_preview_target: "galleryInput", action: "change->project-preview#galleryChanged" },
+                data: { project_preview_target: "galleryInput", dropzone_target: "input", action: "change->project-preview#galleryChanged" },
                 class: "sr-only" %>
         </label>
       <% else %>
@@ -149,29 +165,41 @@
     </div>
   </div>
 
-  <!-- Navigation Buttons -->
-  <div class="flex items-center justify-between pt-2">
-    <button type="button"
-            data-project-wizard-target="previousButton"
-            data-action="project-wizard#previous"
-            class="hidden inline-flex items-center gap-1 text-sm font-medium text-zinc-500 hover:text-charcoal transition-colors cursor-pointer py-2">
-      <i data-lucide="arrow-left" class="w-4 h-4"></i>
-      <span><%= t(".previous") %></span>
-    </button>
+  <!-- Fixed Bottom Navigation Bar (aligned with wizard column) -->
+  <div class="fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-xs border-t border-stone-200 py-3.5 px-5 shadow-[0_-4px_16px_rgba(0,0,0,0.03)] pb-[max(0.875rem,env(safe-area-inset-bottom))]">
+    <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+      <!-- Wizard Column Actions (aligned directly under the form) -->
+      <div class="flex items-center justify-between gap-4 lg:pr-3">
+        <button type="button"
+                data-project-wizard-target="previousButton"
+                data-action="project-wizard#previous"
+                class="hidden inline-flex items-center gap-1.5 text-sm font-medium text-zinc-600 hover:text-charcoal hover:bg-stone-100 px-3.5 py-2 rounded-lg transition-colors cursor-pointer">
+          <i data-lucide="arrow-left" class="w-4 h-4"></i>
+          <span><%= t(".previous") %></span>
+        </button>
 
-    <div class="flex items-center gap-3 ml-auto">
-      <button type="button"
-              data-project-wizard-target="nextButton"
-              data-action="project-wizard#next"
-              class="inline-flex items-center gap-1.5 bg-charcoal hover:bg-zinc-800 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors cursor-pointer shadow-sm">
-        <span><%= t(".next") %></span>
-        <i data-lucide="arrow-right" class="w-4 h-4"></i>
-      </button>
+        <div class="hidden sm:flex items-center gap-2 text-xs text-zinc-500 font-medium select-none" data-project-wizard-target="stepIndicator">
+          <span>Etapa 1 de <%= steps.size %>: <%= steps[0] %></span>
+        </div>
 
-      <div data-project-wizard-target="submitActions" class="hidden">
-        <%= f.submit t(".save_project"),
-                     class: "bg-charcoal hover:bg-zinc-800 text-white px-6 py-2.5 rounded-lg text-sm font-medium transition-colors cursor-pointer shadow-sm" %>
+        <div class="flex items-center gap-3 ml-auto">
+          <button type="button"
+                  data-project-wizard-target="nextButton"
+                  data-action="project-wizard#next"
+                  class="inline-flex items-center gap-1.5 bg-charcoal hover:bg-zinc-800 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors cursor-pointer shadow-sm">
+            <span><%= t(".next") %></span>
+            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </button>
+
+          <div data-project-wizard-target="submitActions" class="hidden">
+            <%= f.submit t(".save_project"),
+                         class: "bg-charcoal hover:bg-zinc-800 text-white px-6 py-2.5 rounded-lg text-sm font-medium transition-colors cursor-pointer shadow-sm" %>
+          </div>
+        </div>
       </div>
+
+      <!-- Preview Column spacer (keeps the preview half clean and calm) -->
+      <div class="hidden lg:block"></div>
     </div>
   </div>
 <% end %>

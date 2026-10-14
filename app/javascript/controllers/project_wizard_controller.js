@@ -3,7 +3,7 @@ import { Controller } from "@hotwired/stimulus"
 // Drives the new-project multi-step form: switches the visible step, marks the active tab and
 // shows the final publish actions only on the last step.
 export default class extends Controller {
-  static targets = ["step", "tab", "previousButton", "nextButton", "submitActions"]
+  static targets = ["step", "tab", "previousButton", "nextButton", "submitActions", "stepIndicator"]
   static values = { index: { type: Number, default: 0 } }
 
   connect() {
@@ -81,6 +81,11 @@ export default class extends Controller {
     if (this.hasSubmitActionsTarget) {
       this.submitActionsTarget.classList.toggle("hidden", !isLast)
       this.submitActionsTarget.style.display = isLast ? "" : "none"
+    }
+
+    if (this.hasStepIndicatorTarget && this.tabTargets[this.indexValue]) {
+      const stepTitle = this.tabTargets[this.indexValue].dataset.stepTitle || ""
+      this.stepIndicatorTarget.textContent = `Etapa ${this.indexValue + 1} de ${this.lastIndex + 1}${stepTitle ? `: ${stepTitle}` : ""}`
     }
   }
 }

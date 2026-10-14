@@ -4,10 +4,26 @@
 %>
 <%= form_with model: [ :my, project ], class: "bg-white rounded-lg border border-stone-border p-6 space-y-5" do |f| %>
   <% if project.errors.any? %>
-    <div class="bg-red-50 border border-red-100 text-red-700 p-4 rounded-lg text-sm space-y-1">
-      <% project.errors.full_messages.each do |msg| %>
-        <div><%= msg %></div>
-      <% end %>
+    <div data-controller="flash"
+         data-flash-timeout-value="5000"
+         data-action="mouseenter->flash#pause mouseleave->flash#resume"
+         class="flex items-start justify-between gap-3 bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg text-sm shadow-sm transition-all duration-300 ease-out"
+         role="alert">
+      <div class="space-y-1 min-w-0">
+        <div class="font-semibold flex items-center gap-1.5">
+          <i data-lucide="alert-circle" class="w-4 h-4 text-red-600 flex-shrink-0"></i>
+          <span><%= t("errors.messages.not_saved", count: project.errors.count, resource: project.class.model_name.human.downcase, default: "Verifique os erros abaixo:") %></span>
+        </div>
+        <% project.errors.full_messages.each do |msg| %>
+          <div class="pl-5 text-xs"><%= msg %></div>
+        <% end %>
+      </div>
+      <button type="button"
+              data-action="flash#dismiss"
+              class="p-1 -mr-1 rounded-md text-red-500 hover:text-red-700 hover:bg-red-100 transition-colors cursor-pointer flex-shrink-0"
+              aria-label="<%= t('common.close', default: 'Fechar') %>">
+        <i data-lucide="x" class="w-3.5 h-3.5"></i>
+      </button>
     </div>
   <% end %>
 
@@ -32,15 +48,38 @@
         form: f, attribute: :cover, attachment: project.cover,
         label: t(".cover"), preview_classes: "w-16 h-12 rounded" %>
 
-  <div class="space-y-1">
-    <label for="project_gallery" class="block text-sm font-medium text-charcoal"><%= t(".gallery") %></label>
+  <div class="space-y-2">
+    <div class="flex items-center justify-between">
+      <label class="block text-sm font-semibold text-charcoal"><%= t(".gallery") %></label>
+      <span class="text-xs text-zinc-500"><%= t(".gallery_slots_hint", count: gallery_slots, default: t(".gallery_upload_hint", count: gallery_slots)) %></span>
+    </div>
+
     <% if gallery_slots.positive? %>
-      <%= file_field_tag "project[gallery_signed_ids][]", id: "project_gallery", multiple: true, direct_upload: true,
-            accept: "image/png,image/jpeg,image/webp",
-            class: "w-full text-xs text-zinc-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-md file:border file:border-stone-300 file:text-xs file:font-semibold file:bg-stone-50 file:text-zinc-700 hover:file:bg-stone-100 cursor-pointer" %>
-      <p class="text-xs text-zinc-400"><%= t(".gallery_upload_hint", count: gallery_slots) %></p>
+      <label for="project_gallery"
+             data-controller="dropzone"
+             data-action="dragover->dropzone#dragOver dragleave->dropzone#dragLeave drop->dropzone#drop"
+             class="relative flex flex-col items-center justify-center p-6 sm:p-8 rounded-lg border-2 border-dashed border-stone-200 hover:border-charcoal bg-stone-50/50 hover:bg-stone-50 cursor-pointer transition-all group text-center">
+        <div class="w-10 h-10 rounded-full bg-white border border-stone-200 flex items-center justify-center text-zinc-500 group-hover:text-charcoal group-hover:border-stone-400 transition-colors mb-3 shadow-xs">
+          <i data-lucide="upload-cloud" class="w-5 h-5"></i>
+        </div>
+        <p class="text-sm font-medium text-charcoal group-hover:text-brand transition-colors"><%= t(".dropzone_title") %></p>
+        <p class="text-xs text-zinc-400 mt-1"><%= t(".dropzone_subtitle") %></p>
+        <span class="inline-flex items-center gap-1.5 mt-3 px-3 py-1.5 rounded-md text-xs font-medium bg-white text-charcoal border border-stone-200 shadow-xs group-hover:border-stone-300">
+          <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+          <%= t(".dropzone_button") %>
+        </span>
+
+        <p data-dropzone-target="status" class="hidden mt-3 text-xs font-medium text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200/60"></p>
+
+        <%= file_field_tag "project[gallery_signed_ids][]", id: "project_gallery", multiple: true, direct_upload: true,
+              accept: "image/png,image/jpeg,image/webp",
+              data: { dropzone_target: "input", action: "change->dropzone#fileChanged" },
+              class: "sr-only" %>
+      </label>
     <% else %>
-      <p class="text-xs text-zinc-400"><%= t(".gallery_full") %></p>
+      <div class="p-4 rounded-lg bg-stone-50 border border-stone-200 text-center text-xs text-zinc-500">
+        <%= t(".gallery_full") %>
+      </div>
     <% end %>
   </div>
 
