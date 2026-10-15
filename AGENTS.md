@@ -144,6 +144,28 @@ app/views/users/index.html.erb        # View: controller/action
 - Mock external services appropriately
 - Maintain high coverage without obsessing
 
+### Test Execution Cadence
+Default is **targeted tests**, not the whole suite. Run the full suite only at the moments below. `bin/test` implements this rule for you.
+
+**Every change:** lint the changed files (`bin/rubocop <files>`; `node --check` for JS).
+
+**Default (during development):** run only the tests for the touched area.
+- `bin/test` — maps `git diff` (staged + unstaged) to the matching tests and runs them.
+- `bin/test quick` — models + services + policies + helpers (fast logic subset).
+- Or directly: `bin/rails test test/models/foo_test.rb`, `bin/rails test -n "name"`.
+
+**Path → test map:** `app/models/x.rb` → `test/models/x_test.rb`; `app/controllers/<p>_controller.rb` → `test/controllers/<p>_controller_test.rb`; same for `services/`, `helpers/`, `policies/`, `jobs/`, `mailers/`; `app/views/<dir>/…` → `test/controllers/<dir>_controller_test.rb`.
+
+**Run the full suite (`bin/test all` / `bin/rails test`) only when:**
+- the diff touches shared/foundational code: `test/test_helper.rb`, `test/fixtures/**`, `ApplicationController` and `app/controllers/concerns/**`, `ApplicationRecord` and the broadly-shared models (Actor, Profile, Activity, ActivityObject, Relation, Permission, Tie, Contact, User), `app/views/layouts/**`, `app/views/shared/**`, `config/initializers/**` (incl. `flipper.rb`), `config/routes.rb`, `config/locales/**`, `db/**`, `Gemfile*`;
+- a change alters defaults/global state the tests rely on (e.g. Flipper flags in `test_helper`, `seed_permissions_and_relations`);
+- finishing a feature or before pushing/merging (for PRs use `bin/ci`);
+- after rebasing/merging `main`.
+
+`bin/test` applies these triggers automatically: it runs the full suite when a changed file matches the shared list, otherwise only the mapped tests.
+
+**Not a full-suite trigger:** isolated views/partials, a single controller action or model with its own test, one-off i18n keys, JS controllers (no automated tests: verify with `node --check` + manual), and documentation.
+
 ## Background Jobs
 
 ### Job Design Principles

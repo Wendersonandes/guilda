@@ -1,0 +1,122 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# Targeted test runner. Maps changed files to their tests and runs only those, reserving the
+# full suite for the moments defined in AGENTS.md ("Test Execution Cadence").
+#
+# Usage:
+#   bin/test                 # map `git diff` (staged + unstaged) to tests and run them
+#   bin/test <paths...>      # map the given paths (or run the given *_test.rb files)
+#   bin/test quick           # models + services + policies + helpers (fast logic subset)
+#   bin/test all             # full suite (bin/rails test)
+#   bin/test help
+
+ROOT = File.expand_path("..", __dir__)
+Dir.chdir(ROOT)
+
+# Files whose change can ripple across the suite: always run everything.
+FOUNDATIONAL_PREFIXES = %w[
+  test/test_helper.rb
+  test/fixtures/
+  app/controllers/application_controller.rb
+  app/controllers/concerns/
+  app/models/application_record.rb
+  app/views/layouts/
+  app/views/shared/
+  config/initializers/
+  config/routes.rb
+  config/locales/
+  db/
+].freeze
+
+FOUNDATIONAL_FILES = %w[
+  app/models/actor.rb
+  app/models/profile.rb
+  app/models/activity.rb
+  app/models/activity_object.rb
+  app/models/relation.rb
+  app/models/permission.rb
+  app/models/tie.rb
+  app/models/contact.rb
+  app/models/user.rb
+  Gemfile
+  Gemfile.lock
+].freeze
+
+def foundational?(path)
+  return true if FOUNDATIONAL_FILES.include?(path)
+
+  FOUNDATIONAL_PREFIXES.any? { |prefix| path.start_with?(prefix) }
+end
+
+def test_for(path)
+  return path if path.match?(%r{\Atest/.*_test\.rb\z})
+
+  case path
+  when %r{\Aapp/models/(.+)\.rb\z} then "test/models/#{Regexp.last_match(1)}_test.rb"
+  when %r{\Aapp/controllers/(.+)_controller\.rb\z} then "test/controllers/#{Regexp.last_match(1)}_controller_test.rb"
+  when %r{\Aapp/services/(.+)\.rb\z} then "test/services/#{Regexp.last_match(1)}_test.rb"
+  when %r{\Aapp/helpers/(.+)_helper\.rb\z} then "test/helpers/#{Regexp.last_match(1)}_helper_test.rb"
+  when %r{\Aapp/policies/(.+)_policy\.rb\z} then "test/policies/#{Regexp.last_match(1)}_policy_test.rb"
+  when %r{\Aapp/jobs/(.+)_job\.rb\z} then "test/jobs/#{Regexp.last_match(1)}_job_test.rb"
+  when %r{\Aapp/mailers/(.+)_mailer\.rb\z} then "test/mailers/#{Regexp.last_match(1)}_mailer_test.rb"
+  when %r{\Aapp/views/(.+)/[^/]+\.html\.erb\z} then "test/controllers/#{Regexp.last_match(1)}_controller_test.rb"
+  end
+end
+
+def changed_files
+  staged = `git diff --name-only --cached`.split("\n")
+  unstaged = `git diff --name-only`.split("\n")
+  (staged + unstaged).uniq
+end
+
+def run_rails_test(*files)
+  command = [ "bin/rails", "test", *files ]
+  puts "> #{command.join(' ')}"
+  system(*command)
+  exit($?.exitstatus || 1)
+end
+
+def run_full(reason)
+  puts "Suíte completa: #{reason}"
+  run_rails_test
+end
+
+args = ARGV
+
+if (args & %w[help -h --help]).any?
+  puts <<~HELP
+    bin/test            mapeia o git diff (staged + unstaged) para os testes e roda só eles
+    bin/test <paths>    mapeia os caminhos dados (ou roda arquivos *_test.rb)
+    bin/test quick      modelos + services + policies + helpers
+    bin/test all        suíte completa (bin/rails test)
+  HELP
+  exit 0
+end
+
+if args == [ "all" ]
+  run_rails_test
+elsif args == [ "quick" ]
+  run_rails_test("test/models", "test/services", "test/policies", "test/helpers")
+else
+  paths = args.empty? ? changed_files : args
+
+  if paths.empty?
+    puts "Nenhuma mudança detectada (git diff). Use `bin/test quick` ou `bin/test all`."
+    exit 0
+  end
+
+  foundational = paths.select { |path| foundational?(path) }
+  run_full("arquivo compartilhado alterado: #{foundational.join(', ')}") if foundational.any?
+
+  tests = paths.map { |path| test_for(path) }.compact.uniq
+  tests = tests.map { |path| path if File.exist?(path) }.compact.uniq
+
+  if tests.empty?
+    puts "Nenhum teste direto mapeado para: #{paths.join(', ')}"
+    puts "Use `bin/test quick` (rápido) ou `bin/test all` (suíte completa)."
+    exit 0
+  end
+
+  run_rails_test(*tests)
+end
