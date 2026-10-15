@@ -24,7 +24,8 @@ module FeatureFlags
     follow_objects: "Follow (bell) on activity objects and profiles",
     notifications: "Notification center and badge",
     suggestions: "Suggested profiles in the right sidebar",
-    projects: "Profile project portfolio"
+    projects: "Profile project portfolio",
+    project_single_page_form: "Single-page new project form instead of the step-by-step wizard"
   }.freeze
 
   # @return [Array<Symbol>] the names of every registered feature flag.

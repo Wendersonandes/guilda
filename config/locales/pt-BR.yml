@@ -120,8 +120,7 @@ pt-BR:
         delete: "Excluir"
         delete_confirm: "Tem certeza de que deseja excluir este projeto?"
       new:
-        title: "Novo projeto"
-        subtitle: "Monte seu projeto passo a passo e acompanhe o preview em tempo real."
+        title: "Adicione um novo Projeto"
         cancel: "Cancelar"
         preview_label: "Pré-visualização"
       edit:
@@ -158,6 +157,8 @@ pt-BR:
         save_project: "Salvar projeto"
         save_draft: "Salvar como rascunho"
         publish: "Publicar projeto"
+      single_form:
+        edit_later: "Você poderá editar tudo depois."
       form:
         title: "Título"
         visibility: "Visibilidade"

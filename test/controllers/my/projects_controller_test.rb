@@ -8,6 +8,8 @@ module My
       @alice = create_profile_for(@alice_user, name: "Alice")
       @alice_user.update!(current_profile: @alice)
       sign_in @alice_user
+      # The wizard is the default new-project form; single-page tests opt in explicitly.
+      Flipper.disable(:project_single_page_form)
     end
 
     test "index lists the profile's projects" do
@@ -20,6 +22,8 @@ module My
       get new_my_project_path
 
       assert_response :success
+      assert_select "h1", text: "Adicione um novo Projeto"
+      assert_select "p", text: "Monte seu projeto passo a passo e acompanhe o preview em tempo real.", count: 0
     end
 
     test "the new form accepts multiple gallery images" do
@@ -48,6 +52,44 @@ module My
       get new_my_project_path
 
       assert_select "[class*='lg:overflow-y-auto']", count: 2
+    end
+
+    test "renders the single-page form with the live preview when the flag is on" do
+      Flipper.enable(:project_single_page_form)
+
+      get new_my_project_path
+
+      assert_response :success
+      assert_select "div[data-controller='project-preview']"
+      assert_select "[data-controller~='project-wizard']", count: 0
+      assert_select "[data-project-wizard-target]", count: 0
+      assert_select "[data-single-project-form]"
+      assert_select "[data-project-preview-target='titleText']"
+      assert_select "label[data-controller='dropzone'] input[type=file][name='project[gallery_signed_ids][]'][multiple]"
+      assert_select "input[type=radio][name='project[visibility]'][value='public'][checked]"
+      assert_select "input[type=radio][name='project[visibility]'][value='draft']"
+      assert_select "input[type=submit][value='Salvar projeto']", count: 1
+      assert_select "[class*='lg:overflow-y-auto']", count: 2
+      assert_select "a[href='#{my_projects_path}']", text: I18n.t("my.projects.new.cancel"), count: 1
+    end
+
+    test "the single-page form keeps the chosen visibility when re-rendered with errors" do
+      Flipper.enable(:project_single_page_form)
+
+      post my_projects_path, params: { project: { title: "", visibility: "draft", about: "<p>Sobre</p>" } }
+
+      assert_response :unprocessable_entity
+      assert_select "[data-single-project-form]"
+      assert_select "input[type=radio][value='draft'][checked]"
+      assert_select "input[type=radio][value='public'][checked]", count: 0
+    end
+
+    test "renders the single-page form when requested via form=single param even if flag is disabled" do
+      get new_my_project_path(form: "single")
+
+      assert_response :success
+      assert_select "[data-single-project-form]"
+      assert_select "[data-controller~='project-wizard']", count: 0
     end
 
     test "renders the edit form with the gallery" do

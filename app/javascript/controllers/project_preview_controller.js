@@ -80,7 +80,7 @@ export default class extends Controller {
       const marked = index === markedIndex
       const wrapper = document.createElement("div")
       wrapper.dataset.id = index
-      wrapper.className = "relative rounded-lg overflow-hidden border border-stone-border cursor-grab"
+      wrapper.className = "relative rounded-lg overflow-hidden border border-stone-border cursor-move"
       if (marked) wrapper.classList.add("ring-2", "ring-brand")
       wrapper.innerHTML = `
         <img src="${this.urlFor(file)}" class="w-full h-24 object-cover pointer-events-none" alt="">

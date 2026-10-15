@@ -47,7 +47,7 @@
 
   <body id="body" class="h-full bg-gallery text-charcoal font-sans antialiased">
     <%= render "shared/nav" %>
-    <main class="min-h-screen pt-20 pb-12">
+    <main class="min-h-screen pt-20 <%= content_for?(:compact_main) ? "pb-6" : "pb-12" %>">
       <div class="max-w-6xl mx-auto px-5" data-layout-band>
         <%= render "shared/flash" %>
 

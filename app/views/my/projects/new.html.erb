@@ -1,23 +1,28 @@
 <% content_for :no_sidebar, true %>
 <%= content_for :title, t(".title") %>
+<%
+  single = single_page_project_form?
+  content_for :compact_main, true if single
+  # The wizard has a fixed bottom action bar, so its scroll columns need extra bottom clearance.
+  bar_clearance = single ? "lg:pb-3" : "lg:pb-28"
+%>
 
-<div class="space-y-6 lg:flex lg:h-[calc(100vh-8rem)] lg:flex-col"
-     data-controller="project-wizard project-preview">
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start lg:flex-none">
-    <!-- Left Column Header: Title, Subtitle and Cancel Button -->
-    <div class="flex items-start justify-between gap-4 lg:pr-3">
-      <div>
-        <h1 class="text-2xl font-serif font-bold text-charcoal tracking-tight"><%= t(".title") %></h1>
-        <p class="text-sm text-zinc-500 mt-0.5"><%= t(".subtitle") %></p>
-      </div>
-      <%= link_to my_projects_path, class: "inline-flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-charcoal hover:bg-white transition-colors px-2.5 py-1.5 rounded-lg border border-transparent hover:border-stone-200 flex-shrink-0" do %>
-        <i data-lucide="x" class="w-3.5 h-3.5"></i>
-        <span><%= t(".cancel") %></span>
+<div class="<%= single ? "space-y-4" : "space-y-6" %> lg:flex <%= single ? "lg:h-[calc(100vh-6.5rem)]" : "lg:h-[calc(100vh-8rem)]" %> lg:flex-col"
+     data-controller="<%= single ? 'project-preview' : 'project-wizard project-preview' %>">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center lg:flex-none">
+    <!-- Left Column Header: Title and Cancel Button -->
+    <div class="flex items-center justify-between gap-4 lg:pr-3">
+      <h1 class="text-2xl font-serif font-bold text-charcoal tracking-tight"><%= t(".title") %></h1>
+      <% unless single %>
+        <%= link_to my_projects_path, class: "inline-flex items-center gap-1.5 text-xs font-medium text-zinc-500 hover:text-charcoal hover:bg-white transition-colors px-2.5 py-1.5 rounded-lg border border-transparent hover:border-stone-200 flex-shrink-0" do %>
+          <i data-lucide="x" class="w-3.5 h-3.5"></i>
+          <span><%= t(".cancel") %></span>
+        <% end %>
       <% end %>
     </div>
 
     <!-- Right Column Header: Preview Header badge & label -->
-    <div class="hidden lg:flex items-center justify-between lg:pl-3 pt-2">
+    <div class="hidden lg:flex items-center justify-between lg:pl-3">
       <p class="text-xs font-semibold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
         <i data-lucide="eye" class="w-3.5 h-3.5 text-zinc-400"></i>
         <span><%= t(".preview_label") %></span>
@@ -29,14 +34,14 @@
     </div>
   </div>
 
-  <div class="grid grid-cols-1 gap-8 pb-28 lg:pb-0 lg:flex lg:flex-1 lg:min-h-0">
-    <!-- Form Wizard Column -->
-    <div class="lg:flex-1 lg:min-h-0 lg:overflow-y-auto lg:pr-3 lg:pb-28">
-      <%= render "wizard", project: @project %>
+  <div class="grid grid-cols-1 gap-6 <%= single ? '' : 'pb-28' %> lg:pb-0 lg:flex lg:flex-1 lg:min-h-0">
+    <!-- Form Column -->
+    <div class="lg:flex-1 lg:min-h-0 <%= single ? 'lg:flex lg:flex-col' : 'lg:overflow-y-auto' %> lg:pr-3 <%= bar_clearance %>">
+      <%= render(single ? "single_form" : "wizard", project: @project) %>
     </div>
 
     <!-- Live Preview Column -->
-    <div class="hidden lg:block lg:flex-1 lg:min-h-0 lg:overflow-y-auto lg:pl-3 lg:pb-28">
+    <div class="hidden lg:block lg:flex-1 lg:min-h-0 lg:overflow-y-auto lg:pl-3 <%= bar_clearance %>">
       <div class="rounded-xl border border-stone-200/80 bg-stone-50/60 p-3 sm:p-4">
         <%= render "projects/project", project: @project, images: [], preview: true %>
       </div>

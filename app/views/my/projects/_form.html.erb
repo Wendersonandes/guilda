@@ -99,7 +99,7 @@
 
     <div data-controller="sortable" data-sortable-url-value="<%= reorder_my_project_images_path(project) %>" class="grid grid-cols-3 gap-3">
       <% images.each do |image| %>
-        <div data-id="<%= image.id %>" class="relative group rounded-lg overflow-hidden border border-stone-border">
+        <div data-id="<%= image.id %>" class="relative group rounded-lg overflow-hidden border border-stone-border cursor-move">
           <%= image_tag image.image.variant(:thumb), class: "w-full h-24 object-cover" %>
           <div class="absolute inset-x-0 bottom-0 flex items-center justify-between bg-black/50 px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity">
             <%= button_to cover_my_project_image_path(project, image), method: :post, title: t(".set_cover"), class: "text-white/90 hover:text-white bg-transparent border-0 p-0 cursor-pointer" do %>
