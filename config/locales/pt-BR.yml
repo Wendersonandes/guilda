@@ -124,6 +124,7 @@ pt-BR:
       view_profile_and_contacts: "Ver perfil e contatos"
       zoom_image: "Ampliar"
       untitled: "Sem título"
+      default_author: "Seu Nome"
       lightbox:
         dialog_label: "Galeria de imagens do projeto"
         close: "Fechar"

@@ -13,7 +13,7 @@ class ProjectsController < ApplicationController
 
   # GET /projects/:slug
   def show
-    @project = Project.friendly.find(params[:id])
+    @project = Project.friendly.includes(:rich_text_about, cover_attachment: :blob, profile: { actor: { avatar_attachment: :blob } }).find(params[:id])
     authorize @project
     @images = @project.project_images.includes(image_attachment: :blob).ordered
   end

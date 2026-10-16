@@ -24,6 +24,11 @@ export default class extends Controller {
     this.onKeydown = (keyboardEvent) => this.handleKeydown(keyboardEvent)
     document.addEventListener("keydown", this.onKeydown)
 
+    this.onTouchStart = (e) => this.handleTouchStart(e)
+    this.onTouchEnd = (e) => this.handleTouchEnd(e)
+    this.overlayTarget.addEventListener("touchstart", this.onTouchStart, { passive: true })
+    this.overlayTarget.addEventListener("touchend", this.onTouchEnd, { passive: true })
+
     this.render()
     this.closeTarget.focus()
   }
@@ -34,6 +39,10 @@ export default class extends Controller {
     this.overlayTarget.classList.add("hidden")
     document.body.classList.remove("overflow-hidden")
     document.removeEventListener("keydown", this.onKeydown)
+    if (this.onTouchStart) {
+      this.overlayTarget.removeEventListener("touchstart", this.onTouchStart)
+      this.overlayTarget.removeEventListener("touchend", this.onTouchEnd)
+    }
     this.previousFocus?.focus?.()
   }
 
@@ -55,14 +64,45 @@ export default class extends Controller {
   }
 
   render() {
-    const url = this.imagesValue[this.indexValue]
-    if (url && this.hasImageTarget) this.imageTarget.src = url
+    const item = this.imagesValue[this.indexValue]
+    if (!item || !this.hasImageTarget) return
+
+    const url = typeof item === "string" ? item : item.url
+    const alt = typeof item === "string" ? "" : (item.alt || "")
+
+    if (url) this.imageTarget.src = url
+    this.imageTarget.alt = alt
 
     if (this.hasCounterTarget) {
       this.counterTarget.textContent = this.counterTemplateValue
         .replace("%{current}", this.indexValue + 1)
         .replace("%{total}", this.imagesValue.length)
     }
+  }
+
+  handleTouchStart(event) {
+    if (event.changedTouches && event.changedTouches.length > 0) {
+      this.touchStartX = event.changedTouches[0].clientX
+      this.touchStartY = event.changedTouches[0].clientY
+    }
+  }
+
+  handleTouchEnd(event) {
+    if (!event.changedTouches || event.changedTouches.length === 0 || this.touchStartX == null) return
+
+    const diffX = event.changedTouches[0].clientX - this.touchStartX
+    const diffY = event.changedTouches[0].clientY - this.touchStartY
+
+    // Horizontal swipe threshold of 40px, dominating vertical scroll
+    if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY)) {
+      if (diffX > 0) {
+        this.previous()
+      } else {
+        this.next()
+      }
+    }
+    this.touchStartX = null
+    this.touchStartY = null
   }
 
   handleKeydown(event) {
@@ -103,6 +143,10 @@ export default class extends Controller {
 
   disconnect() {
     document.removeEventListener("keydown", this.onKeydown)
+    if (this.hasOverlayTarget && this.onTouchStart) {
+      this.overlayTarget.removeEventListener("touchstart", this.onTouchStart)
+      this.overlayTarget.removeEventListener("touchend", this.onTouchEnd)
+    }
     document.body.classList.remove("overflow-hidden")
   }
 }
