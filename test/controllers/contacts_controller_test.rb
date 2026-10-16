@@ -14,6 +14,7 @@ class ContactsControllerTest < ActionDispatch::IntegrationTest
   test "should get index" do
     get contacts_path
     assert_response :success
+    assert_select "[role='status'][aria-live='polite']"
   end
 
   test "should create contact" do
@@ -115,7 +116,7 @@ class ContactsControllerTest < ActionDispatch::IntegrationTest
     @alice.connect_to(@bob, as: :friend)
     @bob.connect_to(@alice, as: :friend)
 
-    @bob.actorable.update!(occupation_list: ["Escrita de Projetos"])
+    @bob.actorable.update!(occupation_list: [ "Escrita de Projetos" ])
 
     get contacts_path(occupation: "Escrita de Projetos")
     assert_response :success
