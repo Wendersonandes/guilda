@@ -1,98 +1,245 @@
 <%= content_for :title, t(".title") %>
 
-<h1 class="text-2xl font-serif font-bold text-charcoal tracking-tight mb-6"><%= t(".title") %></h1>
+<div class="space-y-6">
+  <!-- Header -->
+  <div class="space-y-1">
+    <h1 class="text-2xl sm:text-3xl font-serif font-bold text-charcoal tracking-tight"><%= t(".title") %></h1>
+    <p class="text-sm text-zinc-500 leading-relaxed"><%= t(".subtitle") %></p>
+  </div>
 
-<%= turbo_frame_tag "contacts_frame" do %>
-  <!-- Search Filter Box -->
-  <div class="bg-white rounded-lg border border-stone-border p-5 mb-6 shadow-sm">
+  <!-- Mobile Pending Contact Requests (visible on < lg) -->
+  <% if @pending_contacts.present? && @pending_contacts.any? %>
+    <div class="lg:hidden bg-white rounded-lg border border-stone-border p-4 shadow-xs">
+      <%= render "shared/sidebar_pending_contacts", pending: @pending_contacts %>
+    </div>
+  <% end %>
+
+  <!-- Search & Filter Box -->
+  <div class="bg-white rounded-lg border border-stone-border p-4 sm:p-5 shadow-xs">
     <%= form_with url: contacts_path, method: :get,
                   html: {
-                    class: "flex flex-col sm:flex-row items-end gap-4",
                     data: {
                       controller: "filter-form",
+                      turbo_frame: "contacts_frame",
                       turbo_action: "advance"
                     }
                   } do |f| %>
-      <div class="flex-1 w-full space-y-1.5">
-        <%= f.label :city, class: "block text-xs font-bold text-zinc-500 uppercase tracking-wider" do %>
-          <span class="flex items-center gap-1.5"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-zinc-400"></i> Cidade</span>
-        <% end %>
-        <%= f.select :city, options_for_select([["Todas as cidades", ""]] + @cities, params[:city]), {},
-                     class: "w-full text-sm rounded-lg border border-stone-300 bg-white px-3.5 py-2 text-charcoal focus:border-brand focus:ring-brand font-medium outline-none transition-shadow shadow-sm",
-                     data: { action: "change->filter-form#submit" } %>
-      </div>
-
-      <div class="flex-1 w-full space-y-1.5">
-        <%= f.label :occupation, class: "block text-xs font-bold text-zinc-500 uppercase tracking-wider" do %>
-          <span class="flex items-center gap-1.5"><i data-lucide="briefcase" class="w-3.5 h-3.5 text-zinc-400"></i> Categoria Profissional</span>
-        <% end %>
-        <%= f.select :occupation, options_for_select([["Todas as categorias", ""]] + @occupations, params[:occupation]), {},
-                     class: "w-full text-sm rounded-lg border border-stone-300 bg-white px-3.5 py-2 text-charcoal focus:border-brand focus:ring-brand font-medium outline-none transition-shadow shadow-sm",
-                     data: { action: "change->filter-form#submit" } %>
-      </div>
-
-      <% if params[:city].present? || params[:occupation].present? %>
-        <div class="w-full sm:w-auto">
-          <%= link_to contacts_path,
-                      class: "flex items-center justify-center gap-1.5 text-xs font-semibold bg-stone-100 hover:bg-stone-200 text-zinc-700 px-4 py-2.5 rounded-lg border border-stone-300 transition-colors cursor-pointer h-[38px] box-border w-full",
-                      data: { turbo_frame: "contacts_frame" } do %>
-            <i data-lucide="x" class="w-4 h-4"></i>
-            <span>Limpar</span>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 items-end">
+        <!-- Name Search (q) with debounce -->
+        <div class="lg:col-span-5 space-y-1.5">
+          <%= f.label :q, class: "block text-xs font-semibold text-zinc-500 uppercase tracking-wider" do %>
+            <span class="flex items-center gap-1.5"><i data-lucide="search" class="w-3.5 h-3.5 text-zinc-400"></i> <%= t(".search_label") %></span>
           <% end %>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-zinc-400">
+              <i data-lucide="search" class="w-4 h-4"></i>
+            </div>
+            <%= f.text_field :q, value: params[:q],
+                             placeholder: t(".search_placeholder"),
+                             autocomplete: "off",
+                             class: "w-full text-sm rounded-lg border border-stone-300 bg-white pl-9 pr-3.5 py-2 text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal font-medium transition-colors",
+                             data: {
+                               filter_form_target: "input",
+                               action: "input->filter-form#debouncedSubmit keydown.enter->filter-form#submit"
+                             } %>
+          </div>
         </div>
-      <% end %>
+
+        <!-- Occupation Select -->
+        <div class="lg:col-span-4 space-y-1.5">
+          <%= f.label :occupation, class: "block text-xs font-semibold text-zinc-500 uppercase tracking-wider" do %>
+            <span class="flex items-center gap-1.5"><i data-lucide="briefcase" class="w-3.5 h-3.5 text-zinc-400"></i> <%= t(".category_label") %></span>
+          <% end %>
+          <%= f.select :occupation, options_for_select([[t(".all_categories"), ""]] + @occupations, params[:occupation]), {},
+                       class: "w-full text-sm rounded-lg border border-stone-300 bg-white px-3.5 py-2 text-charcoal focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal font-medium transition-colors cursor-pointer",
+                       data: { action: "change->filter-form#submit" } %>
+        </div>
+
+        <!-- City Select -->
+        <div class="lg:col-span-3 space-y-1.5">
+          <%= f.label :city, class: "block text-xs font-semibold text-zinc-500 uppercase tracking-wider" do %>
+            <span class="flex items-center gap-1.5"><i data-lucide="map-pin" class="w-3.5 h-3.5 text-zinc-400"></i> <%= t(".city_label") %></span>
+          <% end %>
+          <%= f.select :city, options_for_select([[t(".all_cities"), ""]] + @cities, params[:city]), {},
+                       class: "w-full text-sm rounded-lg border border-stone-300 bg-white px-3.5 py-2 text-charcoal focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal font-medium transition-colors cursor-pointer",
+                       data: { action: "change->filter-form#submit" } %>
+        </div>
+      </div>
     <% end %>
   </div>
 
-  <!-- Contacts List -->
-  <% if @contacts.any? %>
-    <div class="bg-white rounded-lg border border-stone-border divide-y divide-stone-100 overflow-hidden">
-      <% @contacts.each do |contact| %>
-        <div class="flex items-center justify-between p-4 hover:bg-stone-50/50 transition-colors">
-          <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-full bg-stone-100 text-charcoal flex items-center justify-center font-bold text-xs border border-stone-border">
-              <%= contact.receiver.name.first.upcase %>
-            </div>
-            <div class="flex flex-col min-w-0">
-              <span class="font-semibold text-charcoal text-sm">
-                <%= link_to contact.receiver.name, public_path_for(contact.receiver), class: "hover:text-brand transition-colors", data: { turbo_frame: "_top" } %>
+  <!-- Contacts Results Frame -->
+  <%= turbo_frame_tag "contacts_frame", data: { turbo_action: "advance" } do %>
+    <% has_filters = params[:q].present? || params[:occupation].present? || params[:city].present? %>
+    <% results_count = @pagy.count %>
+
+    <!-- Status & Active Filters Bar -->
+    <div class="flex flex-wrap items-center justify-between gap-3 pb-3">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="text-sm font-semibold text-charcoal">
+          <%= t(has_filters ? ".filtered_results_count" : ".results_count", count: results_count) %>
+        </span>
+
+        <% if has_filters %>
+          <span class="text-zinc-300">|</span>
+          <span class="text-xs text-zinc-500"><%= t(".active_filters") %></span>
+          <div class="flex flex-wrap items-center gap-1.5">
+            <% if params[:q].present? %>
+              <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-stone-100 text-charcoal border border-stone-200">
+                "<%= params[:q] %>"
+                <%= link_to contacts_path(request.query_parameters.except(:q)), class: "text-zinc-400 hover:text-charcoal ml-0.5", aria: { label: "Remover busca" }, data: { turbo_action: "advance", turbo_frame: "_top" } do %>
+                  <i data-lucide="x" class="w-3 h-3"></i>
+                <% end %>
               </span>
-              <div class="flex flex-wrap items-center gap-2 mt-0.5">
-                <% if contact.receiver.actorable.is_a?(Profile) %>
-                  <% profile = contact.receiver.actorable %>
-                  <% if profile.city.present? %>
-                    <span class="flex items-center gap-1 text-[11px] font-medium text-zinc-500 mr-1">
-                      <i data-lucide="map-pin" class="w-3.5 h-3.5 text-zinc-400"></i>
-                      <%= profile.city %>
-                    </span>
-                  <% end %>
-                  <% if profile.occupations.any? %>
-                    <% profile.occupations.each do |occupation| %>
-                      <span class="text-[10px] font-semibold bg-stone-100 text-zinc-700 border border-stone-200 px-1.5 py-0.5 rounded-md"><%= occupation.name %></span>
+            <% end %>
+
+            <% if params[:occupation].present? %>
+              <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-stone-100 text-charcoal border border-stone-200">
+                <%= params[:occupation] %>
+                <%= link_to contacts_path(request.query_parameters.except(:occupation)), class: "text-zinc-400 hover:text-charcoal ml-0.5", aria: { label: "Remover categoria" }, data: { turbo_action: "advance", turbo_frame: "_top" } do %>
+                  <i data-lucide="x" class="w-3 h-3"></i>
+                <% end %>
+              </span>
+            <% end %>
+
+            <% if params[:city].present? %>
+              <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-stone-100 text-charcoal border border-stone-200">
+                <%= params[:city] %>
+                <%= link_to contacts_path(request.query_parameters.except(:city)), class: "text-zinc-400 hover:text-charcoal ml-0.5", aria: { label: "Remover cidade" }, data: { turbo_action: "advance", turbo_frame: "_top" } do %>
+                  <i data-lucide="x" class="w-3 h-3"></i>
+                <% end %>
+              </span>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+
+      <% if has_filters %>
+        <%= link_to contacts_path, class: "text-xs font-medium text-zinc-500 hover:text-charcoal hover:underline transition-colors", data: { turbo_action: "advance", turbo_frame: "_top" } do %>
+          <span><%= t(".clear_filters") %></span>
+        <% end %>
+      <% end %>
+    </div>
+
+    <!-- Contacts List -->
+    <% if @contacts.any? %>
+      <div class="bg-white rounded-lg border border-stone-border divide-y divide-stone-100 overflow-hidden shadow-xs">
+        <% @contacts.each do |contact| %>
+          <% receiver = contact.receiver %>
+          <% profile = receiver.actorable.is_a?(Profile) ? receiver.actorable : nil %>
+          <div class="flex items-center justify-between p-4 sm:px-5 hover:bg-stone-50/70 transition-colors gap-3">
+            <div class="flex items-center gap-3.5 min-w-0 flex-1">
+              <!-- Avatar with photo support -->
+              <div class="w-11 h-11 rounded-full bg-white flex-shrink-0 overflow-hidden border border-stone-border shadow-xs">
+                <% if receiver.avatar.attached? %>
+                  <%= image_tag receiver.avatar.variant(:thumb), class: "w-full h-full rounded-full object-cover" %>
+                <% else %>
+                  <div class="w-full h-full rounded-full bg-stone-100 text-charcoal flex items-center justify-center font-serif font-bold text-sm">
+                    <%= receiver.name.first.upcase %>
+                  </div>
+                <% end %>
+              </div>
+
+              <!-- Recognition Cues: Name, Logistics & Specialties -->
+              <div class="flex flex-col min-w-0 flex-1">
+                <!-- Line 1: Name + Logistics/Status -->
+                <div class="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                  <%= link_to receiver.name, public_path_for(receiver),
+                              class: "font-serif font-bold text-charcoal text-base hover:text-brand transition-colors truncate",
+                              data: { turbo_frame: "_top" } %>
+
+                  <% if profile %>
+                    <% if profile.city.present? || profile.state.present? %>
+                      <span class="inline-flex items-center gap-1 text-xs text-zinc-500">
+                        <i data-lucide="map-pin" class="w-3.5 h-3.5 text-zinc-400 flex-shrink-0"></i>
+                        <span><%= [profile.city, profile.state].reject(&:blank?).join(", ") %></span>
+                      </span>
+                    <% end %>
+
+                    <% if (profile.city.present? || profile.state.present?) && profile.availability.present? %>
+                      <span class="text-zinc-300 text-xs" aria-hidden="true">•</span>
+                    <% end %>
+
+                    <% if profile.availability.present? %>
+                      <span class="inline-flex items-center gap-1.5 text-xs font-medium <%= profile.unavailable? ? 'text-zinc-500' : 'text-emerald-700' %>">
+                        <span class="w-1.5 h-1.5 rounded-full <%= profile.unavailable? ? 'bg-zinc-400' : 'bg-emerald-500' %>" aria-hidden="true"></span>
+                        <span class="hidden sm:inline"><%= profile.availability_label %></span>
+                      </span>
                     <% end %>
                   <% end %>
+                </div>
+
+                <!-- Line 2: Occupations (up to 3 + counter) -->
+                <% if profile && profile.occupations.any? %>
+                  <div class="flex flex-wrap items-center gap-1 mt-1">
+                    <% profile.occupations.first(3).each do |occupation| %>
+                      <span class="text-[10px] font-medium bg-stone-100 text-zinc-700 border border-stone-200/70 px-2 py-0.5 rounded-full">
+                        <%= occupation.name %>
+                      </span>
+                    <% end %>
+                    <% if profile.occupations.size > 3 %>
+                      <span class="text-[10px] font-medium text-zinc-400 pl-0.5">
+                        +<%= profile.occupations.size - 3 %>
+                      </span>
+                    <% end %>
+                  </div>
                 <% end %>
               </div>
             </div>
+
+            <!-- Actions -->
+            <div class="flex items-center gap-2 flex-shrink-0">
+              <%= link_to public_path_for(receiver),
+                          class: "hidden sm:inline-flex items-center gap-1 text-xs font-medium text-zinc-700 hover:text-charcoal hover:bg-stone-100 px-3 py-1.5 rounded-md border border-stone-300/80 transition-colors shadow-2xs",
+                          data: { turbo_frame: "_top" } do %>
+                <span><%= t(".view_profile") %></span>
+                <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-zinc-400"></i>
+              <% end %>
+
+              <%= button_to contact_path(contact),
+                            method: :delete,
+                            class: "w-8 h-8 rounded-md flex items-center justify-center text-zinc-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer border-0 bg-transparent p-0",
+                            title: t(".remove"),
+                            data: { turbo_confirm: t(".remove_confirm", name: receiver.name) } do %>
+                <i data-lucide="user-minus" class="w-4 h-4"></i>
+                <span class="sr-only"><%= t(".remove") %></span>
+              <% end %>
+            </div>
           </div>
-          <%= button_to contact_path(contact), method: :delete, class: "flex items-center gap-1.5 text-xs bg-white text-red-600 hover:bg-red-600 hover:text-white font-semibold px-3.5 py-1.5 rounded-md border border-stone-300 transition-all cursor-pointer shadow-sm" do %>
-            <i data-lucide="user-minus" class="w-3.5 h-3.5"></i>
-            <span><%= t(".remove") %></span>
+        <% end %>
+      </div>
+    <% else %>
+      <!-- Empty State -->
+      <div class="text-center text-zinc-500 py-12 sm:py-16 bg-white rounded-lg border border-stone-border p-6 sm:p-8 shadow-xs space-y-3">
+        <div class="w-12 h-12 bg-stone-50 rounded-full flex items-center justify-center mx-auto border border-stone-100 text-zinc-400">
+          <i data-lucide="<%= has_filters ? 'search' : 'users-2' %>" class="w-6 h-6"></i>
+        </div>
+        <div class="space-y-1">
+          <h3 class="text-base font-serif font-bold text-charcoal">
+            <%= t(has_filters ? ".empty_title" : ".no_contacts_title") %>
+          </h3>
+          <p class="text-sm text-zinc-500 max-w-sm mx-auto leading-relaxed">
+            <%= t(has_filters ? ".empty_subtitle" : ".no_contacts_subtitle") %>
+          </p>
+        </div>
+        <div class="pt-2">
+          <% if has_filters %>
+            <%= link_to contacts_path, class: "inline-flex items-center gap-1.5 text-xs bg-stone-100 hover:bg-stone-200 text-charcoal font-medium px-4 py-2 rounded-lg transition-colors border border-stone-300/80 shadow-2xs", data: { turbo_action: "advance", turbo_frame: "_top" } do %>
+              <i data-lucide="x" class="w-3.5 h-3.5"></i>
+              <span><%= t(".clear_filters") %></span>
+            <% end %>
+          <% else %>
+            <%= link_to profiles_path, class: "inline-flex items-center gap-1.5 text-xs bg-charcoal text-white hover:bg-zinc-800 font-medium px-4 py-2 rounded-lg transition-colors shadow-xs" do %>
+              <i data-lucide="search" class="w-3.5 h-3.5"></i>
+              <span><%= t(".explore_profiles") %></span>
+            <% end %>
           <% end %>
         </div>
-      <% end %>
-    </div>
-  <% else %>
-    <div class="text-center text-zinc-500 py-16 bg-white rounded-lg border border-stone-border p-8 shadow-sm">
-      <div class="w-12 h-12 bg-stone-50 rounded-full flex items-center justify-center mx-auto mb-3 border border-stone-100">
-        <i data-lucide="users-2" class="w-6 h-6 text-zinc-400"></i>
       </div>
-      <h3 class="text-base font-semibold text-charcoal">Nenhum contato encontrado</h3>
-      <p class="text-sm text-zinc-500 mt-1 max-w-sm mx-auto">Tente refinar seus filtros ou visite um perfil/grupo para se conectar.</p>
-    </div>
-  <% end %>
+    <% end %>
 
-  <% if @pagy.pages > 1 %>
-    <div class="mt-6 flex justify-center"><%== pagy_nav(@pagy) %></div>
+    <% if @pagy.pages > 1 %>
+      <div class="mt-6 flex justify-center"><%== pagy_nav(@pagy) %></div>
+    <% end %>
   <% end %>
-<% end %>
+</div>

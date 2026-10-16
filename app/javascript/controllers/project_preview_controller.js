@@ -196,7 +196,7 @@ export default class extends Controller {
     this.files.forEach((file) => {
       const img = document.createElement("img")
       img.src = this.urlFor(file)
-      img.className = "w-full h-40 object-cover rounded-lg border border-stone-border"
+      img.className = "w-full aspect-[4/3] object-cover rounded-lg border border-stone-border"
       img.alt = ""
       this.galleryTarget.appendChild(img)
     })
@@ -234,7 +234,7 @@ export default class extends Controller {
     const file = this.coverFile || this.files[0] || null
 
     if (file) {
-      this.coverContainerTarget.innerHTML = `<img src="${this.urlFor(file)}" alt="Capa do projeto" class="w-full h-56 sm:h-72 object-cover">`
+      this.coverContainerTarget.innerHTML = `<img src="${this.urlFor(file)}" alt="Capa do projeto" class="w-full max-h-[500px] object-cover">`
       this.coverContainerTarget.classList.remove("hidden")
       this.coverPlaceholderTarget.classList.add("hidden")
     } else {

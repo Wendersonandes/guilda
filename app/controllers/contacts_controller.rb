@@ -12,19 +12,28 @@ class ContactsController < ApplicationController
   # pending incoming requests from other profiles.
   def index
     authorize Contact
-    @contacts_base = policy_scope(Contact)
-                       .joins(:ties)
-                       .where(sender_id: current_actor.id)
-                       .joins(:receiver)
-                       .merge(Actor.where(actorable_type: "Profile"))
-                       .joins("INNER JOIN profiles ON profiles.id = actors.actorable_id AND actors.actorable_type = 'Profile'")
-                       .preload(receiver: { actorable: :occupations })
-                       .distinct
+    contact_ids = policy_scope(Contact)
+                    .joins(:ties)
+                    .where(sender_id: current_actor.id)
+                    .distinct
+                    .pluck(:id)
 
+    @contacts_base = Contact.where(id: contact_ids)
+                            .joins(:receiver)
+                            .merge(Actor.where(actorable_type: "Profile"))
+                            .joins("INNER JOIN profiles ON profiles.id = actors.actorable_id AND actors.actorable_type = 'Profile'")
+                            .preload(receiver: [ { actorable: :occupations }, { avatar_attachment: :blob } ])
+
+    @total_contacts_count = @contacts_base.count
     @cities = @contacts_base.pluck("profiles.city").uniq.compact.sort
     @occupations = Profile::OCCUPATIONS.map { |o| o["name"] }
 
     @contacts = @contacts_base
+
+    if params[:q].present?
+      term = "%#{ActiveRecord::Base.sanitize_sql_like(params[:q].to_s.strip)}%"
+      @contacts = @contacts.where("actors.name ILIKE :term", term: term)
+    end
 
     if params[:city].present?
       @contacts = @contacts.where(profiles: { city: params[:city] })
@@ -36,7 +45,14 @@ class ContactsController < ApplicationController
                            .where(tags: { name: params[:occupation] })
     end
 
+    @contacts = @contacts.order("actors.name ASC")
     @pagy, @contacts = pagy(@contacts)
+
+    @pending_contacts = Contact.pending
+                               .where(receiver_id: current_actor.id)
+                               .joins(:sender)
+                               .merge(Actor.where(actorable_type: "Profile"))
+                               .includes(:sender)
   end
 
   # Returns the pending incoming contact requests to be rendered inside the right sidebar.

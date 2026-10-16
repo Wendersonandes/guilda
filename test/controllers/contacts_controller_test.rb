@@ -125,4 +125,27 @@ class ContactsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_no_match /#{@bob.name}/, response.body
   end
+
+  test "should filter contacts by text query q" do
+    @alice.connect_to(@bob, as: :friend)
+    @bob.connect_to(@alice, as: :friend)
+
+    get contacts_path(q: @bob.name)
+    assert_response :success
+    assert_match /#{@bob.name}/, response.body
+
+    get contacts_path(q: "NomeInexistente999")
+    assert_response :success
+    assert_no_match /#{@bob.name}/, response.body
+    assert_match I18n.t("contacts.index.empty_title"), response.body
+  end
+
+  test "clear filters link includes turbo advance and top attributes" do
+    @alice.connect_to(@bob, as: :friend)
+    @bob.connect_to(@alice, as: :friend)
+
+    get contacts_path(city: "Belo Horizonte")
+    assert_response :success
+    assert_select "a[href='#{contacts_path}'][data-turbo-action='advance'][data-turbo-frame='_top']", text: /Limpar todos os filtros/
+  end
 end

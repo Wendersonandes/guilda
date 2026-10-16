@@ -1,5 +1,66 @@
+<% content_for :no_sidebar, true %>
 <%= content_for :title, @project.title %>
 
-<div class="max-w-3xl mx-auto">
+<div class="max-w-4xl mx-auto space-y-6">
+  <!-- Top Context Navigation & Owner Actions -->
+  <div class="flex flex-wrap items-center justify-between gap-3 pb-1">
+    <div>
+      <%= link_to public_path_for(@project.profile.actor), class: "inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-zinc-600 hover:text-charcoal transition-colors group" do %>
+        <i data-lucide="arrow-left" class="w-4 h-4 text-zinc-400 group-hover:text-charcoal transition-colors"></i>
+        <span><%= t("projects.show.back_to_profile", name: @project.profile.name) %></span>
+      <% end %>
+    </div>
+
+    <% if current_actor && current_actor == @project.profile.actor %>
+      <div class="flex items-center gap-2.5">
+        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium <%= @project.visibility_draft? ? 'bg-amber-50 text-amber-800 border border-amber-200/80' : 'bg-stone-100 text-zinc-600 border border-stone-200' %>">
+          <%= @project.visibility_label %>
+        </span>
+        <%= link_to edit_my_project_path(@project), class: "inline-flex items-center gap-1.5 text-xs bg-white hover:bg-stone-50 text-charcoal font-medium px-3 py-1.5 rounded-lg border border-stone-300 transition-colors shadow-2xs" do %>
+          <i data-lucide="edit-3" class="w-3.5 h-3.5 text-zinc-500"></i>
+          <span><%= t("my.projects.index.edit", default: "Editar") %></span>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Unified Project Article -->
   <%= render "projects/project", project: @project, images: @images %>
+
+  <!-- Author Signature Card -->
+  <div class="bg-white rounded-xl border border-stone-border p-5 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
+    <div class="flex items-center gap-3.5 min-w-0">
+      <div class="w-12 h-12 rounded-full bg-stone-100 border border-stone-border overflow-hidden flex-shrink-0 flex items-center justify-center">
+        <% if @project.profile.actor&.avatar&.attached? %>
+          <%= image_tag @project.profile.actor.avatar.variant(:thumb), class: "w-full h-full rounded-full object-cover" %>
+        <% else %>
+          <span class="font-serif font-bold text-base text-charcoal"><%= @project.profile.name.first.upcase %></span>
+        <% end %>
+      </div>
+      <div class="min-w-0">
+        <h3 class="font-serif font-bold text-charcoal text-base truncate">
+          <%= link_to @project.profile.name, public_path_for(@project.profile.actor), class: "hover:text-brand transition-colors" %>
+        </h3>
+        <p class="text-xs text-zinc-500 mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5">
+          <% if @project.profile.city.present? || @project.profile.state.present? %>
+            <span class="inline-flex items-center gap-1">
+              <i data-lucide="map-pin" class="w-3 h-3 text-zinc-400"></i>
+              <span><%= [@project.profile.city, @project.profile.state].reject(&:blank?).join(", ") %></span>
+            </span>
+          <% end %>
+          <% if (@project.profile.city.present? || @project.profile.state.present?) && @project.profile.occupations.any? %>
+            <span class="text-zinc-300" aria-hidden="true">·</span>
+          <% end %>
+          <% if @project.profile.occupations.any? %>
+            <span><%= @project.profile.occupations.map(&:name).join(", ") %></span>
+          <% end %>
+        </p>
+      </div>
+    </div>
+
+    <%= link_to public_path_for(@project.profile.actor), class: "inline-flex items-center gap-1.5 text-xs font-semibold bg-charcoal text-white hover:bg-zinc-800 px-4 py-2 rounded-lg transition-colors shadow-xs flex-shrink-0" do %>
+      <span><%= t("projects.show.view_profile_and_contacts") %></span>
+      <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+    <% end %>
+  </div>
 </div>

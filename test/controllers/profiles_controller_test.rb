@@ -118,25 +118,29 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_select "h2", text: /Diego Rocha/, count: 0
   end
 
-  test "should filter profiles index by text query q" do
+  test "should filter profiles index by text query q matching only actor name" do
     sign_in @user
     other_user = users(:bob)
     other_actor = create_profile_for(other_user, name: "Mariana Expografia")
     other_actor.update!(description: "<p>Especialista em iluminação cênica</p>")
     other_actor.actorable.update!(organization: "Ateliê Territórios")
 
+    # Name search matches
     get profiles_path, params: { q: "Mariana" }
     assert_response :success
     assert_select "h2", text: /Mariana Expografia/
 
+    # Bio does NOT match
     get profiles_path, params: { q: "iluminação" }
     assert_response :success
-    assert_select "h2", text: /Mariana Expografia/
+    assert_select "h2", text: /Mariana Expografia/, count: 0
 
+    # Organization does NOT match
     get profiles_path, params: { q: "Territórios" }
     assert_response :success
-    assert_select "h2", text: /Mariana Expografia/
+    assert_select "h2", text: /Mariana Expografia/, count: 0
 
+    # Nonexistent term shows empty state
     get profiles_path, params: { q: "TermoInexistente123" }
     assert_response :success
     assert_select "h2", text: /Mariana Expografia/, count: 0

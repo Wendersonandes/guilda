@@ -24,10 +24,7 @@ class ProfilesController < ApplicationController
 
     if params[:q].present?
       term = "%#{ActiveRecord::Base.sanitize_sql_like(params[:q].to_s.strip)}%"
-      @profiles = @profiles.where(
-        "actors.name ILIKE :term OR actors.description ILIKE :term OR profiles.organization ILIKE :term",
-        term: term
-      )
+      @profiles = @profiles.where("actors.name ILIKE :term", term: term)
     end
 
     if params[:occupation].present?

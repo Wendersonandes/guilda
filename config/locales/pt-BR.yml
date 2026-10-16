@@ -108,8 +108,14 @@ pt-BR:
       private: "Privado"
     show:
       about: "Sobre o projeto"
-      images: "Imagens"
+      images: "Galeria de imagens"
       back: "Voltar"
+      back_to_profile: "Voltar ao perfil de %{name}"
+      gallery_count:
+        one: "1 imagem"
+        other: "%{count} imagens"
+      view_profile_and_contacts: "Ver perfil e contatos"
+      zoom_image: "Ampliar"
       untitled: "Sem título"
   my:
     projects:
@@ -329,7 +335,30 @@ pt-BR:
   contacts:
     index:
       title: "Contatos"
+      subtitle: "Encontre rapidamente profissionais da sua rede de conexões"
+      search_label: "Buscar contato"
+      search_placeholder: "Buscar por nome..."
+      category_label: "Categoria Profissional"
+      all_categories: "Todas as categorias"
+      city_label: "Cidade"
+      all_cities: "Todas as cidades"
+      active_filters: "Filtros ativos:"
+      results_count:
+        one: "1 contato na sua rede"
+        other: "%{count} contatos na sua rede"
+      filtered_results_count:
+        one: "1 contato encontrado"
+        other: "%{count} contatos encontrados"
+      clear_filters: "Limpar todos os filtros"
+      view_profile: "Ver perfil"
       remove: "Remover contato"
+      remove_confirm: "Tem certeza de que deseja remover %{name} dos seus contatos?"
+      empty_title: "Nenhum contato encontrado"
+      empty_subtitle: "Tente refinar os filtros aplicados para localizar quem procura."
+      no_contacts_title: "Sua rede de contatos ainda está vazia"
+      no_contacts_subtitle: "Conecte-se com profissionais e fornecedores para formar sua equipe e acompanhar seus trabalhos."
+      explore_profiles: "Explorar profissionais"
+      pending_section_title: "Solicitações pendentes"
 
   # === Profiles / Actors ======================================================
   profiles:
@@ -337,7 +366,7 @@ pt-BR:
       title: "Profissionais e Fornecedores"
       subtitle: "Conecte-se a profissionais de expografia, transporte de obras, montagem, produção cultural e design para compor sua equipe."
       search_label: "Busca"
-      search_placeholder: "Buscar por nome, bio ou organização..."
+      search_placeholder: "Buscar por nome..."
       category_label: "Categoria Profissional"
       city_label: "Cidade"
       availability_label: "Disponibilidade"
