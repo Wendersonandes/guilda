@@ -47,6 +47,11 @@ class Project < ApplicationRecord
   end
   has_many :project_images, -> { order(:position, :id) }, dependent: :destroy, inverse_of: :project
 
+  # Gallery images collection (used for view helpers, validation messages, and errors).
+  def gallery
+    project_images
+  end
+
   enum :visibility, { draft: 0, public: 1, private: 2 }, prefix: :visibility
 
   validates :title, presence: true

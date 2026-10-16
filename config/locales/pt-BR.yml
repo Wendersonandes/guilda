@@ -97,6 +97,7 @@ pt-BR:
       one: "1 imagem não foi adicionada (limite de 10 por projeto ou arquivo inválido)."
       other: "%{count} imagens não foram adicionadas (limite de 10 por projeto ou arquivo inválido)."
     project_cover_set: "Capa atualizada."
+    project_image_cannot_delete_last: "O projeto precisa manter pelo menos uma imagem na galeria."
     projects_require_profile: "Você precisa de um perfil para gerenciar projetos."
 
   # === Projects (portfolio) ===================================================
@@ -141,6 +142,7 @@ pt-BR:
           one: "Resta %{count} vaga para imagem neste projeto."
           other: "Restam %{count} vagas para imagens neste projeto."
         gallery_full: "Limite de 10 imagens atingido."
+        gallery_required_error: "Adicione pelo menos uma imagem à galeria antes de salvar ou publicar o projeto."
         cover_label: "Imagem de destaque"
         cover_hint: "Clique na estrela de uma imagem para usá-la como destaque do projeto."
         set_cover: "Definir como imagem de destaque"
@@ -215,6 +217,18 @@ pt-BR:
       activity:
         title: "Título"
         body: "Corpo"
+      project:
+        title: "Título"
+        about: "Descrição do projeto"
+        cover: "Imagem de capa"
+        visibility: "Visibilidade"
+        gallery: "Galeria de imagens"
+    errors:
+      models:
+        project:
+          attributes:
+            gallery:
+              blank: "deve conter pelo menos uma imagem"
 
   # === Account ================================================================
   users:

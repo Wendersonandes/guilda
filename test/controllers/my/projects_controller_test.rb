@@ -8,8 +8,6 @@ module My
       @alice = create_profile_for(@alice_user, name: "Alice")
       @alice_user.update!(current_profile: @alice)
       sign_in @alice_user
-      # The wizard is the default new-project form; single-page tests opt in explicitly.
-      Flipper.disable(:project_single_page_form)
     end
 
     test "index lists the profile's projects" do
@@ -32,31 +30,19 @@ module My
       assert_select "input[type=file][name='project[gallery_signed_ids][]'][multiple]"
     end
 
-    test "renders the wizard with tabs, preview and publish actions" do
-      get new_my_project_path
-
-      assert_response :success
-      assert_select "div[data-controller~='project-wizard'][data-controller~='project-preview']"
-      assert_select "input[type=radio][name='project[visibility]'][value='draft']"
-      assert_select "input[type=radio][name='project[visibility]'][value='public']"
-      assert_select "input[type=submit][value='Salvar projeto']"
-    end
-
-    test "the wizard page is full width without the sidebar frame" do
+    test "the new page is full width without the sidebar frame" do
       get new_my_project_path
 
       assert_select "div.grid.grid-cols-12", count: 0
     end
 
-    test "the wizard uses independently scrollable panes" do
+    test "the new form uses independently scrollable panes" do
       get new_my_project_path
 
       assert_select "[class*='lg:overflow-y-auto']", count: 2
     end
 
-    test "renders the single-page form with the live preview when the flag is on" do
-      Flipper.enable(:project_single_page_form)
-
+    test "renders the single-page form with live preview and publish actions" do
       get new_my_project_path
 
       assert_response :success
@@ -68,28 +54,19 @@ module My
       assert_select "label[data-controller='dropzone'] input[type=file][name='project[gallery_signed_ids][]'][multiple]"
       assert_select "input[type=radio][name='project[visibility]'][value='public'][checked]"
       assert_select "input[type=radio][name='project[visibility]'][value='draft']"
-      assert_select "input[type=submit][value='Salvar projeto']", count: 1
+      assert_select "input[type=submit][value='#{I18n.t("my.projects.wizard.publish")}']", count: 1
       assert_select "[class*='lg:overflow-y-auto']", count: 2
       assert_select "a[href='#{my_projects_path}']", text: I18n.t("my.projects.new.cancel"), count: 1
     end
 
     test "the single-page form keeps the chosen visibility when re-rendered with errors" do
-      Flipper.enable(:project_single_page_form)
-
       post my_projects_path, params: { project: { title: "", visibility: "draft", about: "<p>Sobre</p>" } }
 
       assert_response :unprocessable_entity
       assert_select "[data-single-project-form]"
       assert_select "input[type=radio][value='draft'][checked]"
       assert_select "input[type=radio][value='public'][checked]", count: 0
-    end
-
-    test "renders the single-page form when requested via form=single param even if flag is disabled" do
-      get new_my_project_path(form: "single")
-
-      assert_response :success
-      assert_select "[data-single-project-form]"
-      assert_select "[data-controller~='project-wizard']", count: 0
+      assert_select "input[type=submit][value='#{I18n.t("my.projects.wizard.save_draft")}']", count: 1
     end
 
     test "renders the edit form with the gallery" do
@@ -103,15 +80,34 @@ module My
     end
 
     test "creates a project" do
+      signed_id = image_blob("foto.png").signed_id
+
       assert_difference("Project.count", 1) do
-        post my_projects_path, params: { project: { title: "Novo Projeto", visibility: "draft", about: "<p>Sobre</p>" } }
+        post my_projects_path, params: {
+          project: { title: "Novo Projeto", visibility: "draft", about: "<p>Sobre</p>", gallery_signed_ids: [ signed_id ] }
+        }
       end
 
       assert_redirected_to my_projects_path
     end
 
+    test "does not create a project without gallery images" do
+      assert_no_difference("Project.count") do
+        post my_projects_path, params: {
+          project: { title: "Sem imagens", about: "<p>Sobre</p>", visibility: "draft" }
+        }
+      end
+
+      assert_response :unprocessable_entity
+      assert_select "div[role='alert']", text: /Galeria de imagens deve conter pelo menos uma imagem/
+    end
+
     test "renders flash messages with the auto-dismiss controller" do
-      post my_projects_path, params: { project: { title: "Projeto Flash", visibility: "draft", about: "<p>Sobre</p>" } }
+      signed_id = image_blob("foto.png").signed_id
+
+      post my_projects_path, params: {
+        project: { title: "Projeto Flash", visibility: "draft", about: "<p>Sobre</p>", gallery_signed_ids: [ signed_id ] }
+      }
       follow_redirect!
 
       assert_response :success
@@ -134,7 +130,11 @@ module My
     end
 
     test "creates a public project when publishing" do
-      post my_projects_path, params: { project: { title: "Público", about: "<p>Sobre</p>", visibility: "public" } }
+      signed_id = image_blob("foto.png").signed_id
+
+      post my_projects_path, params: {
+        project: { title: "Público", about: "<p>Sobre</p>", visibility: "public", gallery_signed_ids: [ signed_id ] }
+      }
 
       assert_predicate Project.find_by(title: "Público"), :visibility_public?
     end
@@ -197,6 +197,31 @@ module My
       assert_response :success
       assert_equal 1, second.reload.position
       assert_equal 2, first.reload.position
+    end
+
+    test "cannot delete the last image of a project" do
+      project = @alice.actorable.projects.create!(title: "Meu Projeto", about: "<p>Sobre</p>")
+      image = project.project_images.create!(image: image_blob("unica.png"))
+
+      assert_no_difference("ProjectImage.count") do
+        delete my_project_image_path(project, image)
+      end
+
+      assert_redirected_to edit_my_project_path(project)
+      assert_equal I18n.t("flash.project_image_cannot_delete_last"), flash[:alert]
+    end
+
+    test "deletes an image when the project has more than one image" do
+      project = @alice.actorable.projects.create!(title: "Meu Projeto", about: "<p>Sobre</p>")
+      image1 = project.project_images.create!(image: image_blob("img-1.png"))
+      image2 = project.project_images.create!(image: image_blob("img-2.png"))
+
+      assert_difference("ProjectImage.count", -1) do
+        delete my_project_image_path(project, image1)
+      end
+
+      assert_redirected_to edit_my_project_path(project)
+      assert_equal I18n.t("flash.project_image_removed"), flash[:notice]
     end
 
     private

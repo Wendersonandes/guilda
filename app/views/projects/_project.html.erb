@@ -2,7 +2,7 @@
 <div class="space-y-6">
   <div class="bg-white rounded-lg border border-stone-border overflow-hidden">
     <% if preview %>
-      <img data-project-preview-target="cover" src="" alt="" class="hidden w-full h-56 sm:h-72 object-cover">
+      <div data-project-preview-target="coverContainer" class="hidden w-full h-56 sm:h-72 overflow-hidden"></div>
       <div data-project-preview-target="coverPlaceholder" class="w-full h-56 sm:h-72 bg-stone-50 border-b border-stone-border flex items-center justify-center text-zinc-300">
         <i data-lucide="image" class="w-8 h-8"></i>
       </div>
@@ -18,7 +18,11 @@
         <span data-project-preview-target="titleText" class="<%= "text-zinc-300" if project.title.blank? %>"><%= project.title.presence || t("projects.show.untitled") %></span>
       </h1>
       <p class="text-xs font-medium text-zinc-400">
-        <%= link_to project.profile.name, public_path_for(project.profile.actor), class: "hover:text-brand transition-colors" %>
+        <% if preview %>
+          <span class="text-zinc-500"><%= project.profile.name %></span>
+        <% else %>
+          <%= link_to project.profile.name, public_path_for(project.profile.actor), class: "hover:text-brand transition-colors" %>
+        <% end %>
       </p>
     </div>
   </div>

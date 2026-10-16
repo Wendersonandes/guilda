@@ -12,8 +12,6 @@ module My
     before_action :ensure_profile!
     before_action :set_project, only: [ :edit, :update, :destroy ]
 
-    helper_method :single_page_project_form?
-
     # GET /my/projects
     def index
       authorize Project, :index?
@@ -31,7 +29,10 @@ module My
       @project = current_profile.projects.build(project_params)
       authorize @project
 
-      if @project.save
+      @project.valid?
+      @project.errors.add(:gallery, :blank) if gallery_signed_ids.blank?
+
+      if @project.errors.empty? && @project.save
         ingest_gallery
         redirect_to my_projects_path, notice: t("flash.project_created")
       else
@@ -87,18 +88,6 @@ module My
       current_actor.actorable
     end
 
-    # Whether the new-project screen uses the single-page form instead of the step-by-step
-    # wizard. Toggled via the +:project_single_page_form+ Flipper flag (usability test).
-    #
-    # @return [Boolean]
-    def single_page_project_form?
-      case params[:form]
-      when "single" then true
-      when "wizard" then false
-      else feature_enabled?(:project_single_page_form)
-      end
-    end
-
     def set_project
       @project = current_profile.projects
                               .includes(:cover_attachment, project_images: { image_attachment: :blob })
@@ -110,7 +99,7 @@ module My
     end
 
     def gallery_signed_ids
-      Array(params.dig(:project, :gallery_signed_ids))
+      Array(params.dig(:project, :gallery_signed_ids)).reject(&:blank?)
     end
 
     def cover_index

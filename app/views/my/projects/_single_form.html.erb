@@ -1,8 +1,7 @@
 <%# locals: (project:) %>
 <%#
-  Single-page variant of the new-project form (usability test against the wizard, toggled by
-  the :project_single_page_form Flipper flag). Every field is visible at once; the live preview
-  beside it stays in sync through the same project-preview targets used by the wizard.
+  Single-page new-project form. Every field is visible at once; the live preview beside it
+  stays in sync through the project-preview targets.
 %>
 <%
   scope = "my.projects.wizard"
@@ -40,41 +39,51 @@
   <div class="bg-white rounded-lg border border-stone-border flex flex-col lg:flex-1 lg:min-h-0" data-single-project-form>
     <!-- Scrollable content inside the card -->
     <div class="lg:flex-1 lg:min-h-0 lg:overflow-y-auto divide-y divide-stone-100 rounded-t-lg">
-      <!-- 01 — Information -->
+      <!-- Information -->
       <section class="p-5 space-y-3.5" aria-labelledby="single-form-info">
-        <div class="flex items-baseline gap-2">
-          <span class="font-serif text-xs font-semibold text-zinc-400 tabular-nums" aria-hidden="true">01</span>
+        <div class="flex items-center justify-between">
           <h2 id="single-form-info" class="text-xs font-semibold uppercase tracking-wider text-charcoal"><%= t("#{scope}.step_info") %></h2>
+          <span class="text-[11px] text-zinc-400">Campos obrigatórios marcados com *</span>
         </div>
 
         <div class="space-y-1">
-          <%= f.label :title, t("#{scope}.project_title"), class: "block text-xs font-medium text-charcoal" %>
+          <%= f.label :title, class: "block text-xs font-medium text-charcoal" do %>
+            <span><%= t("#{scope}.project_title") %></span>
+            <span class="text-red-500 font-semibold" aria-hidden="true">*</span>
+          <% end %>
           <%= f.text_field :title,
+                required: true,
                 placeholder: "Ex: Cenografia da Exposição Territórios Invisíveis",
                 data: { project_preview_target: "titleInput", action: "input->project-preview#titleChanged" },
                 class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal transition-colors" %>
         </div>
 
         <div class="space-y-1">
-          <%= f.label :about, t("#{scope}.about"), class: "block text-xs font-medium text-charcoal" %>
+          <%= f.label :about, class: "block text-xs font-medium text-charcoal" do %>
+            <span><%= t("#{scope}.about") %></span>
+            <span class="text-red-500 font-semibold" aria-hidden="true">*</span>
+          <% end %>
           <%= f.rich_text_area :about, preset: "project", class: "lexxy-content block w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-charcoal min-h-[110px]" %>
           <p class="text-[11px] text-zinc-400 leading-normal max-w-prose"><%= t("#{scope}.about_hint") %></p>
         </div>
       </section>
 
-      <!-- 02 — Gallery & cover -->
+      <!-- Gallery & cover -->
       <section class="p-5 space-y-3.5" aria-labelledby="single-form-gallery">
         <div class="flex items-center justify-between gap-4">
-          <div class="flex items-baseline gap-2">
-            <span class="font-serif text-xs font-semibold text-zinc-400 tabular-nums" aria-hidden="true">02</span>
+          <div class="flex items-center gap-1.5">
             <h2 id="single-form-gallery" class="text-xs font-semibold uppercase tracking-wider text-charcoal"><%= t("#{scope}.gallery") %></h2>
+            <span class="text-red-500 font-semibold" aria-hidden="true">*</span>
           </div>
-          <span class="text-[11px] text-zinc-400"><%= t("#{scope}.gallery_hint", count: gallery_slots) %></span>
+          <span data-project-preview-target="slotCount" class="text-[11px] text-zinc-500 font-medium">
+            <%= t("#{scope}.gallery_hint", count: gallery_slots) %>
+          </span>
         </div>
 
         <div class="space-y-3">
           <% if gallery_slots.positive? %>
             <label for="project_gallery"
+                   data-project-preview-target="dropzone"
                    data-controller="dropzone"
                    data-action="dragover->dropzone#dragOver dragleave->dropzone#dragLeave drop->dropzone#drop"
                    class="relative flex items-center gap-3.5 p-3.5 rounded-lg border-2 border-dashed border-stone-200 hover:border-charcoal bg-stone-50/50 hover:bg-stone-50 cursor-pointer transition-all group text-left">
@@ -83,18 +92,19 @@
               </div>
               <div class="min-w-0 flex-1">
                 <p class="text-xs font-medium text-charcoal group-hover:underline"><%= t("#{scope}.dropzone_title") %></p>
-                <p class="text-[11px] text-zinc-400 mt-0.5"><%= t("#{scope}.dropzone_subtitle") %></p>
+                <p class="text-[11px] text-zinc-400 mt-0.5">Obrigatório pelo menos 1 imagem · até 5 MB cada (PNG, JPEG ou WebP)</p>
               </div>
-              <span class="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium bg-white text-charcoal border border-stone-200 group-hover:border-stone-300 flex-shrink-0 shadow-xs">
-                <i data-lucide="plus" class="w-3 h-3"></i>
-                <%= t("#{scope}.dropzone_button") %>
-              </span>
 
               <%= file_field_tag "project[gallery_signed_ids][]", id: "project_gallery", multiple: true, direct_upload: true,
                     accept: "image/png,image/jpeg,image/webp",
                     data: { project_preview_target: "galleryInput", dropzone_target: "input", action: "change->project-preview#galleryChanged" },
                     class: "sr-only" %>
             </label>
+
+            <p data-project-preview-target="galleryError" class="hidden text-xs text-red-600 flex items-center gap-1.5">
+              <i data-lucide="alert-circle" class="w-3.5 h-3.5 flex-shrink-0"></i>
+              <span><%= t("#{scope}.gallery_required_error") %></span>
+            </p>
           <% else %>
             <div class="p-3 rounded-lg bg-stone-50 border border-stone-200 text-center text-xs text-zinc-500">
               <%= t("#{scope}.gallery_full") %>
@@ -105,10 +115,10 @@
                 data: { project_preview_target: "coverIndexInput", cover_label: t("#{scope}.set_cover") } %>
 
           <div class="space-y-2">
-            <div class="flex items-center justify-between text-xs text-zinc-500">
+            <div data-project-preview-target="galleryInstructions" class="hidden flex items-center justify-between text-xs text-zinc-500 pt-1">
               <span class="text-xs text-zinc-500 flex items-center gap-1.5">
-                <span class="font-medium text-charcoal"><%= t("#{scope}.cover_label") %>:</span>
-                <%= t("#{scope}.cover_hint") %>
+                <i data-lucide="star" class="w-3.5 h-3.5 text-zinc-500 flex-shrink-0"></i>
+                <span><%= t("#{scope}.cover_hint") %></span>
               </span>
               <span class="text-[11px] text-zinc-400 flex items-center gap-1 flex-shrink-0">
                 <i data-lucide="move" class="w-3 h-3"></i>
@@ -116,7 +126,6 @@
               </span>
             </div>
 
-            <p data-project-preview-target="galleryEmpty" class="text-xs text-zinc-400 py-3 text-center border border-dashed border-stone-200/60 rounded-lg bg-stone-50/30"><%= t("#{scope}.no_images") %></p>
             <div data-project-preview-target="thumbnails"
                  data-controller="sortable"
                  data-sortable-filter-value="button"
@@ -126,30 +135,33 @@
         </div>
       </section>
 
-      <!-- 03 — Publish -->
+      <!-- Publish -->
       <section class="p-5 space-y-3" aria-labelledby="single-form-publish">
-        <div class="flex items-baseline gap-2">
-          <span class="font-serif text-xs font-semibold text-zinc-400 tabular-nums" aria-hidden="true">03</span>
-          <h2 id="single-form-publish" class="text-xs font-semibold uppercase tracking-wider text-charcoal"><%= t("#{scope}.publish_title") %></h2>
-        </div>
+        <h2 id="single-form-publish" class="text-xs font-semibold uppercase tracking-wider text-charcoal"><%= t("#{scope}.publish_title") %></h2>
 
-        <div class="space-y-1" role="radiogroup" aria-labelledby="single-form-publish">
+        <div class="grid grid-cols-2 gap-3" role="radiogroup" aria-labelledby="single-form-publish">
           <% [
-               [ "public", "globe", "text-brand", t("#{scope}.public_label"), t("#{scope}.public_hint"), public_checked ],
-               [ "draft", "lock", "text-zinc-400", t("#{scope}.draft_label"), t("#{scope}.draft_hint"), !public_checked ]
-             ].each do |value, icon, icon_color, label, hint, checked| %>
-            <label class="flex items-start gap-3 p-3 rounded-lg cursor-pointer transition-colors hover:bg-stone-50 has-[:checked]:bg-stone-100/70 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-inset has-[:focus-visible]:ring-charcoal/20">
-              <%= f.radio_button :visibility, value, checked: checked, class: "sr-only peer" %>
-              <span class="mt-0.5 flex items-center justify-center w-4 h-4 rounded-full border border-stone-300 peer-checked:border-charcoal peer-checked:bg-charcoal transition-colors flex-shrink-0">
-                <span class="w-1.5 h-1.5 rounded-full bg-white opacity-0 peer-checked:opacity-100 transition-opacity"></span>
-              </span>
-              <span class="min-w-0">
-                <span class="text-xs font-semibold text-charcoal flex items-center gap-1.5">
-                  <i data-lucide="<%= icon %>" class="w-3.5 h-3.5 <%= icon_color %>"></i>
-                  <span><%= label %></span>
-                </span>
-                <span class="block mt-0.5 text-[11px] text-zinc-500 leading-snug"><%= hint %></span>
-              </span>
+               [ "public", "globe", t("#{scope}.public_label"), t("#{scope}.public_hint"), public_checked ],
+               [ "draft", "lock", t("#{scope}.draft_label"), t("#{scope}.draft_hint"), !public_checked ]
+             ].each do |value, icon, label, hint, checked| %>
+            <label class="relative flex flex-col justify-between p-3.5 rounded-lg border-2 border-stone-200 bg-white cursor-pointer transition-all hover:border-stone-300 hover:bg-stone-50/40 has-[:checked]:border-charcoal has-[:checked]:bg-stone-50/60 has-[:checked]:shadow-xs group">
+              <%= f.radio_button :visibility, value, checked: checked,
+                    data: { action: "change->project-preview#visibilityChanged" },
+                    class: "sr-only peer" %>
+              <div>
+                <div class="flex items-center justify-between gap-2">
+                  <div class="flex items-center gap-2 min-w-0">
+                    <div class="w-6 h-6 rounded-md bg-stone-100 flex items-center justify-center text-charcoal flex-shrink-0 group-has-[:checked]:bg-charcoal group-has-[:checked]:text-white transition-colors">
+                      <i data-lucide="<%= icon %>" class="w-3.5 h-3.5"></i>
+                    </div>
+                    <span class="text-xs sm:text-sm font-semibold text-charcoal truncate"><%= label %></span>
+                  </div>
+                  <span class="w-4 h-4 rounded-full border-2 border-stone-300 peer-checked:border-charcoal peer-checked:bg-charcoal flex items-center justify-center transition-colors flex-shrink-0">
+                    <span class="w-1.5 h-1.5 rounded-full bg-white opacity-0 peer-checked:opacity-100 transition-opacity"></span>
+                  </span>
+                </div>
+                <p class="mt-2 text-[11px] sm:text-xs text-zinc-500 leading-relaxed"><%= hint %></p>
+              </div>
             </label>
           <% end %>
         </div>
@@ -160,7 +172,12 @@
     <div class="flex-none px-5 py-3 flex items-center justify-between gap-4 bg-stone-50/70 border-t border-stone-200 rounded-b-lg">
       <%= link_to t("my.projects.new.cancel"), my_projects_path,
             class: "text-sm font-medium text-zinc-500 hover:text-charcoal transition-colors py-1.5" %>
-      <%= f.submit t("#{scope}.save_project"),
+      <%= f.submit (public_checked ? t("#{scope}.publish") : t("#{scope}.save_draft")),
+            data: {
+              project_preview_target: "submitButton",
+              publish_text: t("#{scope}.publish"),
+              draft_text: t("#{scope}.save_draft")
+            },
             class: "bg-charcoal hover:bg-zinc-800 text-white px-5 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer shadow-sm focus:outline-none focus:ring-2 focus:ring-charcoal focus:ring-offset-1" %>
     </div>
   </div>

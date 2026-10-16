@@ -15,6 +15,12 @@ module My
     # DELETE /my/projects/:project_id/images/:id
     def destroy
       authorize @project, :update?
+
+      if @project.project_images.count <= 1
+        redirect_to edit_my_project_path(@project), alert: t("flash.project_image_cannot_delete_last")
+        return
+      end
+
       @project.project_images.find(params[:id]).destroy
 
       redirect_to edit_my_project_path(@project), notice: t("flash.project_image_removed")
