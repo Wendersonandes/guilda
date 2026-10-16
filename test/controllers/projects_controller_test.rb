@@ -31,4 +31,30 @@ class ProjectsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
   end
+
+  test "shows the project label, section headings and gallery lightbox" do
+    @public_project.project_images.create!(image: image_blob("foto.png"))
+
+    get project_path(@public_project)
+
+    assert_response :success
+    assert_select "p", text: I18n.t("projects.show.project_label")
+    assert_select "h2", text: I18n.t("projects.show.images")
+    assert_select "h2", text: I18n.t("projects.show.about")
+    # The trigger must live inside the lightbox controller scope for the action to bind.
+    assert_select "div[data-controller='lightbox'] button[data-action='click->lightbox#open'] img[loading='lazy']"
+    assert_select "div[data-controller='lightbox'] [data-lightbox-target='overlay'][role='dialog'][aria-modal='true']"
+    assert_select "div[data-controller='lightbox'][data-lightbox-images-value*='active_storage']"
+  end
+
+  private
+
+  def image_blob(filename)
+    ActiveStorage::Blob.create_and_upload!(
+      io: StringIO.new("fake-image-#{filename}"),
+      filename: filename,
+      content_type: "image/png",
+      identify: false
+    )
+  end
 end

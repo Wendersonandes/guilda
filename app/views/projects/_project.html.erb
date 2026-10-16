@@ -1,102 +1,153 @@
 <%# locals: (project:, images:, preview: false) %>
 <% profile = project.profile %>
 <% actor = profile&.actor %>
+<% gallery_image_alt = ->(index) { t("projects.show.gallery_image_alt", title: project.title.presence || t("projects.show.untitled"), current: index + 1, total: images.size) } %>
+<% lightbox_images = preview ? [] : images.map { |image| url_for(image.image.variant(:large)) } %>
 
-<article class="bg-white rounded-xl border border-stone-border overflow-hidden">
-  <!-- 1. Hero / Cover Image -->
-  <% if preview %>
-    <div data-project-preview-target="coverContainer" class="hidden w-full max-h-[500px] overflow-hidden bg-stone-100 flex items-center justify-center border-b border-stone-border"></div>
-    <div data-project-preview-target="coverPlaceholder" class="w-full aspect-[16/9] max-h-[380px] bg-stone-50 border-b border-stone-border flex flex-col items-center justify-center text-zinc-300 gap-2">
-      <i data-lucide="image" class="w-10 h-10 stroke-1 text-zinc-300"></i>
-      <span class="text-xs font-medium text-zinc-400">A capa do projeto aparecerá aqui</span>
-    </div>
-  <% else %>
-    <% cover = project.cover_or_first %>
-    <% if cover&.attached? %>
-      <div class="w-full max-h-[520px] overflow-hidden bg-stone-100 flex items-center justify-center border-b border-stone-border">
-        <%= image_tag cover.variant(:large), class: "w-full h-full max-h-[520px] object-cover" %>
+<div data-controller="lightbox"
+     data-lightbox-images-value="<%= lightbox_images.to_json %>"
+     data-lightbox-counter-template-value="<%= t("projects.show.lightbox.counter") %>">
+  <article class="bg-white rounded-xl border border-stone-border overflow-hidden">
+    <!-- 1. Hero / Cover Image -->
+    <% if preview %>
+      <div data-project-preview-target="coverContainer" class="hidden w-full max-h-[500px] overflow-hidden bg-stone-100 flex items-center justify-center border-b border-stone-border"></div>
+      <div data-project-preview-target="coverPlaceholder" class="w-full aspect-[16/9] max-h-[380px] bg-stone-50 border-b border-stone-border flex flex-col items-center justify-center text-zinc-300 gap-2">
+        <i data-lucide="image" class="w-10 h-10 stroke-1 text-zinc-300"></i>
+        <span class="text-xs font-medium text-zinc-400"><%= t("projects.show.cover_placeholder") %></span>
       </div>
+    <% else %>
+      <% cover = project.cover_or_first %>
+      <% if cover&.attached? %>
+        <div class="w-full max-h-[520px] overflow-hidden bg-stone-100 flex items-center justify-center border-b border-stone-border">
+          <%= image_tag cover.variant(:large),
+                alt: t("projects.show.cover_alt", title: project.title.presence || t("projects.show.untitled")),
+                fetchpriority: "high",
+                class: "w-full h-full max-h-[520px] object-cover" %>
+        </div>
+      <% end %>
     <% end %>
-  <% end %>
 
-  <!-- 2. Integrated Content Surface: Byline, Title, Narrative & Gallery -->
-  <div class="p-6 sm:p-8 space-y-6">
-    <!-- Header Block: Author Byline & Project Title -->
-    <div class="space-y-3">
-      <!-- Author Byline -->
-      <div class="flex items-center gap-3">
-        <% if actor %>
-          <div class="w-9 h-9 rounded-full bg-stone-100 border border-stone-border overflow-hidden flex-shrink-0 flex items-center justify-center">
-            <% if actor.avatar.attached? %>
-              <%= image_tag actor.avatar.variant(:thumb), class: "w-full h-full rounded-full object-cover" %>
-            <% else %>
-              <span class="font-serif font-bold text-xs text-charcoal"><%= actor.name.first.upcase %></span>
+    <!-- 2. Integrated Content Surface: Byline, Title, Gallery & Narrative -->
+    <div class="p-6 sm:p-8 space-y-6">
+      <!-- Header Block: Author Byline & Project Title -->
+      <div class="space-y-3">
+        <!-- Author Byline -->
+        <div class="flex items-center gap-3">
+          <% if actor %>
+            <div class="w-9 h-9 rounded-full bg-stone-100 border border-stone-border overflow-hidden flex-shrink-0 flex items-center justify-center">
+              <% if actor.avatar.attached? %>
+                <%= image_tag actor.avatar.variant(:thumb), alt: "", class: "w-full h-full rounded-full object-cover" %>
+              <% else %>
+                <span class="font-serif font-bold text-xs text-charcoal"><%= actor.name.first.upcase %></span>
+              <% end %>
+            </div>
+          <% end %>
+          <div class="min-w-0">
+            <p class="text-xs font-medium text-charcoal truncate">
+              <% if preview || actor.nil? %>
+                <span class="font-semibold text-charcoal"><%= profile&.name || "Seu Nome" %></span>
+              <% else %>
+                <%= link_to actor.name, public_path_for(actor), class: "font-semibold text-charcoal hover:text-brand transition-colors", data: { turbo_frame: "_top" } %>
+              <% end %>
+            </p>
+            <% if profile && (profile.city.present? || profile.state.present?) %>
+              <p class="text-[11px] text-zinc-500 flex items-center gap-1">
+                <i data-lucide="map-pin" class="w-3 h-3 text-zinc-400"></i>
+                <span><%= [profile.city, profile.state].reject(&:blank?).join(", ") %></span>
+              </p>
             <% end %>
           </div>
-        <% end %>
-        <div class="min-w-0">
-          <p class="text-xs font-medium text-charcoal truncate">
-            <% if preview || actor.nil? %>
-              <span class="font-semibold text-charcoal"><%= profile&.name || "Seu Nome" %></span>
+        </div>
+
+        <!-- Eyebrow + Project Title -->
+        <div class="space-y-1.5">
+          <p class="text-[11px] font-semibold uppercase tracking-wider text-zinc-400"><%= t("projects.show.project_label") %></p>
+          <h1 class="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-charcoal tracking-tight leading-tight">
+            <span data-project-preview-target="titleText" class="<%= "text-zinc-300" if project.title.blank? %>">
+              <%= project.title.presence || t("projects.show.untitled") %>
+            </span>
+          </h1>
+        </div>
+      </div>
+
+      <!-- Gallery Section: visual plates, right under the title -->
+      <div data-project-preview-target="gallerySection" class="pt-5 border-t border-stone-100 space-y-4 <%= "hidden" if images.blank? %>">
+        <div class="flex items-center justify-between">
+          <h2 class="text-xs font-semibold uppercase tracking-wider text-zinc-500 flex items-center gap-2">
+            <i data-lucide="images" class="w-4 h-4 text-zinc-400"></i>
+            <span><%= t("projects.show.images") %></span>
+          </h2>
+          <% if images.present? %>
+            <span class="text-xs text-zinc-400 font-medium">
+              <%= t("projects.show.gallery_count", count: images.size) %>
+            </span>
+          <% end %>
+        </div>
+
+        <div data-project-preview-target="gallery" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <% images.each_with_index do |image, index| %>
+            <% if preview %>
+              <%= image_tag image.image.variant(:thumb), alt: gallery_image_alt.call(index), loading: "lazy", decoding: "async",
+                    class: "w-full aspect-[4/3] object-cover rounded-lg border border-stone-border" %>
             <% else %>
-              <%= link_to actor.name, public_path_for(actor), class: "font-semibold text-charcoal hover:text-brand transition-colors", data: { turbo_frame: "_top" } %>
+              <button type="button"
+                      data-action="click->lightbox#open"
+                      data-lightbox-index-param="<%= index %>"
+                      aria-label="<%= t("projects.show.open_image", current: index + 1, total: images.size) %>"
+                      class="group relative block w-full aspect-[4/3] bg-stone-100 rounded-lg overflow-hidden border border-stone-border hover:border-stone-400 transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-charcoal focus:ring-offset-2">
+                <%= image_tag image.image.variant(:thumb), alt: gallery_image_alt.call(index), loading: "lazy", decoding: "async",
+                      class: "w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-200" %>
+                <span class="absolute inset-0 bg-charcoal/0 group-hover:bg-charcoal/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                  <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-charcoal/80 text-white text-xs font-medium">
+                    <i data-lucide="zoom-in" class="w-3.5 h-3.5"></i>
+                    <span><%= t("projects.show.zoom_image") %></span>
+                  </span>
+                </span>
+              </button>
             <% end %>
-          </p>
-          <% if profile && (profile.city.present? || profile.state.present?) %>
-            <p class="text-[11px] text-zinc-500 flex items-center gap-1">
-              <i data-lucide="map-pin" class="w-3 h-3 text-zinc-400"></i>
-              <span><%= [profile.city, profile.state].reject(&:blank?).join(", ") %></span>
-            </p>
           <% end %>
         </div>
       </div>
 
-      <!-- Project Title -->
-      <h1 class="text-2xl sm:text-3xl lg:text-4xl font-serif font-bold text-charcoal tracking-tight leading-tight">
-        <span data-project-preview-target="titleText" class="<%= "text-zinc-300" if project.title.blank? %>">
-          <%= project.title.presence || t("projects.show.untitled") %>
-        </span>
-      </h1>
-    </div>
-
-    <!-- Narrative Section: Flows directly below Title without bureaucratic headers -->
-    <div data-project-preview-target="aboutSection" class="pt-5 border-t border-stone-100 <%= "hidden" if project.about.to_plain_text.blank? %>">
-      <div data-project-preview-target="about" class="lexxy-content text-sm sm:text-base text-zinc-700 leading-relaxed max-w-prose">
-        <%= project.about if project.about.to_plain_text.present? %>
-      </div>
-    </div>
-
-    <!-- Gallery Section: Unified as generous visual plates -->
-    <div data-project-preview-target="gallerySection" class="pt-6 border-t border-stone-100 space-y-4 <%= "hidden" if images.blank? %>">
-      <div class="flex items-center justify-between">
+      <!-- Narrative Section -->
+      <div data-project-preview-target="aboutSection" class="pt-5 border-t border-stone-100 space-y-3 <%= "hidden" if project.about.to_plain_text.blank? %>">
         <h2 class="text-xs font-semibold uppercase tracking-wider text-zinc-500 flex items-center gap-2">
-          <i data-lucide="images" class="w-4 h-4 text-zinc-400"></i>
-          <span><%= t("projects.show.images") %></span>
+          <i data-lucide="align-left" class="w-4 h-4 text-zinc-400"></i>
+          <span><%= t("projects.show.about") %></span>
         </h2>
-        <% if images.present? %>
-          <span class="text-xs text-zinc-400 font-medium">
-            <%= t("projects.show.gallery_count", count: images.size) %>
-          </span>
-        <% end %>
-      </div>
-
-      <div data-project-preview-target="gallery" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <% images.each do |image| %>
-          <% if preview %>
-            <%= image_tag image.image.variant(:thumb), class: "w-full aspect-[4/3] object-cover rounded-lg border border-stone-border" %>
-          <% else %>
-            <a href="<%= rails_blob_path(image.image, disposition: "inline") %>" target="_blank" rel="noopener" class="group relative block w-full aspect-[4/3] bg-stone-100 rounded-lg overflow-hidden border border-stone-border hover:border-stone-400 transition-colors" title="<%= t("projects.show.zoom_image") %>">
-              <%= image_tag image.image.variant(:thumb), class: "w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-200" %>
-              <div class="absolute inset-0 bg-charcoal/0 group-hover:bg-charcoal/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
-                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-charcoal/80 text-white text-xs font-medium">
-                  <i data-lucide="zoom-in" class="w-3.5 h-3.5"></i>
-                  <span><%= t("projects.show.zoom_image") %></span>
-                </span>
-              </div>
-            </a>
-          <% end %>
-        <% end %>
+        <div data-project-preview-target="about" class="lexxy-content text-sm sm:text-base text-zinc-700 leading-relaxed max-w-prose">
+          <%= project.about if project.about.to_plain_text.present? %>
+        </div>
       </div>
     </div>
-  </div>
-</article>
+  </article>
+
+  <% if !preview && images.present? %>
+    <div data-lightbox-target="overlay"
+         data-action="click->lightbox#backdrop"
+         class="hidden fixed inset-0 z-[60] flex items-center justify-center bg-charcoal/90 p-4"
+         role="dialog" aria-modal="true" aria-label="<%= t("projects.show.lightbox.dialog_label") %>">
+      <button type="button" data-lightbox-target="close" data-action="click->lightbox#close"
+              class="absolute top-4 right-4 inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-white"
+              aria-label="<%= t("projects.show.lightbox.close") %>">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <button type="button" data-action="click->lightbox#previous"
+              class="absolute left-3 sm:left-6 inline-flex items-center justify-center w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-white"
+              aria-label="<%= t("projects.show.lightbox.previous") %>">
+        <i data-lucide="chevron-left" class="w-6 h-6"></i>
+      </button>
+
+      <img data-lightbox-target="image" src="" alt="" class="max-h-[85vh] max-w-full object-contain rounded-lg select-none">
+
+      <button type="button" data-action="click->lightbox#next"
+              class="absolute right-3 sm:right-6 inline-flex items-center justify-center w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-white"
+              aria-label="<%= t("projects.show.lightbox.next") %>">
+        <i data-lucide="chevron-right" class="w-6 h-6"></i>
+      </button>
+
+      <div data-lightbox-target="counter" class="absolute bottom-4 left-1/2 -translate-x-1/2 text-xs font-medium text-white/90" aria-live="polite"></div>
+    </div>
+  <% end %>
+</div>

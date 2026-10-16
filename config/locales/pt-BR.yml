@@ -109,14 +109,27 @@ pt-BR:
     show:
       about: "Sobre o projeto"
       images: "Galeria de imagens"
+      project_label: "Projeto"
       back: "Voltar"
       back_to_profile: "Voltar ao perfil de %{name}"
       gallery_count:
         one: "1 imagem"
         other: "%{count} imagens"
+      cover_alt: "%{title} — imagem de capa"
+      cover_placeholder: "A capa do projeto aparecerá aqui"
+      gallery_image_alt: "%{title} — imagem %{current} de %{total}"
+      open_image: "Ampliar imagem %{current} de %{total}"
+      interested_in_work: "Gostou do trabalho?"
+      contact_author: "Veja o perfil de %{name} e fale diretamente."
       view_profile_and_contacts: "Ver perfil e contatos"
       zoom_image: "Ampliar"
       untitled: "Sem título"
+      lightbox:
+        dialog_label: "Galeria de imagens do projeto"
+        close: "Fechar"
+        previous: "Imagem anterior"
+        next: "Próxima imagem"
+        counter: "%{current} de %{total}"
   my:
     projects:
       index:
