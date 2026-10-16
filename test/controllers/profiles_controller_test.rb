@@ -67,7 +67,7 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     other_user = users(:bob)
     other_actor = create_profile_for(other_user, name: "Bob Incomplete")
     other_actor.actorable.update_columns(wizard_complete: false)
-    
+
     get profiles_path
     assert_response :success
     assert_select "h2", text: /Bob Incomplete/, count: 0
@@ -107,7 +107,7 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     sign_in @user
     other_user = users(:bob)
     other_actor = create_profile_for(other_user, name: "Diego Rocha")
-    other_actor.actorable.update!(occupation_list: ["Escrita de Projetos"])
+    other_actor.actorable.update!(occupation_list: [ "Escrita de Projetos" ])
 
     get profiles_path, params: { occupation: "Escrita de Projetos" }
     assert_response :success
@@ -116,6 +116,46 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     get profiles_path, params: { occupation: "Expografia" }
     assert_response :success
     assert_select "h2", text: /Diego Rocha/, count: 0
+  end
+
+  test "should filter profiles index by text query q" do
+    sign_in @user
+    other_user = users(:bob)
+    other_actor = create_profile_for(other_user, name: "Mariana Expografia")
+    other_actor.update!(description: "<p>Especialista em iluminação cênica</p>")
+    other_actor.actorable.update!(organization: "Ateliê Territórios")
+
+    get profiles_path, params: { q: "Mariana" }
+    assert_response :success
+    assert_select "h2", text: /Mariana Expografia/
+
+    get profiles_path, params: { q: "iluminação" }
+    assert_response :success
+    assert_select "h2", text: /Mariana Expografia/
+
+    get profiles_path, params: { q: "Territórios" }
+    assert_response :success
+    assert_select "h2", text: /Mariana Expografia/
+
+    get profiles_path, params: { q: "TermoInexistente123" }
+    assert_response :success
+    assert_select "h2", text: /Mariana Expografia/, count: 0
+    assert_select "h3", text: I18n.t("profiles.index.empty_title")
+  end
+
+  test "displays signed in profile in index with your profile indicator" do
+    sign_in @user
+
+    get profiles_path
+    assert_response :success
+    assert_select "h2", text: /#{@actor.name}/i
+    assert_select "span", text: I18n.t("profiles.index.your_profile")
+  end
+
+  test "clear filters link includes turbo advance and top attributes to reset url" do
+    get profiles_path, params: { city: "Curitiba" }
+    assert_response :success
+    assert_select "a[href='#{profiles_path}'][data-turbo-action='advance'][data-turbo-frame='_top']", text: /Limpar todos os filtros/
   end
 
   test "renders the Lexxy bio editor with the saved text in the edit form" do

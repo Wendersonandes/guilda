@@ -13,15 +13,22 @@ class ProfilesController < ApplicationController
   # GET /profiles
   def index
     authorize Actor, :index?
-    
-    @cities = Profile.where(wizard_complete: true).where.not(city: [nil, ""]).order(:city).pluck(:city).uniq
+
+    @cities = Profile.where(wizard_complete: true).where.not(city: [ nil, "" ]).order(:city).pluck(:city).uniq
     @occupations = Profile::OCCUPATIONS.map { |o| o["name"] }
 
     @profiles = Profile.joins(:actor)
-                       .includes(:occupations, actor: [avatar_attachment: :blob, cover_image_attachment: :blob])
+                       .includes(:occupations, :projects, actor: [ avatar_attachment: :blob, cover_image_attachment: :blob ])
                        .where(wizard_complete: true)
-                       .where.not(id: current_actor&.actorable_id)
                        .order("actors.name ASC")
+
+    if params[:q].present?
+      term = "%#{ActiveRecord::Base.sanitize_sql_like(params[:q].to_s.strip)}%"
+      @profiles = @profiles.where(
+        "actors.name ILIKE :term OR actors.description ILIKE :term OR profiles.organization ILIKE :term",
+        term: term
+      )
+    end
 
     if params[:occupation].present?
       @profiles = @profiles.tagged_with(params[:occupation], on: :occupations)
@@ -66,7 +73,7 @@ class ProfilesController < ApplicationController
 
   def setup_location_variables
     states_hash = CS.states(:BR) || {}
-    @states = states_hash.map { |code, name| [name, code.to_s] }
+    @states = states_hash.map { |code, name| [ name, code.to_s ] }
 
     state_code = state_code_for(@profile.state)
     if state_code.present?
