@@ -49,6 +49,7 @@ export default class extends Controller {
     const value = (this.titleInputTarget.value || "").trim()
     this.titleTextTarget.textContent = value || this.titlePlaceholder
     this.titleTextTarget.classList.toggle("text-zinc-300", !value)
+    this.updateSubmitState()
   }
 
   aboutChanged() {
@@ -56,6 +57,19 @@ export default class extends Controller {
     const empty = this.blankHtml(html)
     this.aboutTarget.innerHTML = empty ? "" : html
     this.aboutSectionTarget.classList.toggle("hidden", empty)
+    this.updateSubmitState()
+  }
+
+  // Keeps the submit button disabled until title, description and at least one gallery image
+  // are filled in (the same fields the server requires).
+  updateSubmitState() {
+    if (!this.hasSubmitButtonTarget) return
+
+    const titleFilled = (this.titleInputTarget.value || "").trim() !== ""
+    const aboutFilled = this.editor ? !this.blankHtml(this.editor.value) : false
+    const galleryFilled = this.files.length > 0
+
+    this.submitButtonTarget.disabled = !(titleFilled && aboutFilled && galleryFilled)
   }
 
   visibilityChanged() {
@@ -189,6 +203,7 @@ export default class extends Controller {
     this.gallerySectionTarget.classList.toggle("hidden", !hasFiles)
 
     this.updatePreviewCover()
+    this.updateSubmitState()
   }
 
   updateSlotCount() {

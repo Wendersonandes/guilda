@@ -55,6 +55,7 @@ module My
       assert_select "input[type=radio][name='project[visibility]'][value='public'][checked]"
       assert_select "input[type=radio][name='project[visibility]'][value='draft']"
       assert_select "input[type=submit][value='#{I18n.t("my.projects.wizard.publish")}']", count: 1
+      assert_select "input[type=submit][data-project-preview-target='submitButton'][disabled]"
       assert_select "[class*='lg:overflow-y-auto']", count: 2
       assert_select "a[href='#{my_projects_path}']", text: I18n.t("my.projects.new.cancel"), count: 1
     end
