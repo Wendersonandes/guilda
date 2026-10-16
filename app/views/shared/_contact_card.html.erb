@@ -85,18 +85,20 @@
 
       <% if profile.website.present? %>
         <% website_display = profile.website.sub(%r{\Ahttps?://(www\.)?}, "").chomp("/") %>
-        <li class="py-2.5 flex items-center justify-between gap-3 group">
-          <div class="flex items-center gap-2.5 min-w-0 flex-1">
-            <div class="w-7 h-7 rounded-md bg-stone-100 flex items-center justify-center text-zinc-500 flex-shrink-0 group-hover:text-charcoal transition-colors">
-              <i data-lucide="globe" class="w-3.5 h-3.5"></i>
+        <li class="py-2.5">
+          <%= link_to profile.website, target: "_blank", rel: "noopener", class: "flex items-center justify-between gap-3 group/link -mx-1.5 px-1.5 py-0.5 rounded-md hover:bg-stone-50 transition-colors", title: t(".open_link") do %>
+            <div class="flex items-center gap-2.5 min-w-0 flex-1">
+              <div class="w-7 h-7 rounded-md bg-stone-100 flex items-center justify-center text-zinc-500 flex-shrink-0 group-hover/link:text-charcoal group-hover/link:bg-stone-200/60 transition-colors">
+                <i data-lucide="globe" class="w-3.5 h-3.5"></i>
+              </div>
+              <div class="min-w-0 flex-1">
+                <p class="text-[10px] uppercase font-semibold tracking-wider text-zinc-400 leading-none mb-0.5"><%= t(".website_label") %></p>
+                <span class="text-xs font-medium text-zinc-800 group-hover/link:text-brand truncate block transition-colors"><%= website_display %></span>
+              </div>
             </div>
-            <div class="min-w-0 flex-1">
-              <p class="text-[10px] uppercase font-semibold tracking-wider text-zinc-400 leading-none mb-0.5"><%= t(".website_label") %></p>
-              <%= link_to website_display, profile.website, target: "_blank", rel: "noopener", class: "text-xs font-medium text-zinc-800 hover:text-brand truncate block transition-colors" %>
+            <div class="w-7 h-7 rounded-md flex items-center justify-center text-zinc-400 group-hover/link:text-charcoal transition-colors flex-shrink-0">
+              <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
             </div>
-          </div>
-          <%= link_to profile.website, target: "_blank", rel: "noopener", title: t(".open_link"), class: "w-7 h-7 rounded-md flex items-center justify-center text-zinc-400 hover:text-charcoal hover:bg-stone-100 transition-colors flex-shrink-0" do %>
-            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
           <% end %>
         </li>
       <% end %>
@@ -108,18 +110,20 @@
                                    .split(%r{[/?#]}).first
                                    .presence || profile.instagram
         %>
-        <li class="py-2.5 flex items-center justify-between gap-3 group">
-          <div class="flex items-center gap-2.5 min-w-0 flex-1">
-            <div class="w-7 h-7 rounded-md bg-stone-100 flex items-center justify-center text-zinc-500 flex-shrink-0 group-hover:text-charcoal transition-colors">
-              <i data-lucide="instagram" class="w-3.5 h-3.5"></i>
+        <li class="py-2.5">
+          <%= link_to instagram_url(profile.instagram), target: "_blank", rel: "noopener", class: "flex items-center justify-between gap-3 group/link -mx-1.5 px-1.5 py-0.5 rounded-md hover:bg-stone-50 transition-colors", title: t(".open_link") do %>
+            <div class="flex items-center gap-2.5 min-w-0 flex-1">
+              <div class="w-7 h-7 rounded-md bg-stone-100 flex items-center justify-center text-zinc-500 flex-shrink-0 group-hover/link:text-charcoal group-hover/link:bg-stone-200/60 transition-colors">
+                <i data-lucide="instagram" class="w-3.5 h-3.5"></i>
+              </div>
+              <div class="min-w-0 flex-1">
+                <p class="text-[10px] uppercase font-semibold tracking-wider text-zinc-400 leading-none mb-0.5"><%= t(".instagram_label") %></p>
+                <span class="text-xs font-medium text-zinc-800 group-hover/link:text-brand truncate block transition-colors"><%= "@#{handle}" %></span>
+              </div>
             </div>
-            <div class="min-w-0 flex-1">
-              <p class="text-[10px] uppercase font-semibold tracking-wider text-zinc-400 leading-none mb-0.5"><%= t(".instagram_label") %></p>
-              <%= link_to "@#{handle}", instagram_url(profile.instagram), target: "_blank", rel: "noopener", class: "text-xs font-medium text-zinc-800 hover:text-brand truncate block transition-colors" %>
+            <div class="w-7 h-7 rounded-md flex items-center justify-center text-zinc-400 group-hover/link:text-charcoal transition-colors flex-shrink-0">
+              <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
             </div>
-          </div>
-          <%= link_to instagram_url(profile.instagram), target: "_blank", rel: "noopener", title: t(".open_link"), class: "w-7 h-7 rounded-md flex items-center justify-center text-zinc-400 hover:text-charcoal hover:bg-stone-100 transition-colors flex-shrink-0" do %>
-            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
           <% end %>
         </li>
       <% end %>

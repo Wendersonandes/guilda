@@ -17,20 +17,22 @@
         <%= current_actor.actorable_type %>
       </p>
 
-      <div class="grid grid-cols-2 gap-2 mt-4 pt-4 border-t border-stone-100 text-center">
-        <% if feature_enabled?(:social_feed) %>
-          <div>
-            <span class="block text-sm font-bold text-charcoal"><%= current_actor.authored_activities.posts.count %></span>
-            <span class="text-[10px] text-zinc-400 font-medium"><%= t(".posts") %></span>
-          </div>
-        <% end %>
-        <% if feature_enabled?(:contacts) %>
-          <div>
-            <span class="block text-sm font-bold text-charcoal"><%= current_actor.sent_active_contact_ids.size %></span>
-            <span class="text-[10px] text-zinc-400 font-medium"><%= t(".connections") %></span>
-          </div>
-        <% end %>
-      </div>
+      <% if feature_enabled?(:social_feed) || feature_enabled?(:contacts) %>
+        <div class="grid <%= feature_enabled?(:social_feed) && feature_enabled?(:contacts) ? 'grid-cols-2' : 'grid-cols-1' %> gap-2 mt-4 pt-4 border-t border-stone-100 text-center">
+          <% if feature_enabled?(:social_feed) %>
+            <div>
+              <span class="block text-sm font-bold text-charcoal"><%= current_actor.authored_activities.posts.count %></span>
+              <span class="text-[10px] text-zinc-400 font-medium"><%= t(".posts") %></span>
+            </div>
+          <% end %>
+          <% if feature_enabled?(:contacts) %>
+            <div>
+              <span class="block text-sm font-bold text-charcoal"><%= current_actor.sent_active_contact_ids.size %></span>
+              <span class="text-[10px] text-zinc-400 font-medium"><%= t(".connections") %></span>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
     </div>
 
     <!-- Navigation List -->

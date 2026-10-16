@@ -17,7 +17,7 @@
     </div>
   <% end %>
 
-  <% if current_actor && (!@actor || @actor == current_actor) %>
+  <% if current_actor && (!@actor || @actor == current_actor) && (feature_enabled?(:contacts) || feature_enabled?(:suggestions)) %>
     <div class="bg-white rounded-lg border border-stone-border p-5 flex flex-col gap-5">
       <% if feature_enabled?(:contacts) %>
         <%= turbo_frame_tag "sidebar_pending_contacts",

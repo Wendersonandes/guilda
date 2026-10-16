@@ -1,202 +1,255 @@
+<% content_for :no_sidebar, true %>
 <%= content_for :title, @actor.name %>
 
-<div class="space-y-6" data-controller="tabs" data-tabs-default-tab-value="<%= feature_enabled?(:projects) && @actor.actorable.is_a?(Profile) ? 'portfolio' : 'activity' %>">
-  <!-- Profile Header Card -->
-  <div class="bg-white rounded-lg border border-stone-border overflow-hidden">
-    <% if @actor.cover_image.attached? %>
-      <%= image_tag @actor.cover_image.variant(:thumb), class: "w-full h-44 sm:h-52 object-cover" %>
-    <% else %>
-      <!-- Gallery-inspired Subtle Neutral Banner -->
-      <div class="w-full h-36 sm:h-44 bg-gradient-to-br from-stone-100 via-[#f5f4f0] to-stone-200/80 border-b border-stone-border relative overflow-hidden" aria-hidden="true">
-        <div class="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#18181b_1px,transparent_1px)] [background-size:16px_16px]"></div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+  <!-- Main Column: Profile Header + Portfolio / Activity -->
+  <div class="lg:col-span-8 space-y-6 min-w-0" data-controller="tabs" data-tabs-default-tab-value="<%= feature_enabled?(:projects) && @actor.actorable.is_a?(Profile) ? 'portfolio' : 'activity' %>">
+    <!-- Profile Header Card -->
+    <div class="bg-white rounded-lg border border-stone-border overflow-hidden">
+      <% if @actor.cover_image.attached? %>
+        <%= image_tag @actor.cover_image.variant(:thumb), class: "w-full h-44 sm:h-52 object-cover" %>
+      <% else %>
+        <!-- Gallery-inspired Subtle Neutral Banner -->
+        <div class="w-full h-36 sm:h-44 bg-gradient-to-br from-stone-100 via-[#f5f4f0] to-stone-200/80 border-b border-stone-border relative overflow-hidden" aria-hidden="true">
+          <div class="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#18181b_1px,transparent_1px)] [background-size:16px_16px]"></div>
+        </div>
+      <% end %>
+
+      <div class="px-6 pb-6 pt-5 relative">
+        <!-- Top Row: Avatar on the left overlapping banner, Actions on the right -->
+        <div class="flex items-start justify-between gap-4 mb-4">
+          <!-- Avatar -->
+          <div class="-mt-14 sm:-mt-16 w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-white p-1 flex-shrink-0 overflow-hidden border border-stone-border shadow-xs">
+            <% if @actor.avatar.attached? %>
+              <%= image_tag @actor.avatar.variant(:thumb), class: "w-full h-full rounded-full object-cover" %>
+            <% else %>
+              <%
+                is_group = @actor.actorable_type == "Group"
+                avatar_rounded = is_group ? "rounded-lg" : "rounded-full"
+                avatar_bg = is_group ? "bg-stone-200 text-charcoal border-stone-300" : "bg-stone-100 text-charcoal border-stone-border"
+              %>
+              <div class="w-full h-full <%= avatar_rounded %> <%= avatar_bg %> flex items-center justify-center text-2xl sm:text-3xl font-serif font-bold text-charcoal">
+                <%= @actor.name.first.upcase %>
+              </div>
+            <% end %>
+          </div>
+
+          <!-- Action Button: Owner (Edit Profile) or Visitor (Connect) -->
+          <div class="flex items-center gap-2 flex-shrink-0 pt-1">
+            <% if current_actor && current_actor == @actor %>
+              <%= link_to edit_my_profile_path, class: "inline-flex items-center gap-1.5 text-xs bg-white text-zinc-700 hover:bg-stone-50 hover:text-charcoal font-medium px-3.5 py-2 rounded-lg border border-stone-300 transition-colors shadow-xs" do %>
+                <i data-lucide="edit-3" class="w-3.5 h-3.5 text-zinc-500"></i>
+                <span><%= t(".edit_profile") %></span>
+              <% end %>
+            <% else %>
+              <%= render "shared/connection_button", actor: @actor %>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- Profile Details: Hierarchy matching profiles/index -->
+        <div class="space-y-2">
+          <!-- 1. Name -->
+          <h1 class="text-2xl sm:text-3xl font-serif font-bold text-charcoal tracking-tight leading-tight"><%= @actor.name %></h1>
+
+          <!-- 2. Location & Availability (Logistics and status) -->
+          <% if @actor.actorable.is_a?(Profile) %>
+            <% profile = @actor.actorable %>
+            <% if profile.city.present? || profile.state.present? || profile.availability.present? %>
+              <div class="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-xs text-zinc-500 pt-0.5">
+                <% if profile.city.present? || profile.state.present? %>
+                  <span class="inline-flex items-center gap-1">
+                    <i data-lucide="map-pin" class="w-3.5 h-3.5 text-zinc-400 flex-shrink-0"></i>
+                    <span><%= [profile.city, profile.state].reject(&:blank?).join(", ") %></span>
+                  </span>
+                <% end %>
+
+                <% if (profile.city.present? || profile.state.present?) && profile.availability.present? %>
+                  <span class="text-zinc-300" aria-hidden="true">•</span>
+                <% end %>
+
+                <% if profile.availability.present? %>
+                  <span class="inline-flex items-center gap-1.5 font-medium <%= profile.unavailable? ? 'text-zinc-500' : 'text-emerald-700' %>">
+                    <span class="w-1.5 h-1.5 rounded-full <%= profile.unavailable? ? 'bg-zinc-400' : 'bg-emerald-500' %>" aria-hidden="true"></span>
+                    <span><%= profile.availability_label %></span>
+                  </span>
+                <% end %>
+              </div>
+            <% end %>
+          <% end %>
+
+          <!-- 3. Occupations Chips (Clickable filter links) -->
+          <% if @actor.actorable.is_a?(Profile) && @actor.actorable.occupations.any? %>
+            <div class="flex flex-wrap gap-1.5 pt-1">
+              <% @actor.actorable.occupations.each do |occupation| %>
+                <%= link_to profiles_path(occupation: occupation.name),
+                            class: "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-stone-100 text-zinc-700 border border-stone-200/70 hover:bg-stone-200/80 hover:text-charcoal transition-colors",
+                            title: t("profiles.index.view_all_in_category", default: "Ver profissionais de %{name}", name: occupation.name) do %>
+                  <span><%= occupation.name %></span>
+                <% end %>
+              <% end %>
+            </div>
+          <% end %>
+
+          <!-- 4. Bio / Description (Separated by subtle border) -->
+          <% if @actor.description.present? %>
+            <div class="pt-3.5 mt-3.5 border-t border-stone-100">
+              <div class="text-sm text-zinc-600 leading-relaxed max-w-[65ch] space-y-2"><%= sanitize(@actor.description) %></div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile Contact Card (accessible on < lg screens) -->
+    <% if @actor.actorable.is_a?(Profile) %>
+      <div class="lg:hidden">
+        <%= render "shared/contact_card", actor: @actor %>
       </div>
     <% end %>
 
-    <div class="px-6 pb-6 pt-5 relative">
-      <!-- Top Row: Avatar on the left overlapping banner, Actions on the right -->
-      <div class="flex items-start justify-between gap-4 mb-4">
-        <!-- Avatar -->
-        <div class="-mt-14 sm:-mt-16 w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-white p-1 flex-shrink-0 overflow-hidden border border-stone-border shadow-sm">
-          <% if @actor.avatar.attached? %>
-            <%= image_tag @actor.avatar.variant(:thumb), class: "w-full h-full rounded-full object-cover" %>
-          <% else %>
-            <%
-              is_group = @actor.actorable_type == "Group"
-              avatar_rounded = is_group ? "rounded-lg" : "rounded-full"
-              avatar_bg = is_group ? "bg-stone-200 text-charcoal border-stone-300" : "bg-stone-100 text-charcoal border-stone-border"
-            %>
-            <div class="w-full h-full <%= avatar_rounded %> <%= avatar_bg %> flex items-center justify-center text-2xl sm:text-3xl font-serif font-bold text-charcoal">
-              <%= @actor.name.first.upcase %>
-            </div>
-          <% end %>
-        </div>
-
-        <!-- Action Button: Owner (Edit Profile) or Visitor (Connect) -->
-        <div class="flex items-center gap-2 flex-shrink-0 pt-1">
-          <% if current_actor && current_actor == @actor %>
-            <%= link_to edit_my_profile_path, class: "inline-flex items-center gap-1.5 text-xs bg-white text-zinc-700 hover:bg-stone-50 hover:text-charcoal font-medium px-3.5 py-2 rounded-lg border border-stone-300 transition-colors shadow-sm" do %>
-              <i data-lucide="edit-3" class="w-3.5 h-3.5 text-zinc-500"></i>
-              <span><%= t(".edit_profile") %></span>
+    <!-- Navigation / Header for Portfolio & Activity -->
+    <% if feature_enabled?(:projects) && @actor.actorable.is_a?(Profile) && feature_enabled?(:social_feed) %>
+      <!-- Tab Navigation (when both projects and feed are enabled) -->
+      <div class="border-b border-stone-border flex items-center justify-between gap-4" role="tablist" aria-label="Seções do perfil">
+        <nav class="flex gap-6 -mb-px" aria-label="Tabs">
+          <button type="button"
+                  role="tab"
+                  data-tabs-target="tab"
+                  data-tab-name="portfolio"
+                  data-action="click->tabs#change"
+                  class="pb-3 text-sm font-medium border-b-2 transition-colors cursor-pointer border-charcoal text-charcoal font-semibold flex items-center gap-2">
+            <span><%= t(".tab_portfolio") %></span>
+            <% if @projects.present? %>
+              <span class="text-xs px-2 py-0.5 rounded-full bg-stone-100 text-zinc-600 font-normal"><%= @projects.size %></span>
             <% end %>
-          <% else %>
-            <%= render "shared/connection_button", actor: @actor %>
-          <% end %>
-        </div>
-      </div>
-
-      <!-- Profile Details: Full width below Avatar & Actions -->
-      <div class="space-y-2.5">
-        <h1 class="text-2xl sm:text-3xl font-serif font-bold text-charcoal tracking-tight leading-tight"><%= @actor.name %></h1>
-
-        <% if @actor.description.present? %>
-          <div class="text-sm text-zinc-600 leading-relaxed max-w-prose space-y-2"><%= sanitize(@actor.description) %></div>
-        <% end %>
-
-        <!-- Occupations Chips (Aligned with DESIGN.md) -->
-        <% if @actor.actorable.is_a?(Profile) && @actor.actorable.occupations.any? %>
-          <div class="flex flex-wrap gap-1.5 pt-1">
-            <% @actor.actorable.occupations.each do |occupation| %>
-              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-stone-100 text-zinc-800 border border-stone-200/70">
-                <%= occupation.name %>
-              </span>
-            <% end %>
-          </div>
-        <% end %>
-
-        <!-- Profile Location & Availability -->
-        <% if @actor.actorable.is_a?(Profile) %>
-          <% profile = @actor.actorable %>
-          <% if profile.city.present? || profile.state.present? || profile.availability.present? %>
-            <div class="flex flex-wrap items-center gap-x-4 gap-y-1.5 pt-1 text-xs text-zinc-500">
-              <% if profile.availability.present? %>
-                <span class="inline-flex items-center gap-1.5 font-medium <%= profile.unavailable? ? 'text-zinc-500' : 'text-emerald-700' %>">
-                  <span class="w-2 h-2 rounded-full <%= profile.unavailable? ? 'bg-zinc-400' : 'bg-emerald-500' %>" aria-hidden="true"></span>
-                  <%= profile.availability_label %>
-                </span>
-              <% end %>
-              <% if profile.city.present? || profile.state.present? %>
-                <span class="inline-flex items-center gap-1">
-                  <i data-lucide="map-pin" class="w-3.5 h-3.5 text-zinc-400"></i>
-                  <%= [profile.city, profile.state].reject(&:blank?).join(", ") %>
-                </span>
-              <% end %>
-            </div>
+          </button>
+          <button type="button"
+                  role="tab"
+                  data-tabs-target="tab"
+                  data-tab-name="activity"
+                  data-action="click->tabs#change"
+                  class="pb-3 text-sm font-medium border-b-2 transition-colors cursor-pointer border-transparent text-zinc-500 hover:text-charcoal hover:border-stone-300 flex items-center gap-2">
+            <span><%= t(".tab_activity") %></span>
+          </button>
+        </nav>
+        <% if @actor == current_actor %>
+          <%= link_to new_my_project_path, class: "mb-2 inline-flex items-center gap-1.5 text-xs bg-charcoal text-white hover:bg-zinc-800 font-medium px-3 py-1.5 rounded-lg transition-colors shadow-xs" do %>
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+            <span><%= t(".new_project") %></span>
           <% end %>
         <% end %>
       </div>
-    </div>
-  </div>
-
-  <!-- Mobile Contact Card -->
-  <% if @actor.actorable.is_a?(Profile) %>
-    <div class="lg:hidden">
-      <%= render "shared/contact_card", actor: @actor %>
-    </div>
-  <% end %>
-
-  <!-- Tab Navigation -->
-  <% if feature_enabled?(:projects) && @actor.actorable.is_a?(Profile) && feature_enabled?(:social_feed) %>
-    <div class="border-b border-stone-border" role="tablist" aria-label="Seções do perfil">
-      <nav class="flex gap-6 -mb-px" aria-label="Tabs">
-        <button type="button"
-                role="tab"
-                data-tabs-target="tab"
-                data-tab-name="portfolio"
-                data-action="click->tabs#change"
-                class="pb-3 text-sm font-medium border-b-2 transition-colors cursor-pointer border-charcoal text-charcoal font-semibold flex items-center gap-2">
-          <span><%= t(".tab_portfolio") %></span>
+    <% elsif feature_enabled?(:projects) && @actor.actorable.is_a?(Profile) %>
+      <!-- Dedicated Section Header (when feed is disabled, e.g. MVP focus on portfolio) -->
+      <div class="flex items-center justify-between gap-4 pb-2 border-b border-stone-border">
+        <div class="flex items-center gap-2">
+          <h2 class="font-serif font-bold text-lg text-charcoal"><%= t(".tab_portfolio") %></h2>
           <% if @projects.present? %>
-            <span class="text-xs px-2 py-0.5 rounded-full bg-stone-100 text-zinc-600 font-normal"><%= @projects.size %></span>
+            <span class="text-xs px-2 py-0.5 rounded-full bg-stone-100 text-zinc-600 font-medium"><%= @projects.size %></span>
           <% end %>
-        </button>
-        <button type="button"
-                role="tab"
-                data-tabs-target="tab"
-                data-tab-name="activity"
-                data-action="click->tabs#change"
-                class="pb-3 text-sm font-medium border-b-2 transition-colors cursor-pointer border-transparent text-zinc-500 hover:text-charcoal hover:border-stone-300 flex items-center gap-2">
-          <span><%= t(".tab_activity") %></span>
-        </button>
-      </nav>
-    </div>
-  <% end %>
+        </div>
+        <% if @actor == current_actor %>
+          <%= link_to new_my_project_path, class: "inline-flex items-center gap-1.5 text-xs bg-charcoal text-white hover:bg-zinc-800 font-medium px-3 py-1.5 rounded-lg transition-colors shadow-xs" do %>
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+            <span><%= t(".new_project") %></span>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
 
-  <!-- Tab Panel 1: Portfolio / Projects -->
-  <% if feature_enabled?(:projects) && @actor.actorable.is_a?(Profile) %>
-    <section data-tabs-target="panel" data-tab-panel="portfolio" role="tabpanel" aria-label="<%= t('.tab_portfolio') %>" class="space-y-4">
-      <% if @projects.present? %>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <% @projects.each do |project| %>
-            <%= link_to project_path(project), class: "group bg-white rounded-lg border border-stone-border overflow-hidden hover:border-stone-400/80 hover:shadow-sm transition-all duration-200 flex flex-col" do %>
-              <div class="aspect-[4/3] bg-stone-100 overflow-hidden relative">
-                <% cover = project.cover_or_first %>
-                <% if cover&.attached? %>
-                  <%= image_tag cover.variant(:thumb), class: "w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-200" %>
-                <% else %>
-                  <div class="w-full h-full flex flex-col items-center justify-center p-4 text-center bg-stone-50 text-zinc-400">
-                    <i data-lucide="image" class="w-6 h-6 stroke-1 text-zinc-300 mb-1"></i>
-                    <span class="text-xs font-serif italic text-zinc-400 line-clamp-1"><%= project.title %></span>
-                  </div>
-                <% end %>
-              </div>
-              <div class="p-4 space-y-1.5 flex-1 flex flex-col justify-between">
-                <div>
-                  <h3 class="font-serif font-bold text-charcoal text-base truncate group-hover:text-brand transition-colors"><%= project.title %></h3>
-                  <% if project.about.present? %>
-                    <p class="text-xs text-zinc-500 line-clamp-2 leading-relaxed mt-1"><%= truncate(project.about.to_plain_text, length: 120) %></p>
+    <!-- Tab Panel 1: Portfolio / Projects -->
+    <% if feature_enabled?(:projects) && @actor.actorable.is_a?(Profile) %>
+      <section data-tabs-target="panel" data-tab-panel="portfolio" role="tabpanel" aria-label="<%= t('.tab_portfolio') %>" class="space-y-4">
+        <% if @projects.present? %>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <% @projects.each do |project| %>
+              <%= link_to project_path(project), class: "group bg-white rounded-lg border border-stone-border overflow-hidden hover:border-stone-400/80 hover:shadow-xs transition-all duration-200 flex flex-col" do %>
+                <div class="aspect-[4/3] bg-stone-100 overflow-hidden relative">
+                  <% cover = project.cover_or_first %>
+                  <% if cover&.attached? %>
+                    <%= image_tag cover.variant(:thumb), class: "w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-200" %>
+                  <% else %>
+                    <div class="w-full h-full flex flex-col items-center justify-center p-4 text-center bg-stone-50 text-zinc-400">
+                      <i data-lucide="image" class="w-6 h-6 stroke-1 text-zinc-300 mb-1"></i>
+                      <span class="text-xs font-serif italic text-zinc-400 line-clamp-1"><%= project.title %></span>
+                    </div>
+                  <% end %>
+
+                  <% image_count = project.project_images.size %>
+                  <% if image_count > 1 %>
+                    <div class="absolute bottom-2.5 right-2.5 inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-charcoal/75 backdrop-blur-xs text-white text-[11px] font-medium shadow-xs">
+                      <i data-lucide="images" class="w-3 h-3 text-zinc-200"></i>
+                      <span><%= image_count %></span>
+                    </div>
                   <% end %>
                 </div>
-                <% if @actor == current_actor %>
-                  <div class="pt-2">
-                    <span class="inline-block text-[10px] font-medium px-2 py-0.5 rounded-full bg-stone-100 text-zinc-600 border border-stone-200"><%= project.visibility_label %></span>
+                <div class="p-4 space-y-1.5 flex-1 flex flex-col justify-between">
+                  <div>
+                    <h3 class="font-serif font-bold text-charcoal text-base truncate group-hover:text-brand transition-colors"><%= project.title %></h3>
+                    <% if project.about.present? %>
+                      <p class="text-xs text-zinc-500 line-clamp-2 leading-relaxed mt-1"><%= truncate(project.about.to_plain_text, length: 120) %></p>
+                    <% end %>
                   </div>
+                  <% if @actor == current_actor %>
+                    <div class="pt-2 flex items-center justify-between text-[11px]">
+                      <span class="inline-flex items-center px-2 py-0.5 rounded-full font-medium <%= project.visibility_draft? ? 'bg-amber-50 text-amber-800 border border-amber-200/60' : 'bg-stone-100 text-zinc-600 border border-stone-200' %>">
+                        <%= project.visibility_label %>
+                      </span>
+                    </div>
+                  <% end %>
+                </div>
+              <% end %>
+            <% end %>
+          </div>
+        <% else %>
+          <!-- Empty State for Projects -->
+          <div class="bg-white rounded-lg border border-stone-border p-8 sm:p-12 text-center space-y-3">
+            <div class="w-12 h-12 bg-stone-50 rounded-full flex items-center justify-center mx-auto border border-stone-200/60 text-zinc-400">
+              <i data-lucide="briefcase" class="w-5 h-5"></i>
+            </div>
+            <h3 class="text-base font-serif font-bold text-charcoal">
+              <%= @actor == current_actor ? t(".no_projects_owner_title") : t(".no_projects_visitor_title") %>
+            </h3>
+            <p class="text-sm text-zinc-500 max-w-sm mx-auto leading-relaxed">
+              <%= @actor == current_actor ? t(".no_projects_owner_subtitle") : t(".no_projects_visitor_subtitle") %>
+            </p>
+            <% if @actor == current_actor %>
+              <div class="pt-2">
+                <%= link_to new_my_project_path, class: "inline-flex items-center gap-1.5 text-xs bg-charcoal text-white hover:bg-zinc-800 font-medium px-4 py-2 rounded-lg transition-colors shadow-xs" do %>
+                  <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                  <span><%= t(".no_projects_owner_cta") %></span>
                 <% end %>
               </div>
             <% end %>
-          <% end %>
-        </div>
-      <% else %>
-        <!-- Empty State for Projects -->
-        <div class="bg-white rounded-lg border border-stone-border p-8 sm:p-12 text-center space-y-3">
-          <div class="w-12 h-12 bg-stone-50 rounded-full flex items-center justify-center mx-auto border border-stone-200/60 text-zinc-400">
-            <i data-lucide="briefcase" class="w-5 h-5"></i>
           </div>
-          <h3 class="text-base font-serif font-bold text-charcoal">
-            <%= @actor == current_actor ? t(".no_projects_owner_title") : t(".no_projects_visitor_title") %>
-          </h3>
-          <p class="text-sm text-zinc-500 max-w-sm mx-auto leading-relaxed">
-            <%= @actor == current_actor ? t(".no_projects_owner_subtitle") : t(".no_projects_visitor_subtitle") %>
-          </p>
-          <% if @actor == current_actor %>
-            <div class="pt-2">
-              <%= link_to new_my_project_path, class: "inline-flex items-center gap-1.5 text-xs bg-charcoal text-white hover:bg-zinc-800 font-medium px-4 py-2 rounded-lg transition-colors shadow-sm" do %>
-                <i data-lucide="plus" class="w-3.5 h-3.5"></i>
-                <span><%= t(".no_projects_owner_cta") %></span>
-              <% end %>
-            </div>
-          <% end %>
-        </div>
-      <% end %>
-    </section>
-  <% end %>
-
-  <!-- Tab Panel 2: Activity Stream / Posts -->
-  <% if feature_enabled?(:social_feed) %>
-    <section data-tabs-target="panel" data-tab-panel="activity" role="tabpanel" aria-label="<%= t('.tab_activity') %>" class="space-y-4 <%= 'hidden' if feature_enabled?(:projects) && @actor.actorable.is_a?(Profile) %>">
-      <% if @activities.any? %>
-        <%= render partial: "shared/activity", collection: @activities, as: :activity %>
-        <% if @pagy.pages > 1 %>
-          <div class="mt-6 flex justify-center"><%== pagy_nav(@pagy) %></div>
         <% end %>
-      <% else %>
-        <div class="text-center text-zinc-500 py-12 bg-white rounded-lg border border-stone-border p-6 shadow-sm">
-          <div class="w-10 h-10 bg-stone-50 rounded-full flex items-center justify-center mx-auto mb-2.5 border border-stone-100">
-            <i data-lucide="message-square" class="w-5 h-5 text-zinc-400"></i>
+      </section>
+    <% end %>
+
+    <!-- Tab Panel 2: Activity Stream / Posts -->
+    <% if feature_enabled?(:social_feed) %>
+      <section data-tabs-target="panel" data-tab-panel="activity" role="tabpanel" aria-label="<%= t('.tab_activity') %>" class="space-y-4 <%= 'hidden' if feature_enabled?(:projects) && @actor.actorable.is_a?(Profile) %>">
+        <% if @activities.any? %>
+          <%= render partial: "shared/activity", collection: @activities, as: :activity %>
+          <% if @pagy.pages > 1 %>
+            <div class="mt-6 flex justify-center"><%== pagy_nav(@pagy) %></div>
+          <% end %>
+        <% else %>
+          <div class="text-center text-zinc-500 py-12 bg-white rounded-lg border border-stone-border p-6 shadow-xs">
+            <div class="w-10 h-10 bg-stone-50 rounded-full flex items-center justify-center mx-auto mb-2.5 border border-stone-100">
+              <i data-lucide="message-square" class="w-5 h-5 text-zinc-400"></i>
+            </div>
+            <h3 class="text-sm font-semibold text-charcoal"><%= t(".no_posts_title") %></h3>
+            <p class="text-xs text-zinc-500 mt-1 max-w-xs mx-auto"><%= t(".no_posts_subtitle") %></p>
           </div>
-          <h3 class="text-sm font-semibold text-charcoal"><%= t(".no_posts_title") %></h3>
-          <p class="text-xs text-zinc-500 mt-1 max-w-xs mx-auto"><%= t(".no_posts_subtitle") %></p>
-        </div>
-      <% end %>
-    </section>
-  <% end %>
+        <% end %>
+      </section>
+    <% end %>
+  </div>
+
+  <!-- Right Sidebar Column: Contact Card, Guest Box & Suggestions (Desktop) -->
+  <aside class="hidden lg:block lg:col-span-4 min-w-0">
+    <%= render "shared/right_sidebar" %>
+  </aside>
 </div>
