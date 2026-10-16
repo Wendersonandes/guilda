@@ -2,7 +2,7 @@
 <% profile = project.profile %>
 <% actor = profile&.actor %>
 
-<article class="bg-white rounded-xl border border-stone-border overflow-hidden shadow-xs">
+<article class="bg-white rounded-xl border border-stone-border overflow-hidden">
   <!-- 1. Hero / Cover Image -->
   <% if preview %>
     <div data-project-preview-target="coverContainer" class="hidden w-full max-h-[500px] overflow-hidden bg-stone-100 flex items-center justify-center border-b border-stone-border"></div>
@@ -14,7 +14,7 @@
     <% cover = project.cover_or_first %>
     <% if cover&.attached? %>
       <div class="w-full max-h-[520px] overflow-hidden bg-stone-100 flex items-center justify-center border-b border-stone-border">
-        <%= image_tag cover, class: "w-full h-full max-h-[520px] object-cover" %>
+        <%= image_tag cover.variant(:large), class: "w-full h-full max-h-[520px] object-cover" %>
       </div>
     <% end %>
   <% end %>
@@ -83,12 +83,12 @@
       <div data-project-preview-target="gallery" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <% images.each do |image| %>
           <% if preview %>
-            <%= image_tag image.image, class: "w-full aspect-[4/3] object-cover rounded-lg border border-stone-border" %>
+            <%= image_tag image.image.variant(:thumb), class: "w-full aspect-[4/3] object-cover rounded-lg border border-stone-border" %>
           <% else %>
             <a href="<%= rails_blob_path(image.image, disposition: "inline") %>" target="_blank" rel="noopener" class="group relative block w-full aspect-[4/3] bg-stone-100 rounded-lg overflow-hidden border border-stone-border hover:border-stone-400 transition-colors" title="<%= t("projects.show.zoom_image") %>">
               <%= image_tag image.image.variant(:thumb), class: "w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-200" %>
               <div class="absolute inset-0 bg-charcoal/0 group-hover:bg-charcoal/20 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
-                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-charcoal/80 text-white text-xs font-medium shadow-xs">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-charcoal/80 text-white text-xs font-medium">
                   <i data-lucide="zoom-in" class="w-3.5 h-3.5"></i>
                   <span><%= t("projects.show.zoom_image") %></span>
                 </span>

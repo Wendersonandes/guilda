@@ -12,7 +12,7 @@
   <div class="w-full">
     <%= form_with url: profiles_path, method: :get,
                   html: {
-                    class: "bg-white p-4 sm:p-5 rounded-lg border border-stone-border shadow-xs",
+                    class: "bg-white p-4 sm:p-5 rounded-lg border border-stone-border",
                     data: {
                       controller: "filter-form",
                       turbo_frame: "profiles_grid",
@@ -143,12 +143,12 @@
               <% if profile.actor.cover_image.attached? %>
                 <%= image_tag profile.actor.cover_image.variant(:thumb), class: "w-full h-20 object-cover border-b border-stone-border" %>
               <% else %>
-                <div class="w-full h-14 bg-gradient-to-r from-stone-100 via-stone-50 to-stone-100 border-b border-stone-border/80" aria-hidden="true"></div>
+                <div class="w-full h-14 bg-stone-100 border-b border-stone-border/80" aria-hidden="true"></div>
               <% end %>
 
               <div class="p-5 pt-0 relative flex flex-col">
                 <!-- Avatar overlapping cover -->
-                <div class="-mt-7 w-14 h-14 rounded-full bg-white p-0.5 overflow-hidden border border-stone-border shadow-xs flex-shrink-0 mb-3">
+                <div class="-mt-7 w-14 h-14 rounded-full bg-white p-0.5 overflow-hidden border border-stone-border flex-shrink-0 mb-3">
                   <%= link_to public_path_for(profile.actor), class: "block w-full h-full rounded-full overflow-hidden focus:outline-none focus:ring-2 focus:ring-charcoal", data: { turbo_frame: "_top" }, title: profile.name do %>
                     <% if profile.actor.avatar.attached? %>
                       <%= image_tag profile.actor.avatar.variant(:thumb), class: "w-full h-full rounded-full object-cover group-hover:scale-105 transition-transform duration-200" %>
@@ -246,7 +246,7 @@
         <div class="mt-8 flex justify-center"><%== pagy_nav(@pagy) %></div>
       <% end %>
     <% else %>
-      <div class="text-center text-zinc-500 py-16 bg-white rounded-lg border border-stone-border p-8 mt-6 max-w-md mx-auto shadow-xs">
+      <div class="text-center text-zinc-500 py-16 bg-white rounded-lg border border-stone-border p-8 mt-6 max-w-md mx-auto">
         <div class="w-12 h-12 bg-stone-50 rounded-full flex items-center justify-center mx-auto mb-3 border border-stone-100">
           <i data-lucide="search-x" class="w-6 h-6 text-zinc-400"></i>
         </div>
@@ -254,7 +254,7 @@
         <p class="text-sm text-zinc-500 mt-1 max-w-sm mx-auto"><%= t(".empty_subtitle") %></p>
         <% if has_filters %>
           <div class="mt-4">
-            <%= link_to profiles_path, class: "inline-flex items-center gap-1.5 text-xs font-semibold bg-charcoal hover:bg-zinc-800 text-white px-4 py-2 rounded-lg transition-colors shadow-xs", data: { turbo_action: "advance", turbo_frame: "_top" } do %>
+            <%= link_to profiles_path, class: "inline-flex items-center gap-1.5 text-xs font-semibold bg-charcoal hover:bg-zinc-800 text-white px-4 py-2 rounded-lg transition-colors", data: { turbo_action: "advance", turbo_frame: "_top" } do %>
               <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
               <span><%= t(".view_all") %></span>
             <% end %>

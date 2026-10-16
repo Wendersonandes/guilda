@@ -31,6 +31,7 @@ class ProjectImage < ApplicationRecord
   belongs_to :project
   has_one_attached :image do |attachable|
     attachable.variant :thumb, resize_to_fill: [ 400, 400 ]
+    attachable.variant :large, resize_to_limit: [ 1600, 1600 ]
   end
 
   validates :image, presence: true
