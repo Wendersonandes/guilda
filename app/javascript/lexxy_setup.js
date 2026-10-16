@@ -9,11 +9,13 @@ Lexxy.configure({
     markdown: false,
     headings: []
   },
-  // Project "About" uses the full-ish editor: headings + inline formatting, no attachments
-  // (images live in the project gallery).
+  // Project "About" is plain prose with minimal emphasis: hide the whole toolbar and keep only
+  // bold/italic (keyboard shortcuts) and link (paste a URL over the selected text). Attachments,
+  // Markdown, headings, tables and code are out of reach (images live in the project gallery).
   project: {
     attachments: false,
-    markdown: true,
-    headings: [ "h2", "h3" ]
+    markdown: false,
+    headings: [],
+    toolbar: false
   }
 })
