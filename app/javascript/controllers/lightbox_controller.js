@@ -43,6 +43,7 @@ export default class extends Controller {
       this.overlayTarget.removeEventListener("touchstart", this.onTouchStart)
       this.overlayTarget.removeEventListener("touchend", this.onTouchEnd)
     }
+    this.resetImage()
     this.previousFocus?.focus?.()
   }
 
@@ -70,14 +71,42 @@ export default class extends Controller {
     const url = typeof item === "string" ? item : item.url
     const alt = typeof item === "string" ? "" : (item.alt || "")
 
-    if (url) this.imageTarget.src = url
-    this.imageTarget.alt = alt
-
     if (this.hasCounterTarget) {
       this.counterTarget.textContent = this.counterTemplateValue
         .replace("%{current}", this.indexValue + 1)
         .replace("%{total}", this.imagesValue.length)
     }
+
+    this.imageTarget.alt = alt
+
+    if (!url) return
+
+    if (this.imageTarget.getAttribute("src") !== url) {
+      this.imageTarget.classList.add("opacity-0")
+      const onLoaded = () => {
+        if (this.hasImageTarget && this.imageTarget.getAttribute("src") === url) {
+          this.imageTarget.classList.remove("opacity-0")
+        }
+      }
+      this.imageTarget.onload = onLoaded
+      this.imageTarget.onerror = onLoaded
+      this.imageTarget.src = url
+      if (this.imageTarget.complete && this.imageTarget.naturalWidth > 0) {
+        onLoaded()
+      }
+    } else {
+      this.imageTarget.classList.remove("opacity-0")
+    }
+  }
+
+  resetImage() {
+    if (!this.hasImageTarget) return
+
+    this.imageTarget.onload = null
+    this.imageTarget.onerror = null
+    this.imageTarget.classList.add("opacity-0")
+    this.imageTarget.removeAttribute("src")
+    this.imageTarget.alt = ""
   }
 
   handleTouchStart(event) {
@@ -147,6 +176,7 @@ export default class extends Controller {
       this.overlayTarget.removeEventListener("touchstart", this.onTouchStart)
       this.overlayTarget.removeEventListener("touchend", this.onTouchEnd)
     }
+    this.resetImage()
     document.body.classList.remove("overflow-hidden")
   }
 }

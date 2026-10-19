@@ -62,6 +62,18 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_select "h1", "Profissionais e Fornecedores"
   end
 
+  test "does not render connection buttons on profile cards in index" do
+    sign_in @user
+    other_user = users(:bob)
+    create_profile_for(other_user, name: "Bob Designer")
+
+    get profiles_path
+    assert_response :success
+    assert_select "div[id^='connection_actor_']", count: 0
+    assert_no_match I18n.t("shared.connection_button.connect"), response.body
+    assert_no_match I18n.t("shared.connection_button.remove"), response.body
+  end
+
   test "should not include incomplete profiles in index" do
     sign_in @user
     other_user = users(:bob)
@@ -172,6 +184,23 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_select "lexxy-editor[name=?][value=?]",
                   "profile[actor_attributes][description]",
                   "<p>Bio salva</p>"
+  end
+
+  test "profile_edit_form_has_accessible_back_link_label_associations_and_responsive_layout" do
+    sign_in @user
+
+    get edit_my_profile_path
+    assert_response :success
+    assert_select "a[href='#{profile_path(@actor)}'] span", text: I18n.t("profiles.edit.back_to_profile")
+    assert_select "label[for='profile_actor_attributes_description']", text: I18n.t("profiles.edit.bio")
+    assert_select "lexxy-editor#profile_actor_attributes_description"
+    assert_select "h2", text: I18n.t("profiles.edit.basic_info")
+    assert_select "h2", text: I18n.t("profiles.edit.location")
+    assert_select "h2", text: I18n.t("profiles.edit.occupations_title")
+    assert_select "div[data-occupations-target='warning'][role='alert']"
+    assert_select "div.grid-cols-12.gap-6", count: 0
+    assert_select "aside", count: 1
+    assert_select "aside turbo-frame#sidebar_suggestions", count: 1
   end
 
   test "profile edit form uses direct upload for the image fields" do

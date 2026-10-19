@@ -4,6 +4,9 @@ import { Controller } from "@hotwired/stimulus"
 // selected image and a progress bar driven by the `direct-upload:*` events.
 export default class extends Controller {
   static targets = ["input", "preview", "placeholder", "progress", "bar", "error"]
+  static values = {
+    errorMessage: { type: String, default: "Falha no envio da imagem. Por favor, tente novamente." }
+  }
 
   connect() {
     this.onChange = this.onChange.bind(this)
@@ -62,10 +65,11 @@ export default class extends Controller {
   }
 
   onError(event) {
-    event.target.setCustomValidity?.("Upload failed. Please try again.")
+    const message = this.errorMessageValue
+    event.target.setCustomValidity?.(message)
     this.hideProgress()
     if (this.hasErrorTarget) {
-      this.errorTarget.textContent = "Upload failed. Please try again."
+      this.errorTarget.textContent = message
       this.errorTarget.classList.remove("hidden")
     }
   }

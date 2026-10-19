@@ -143,7 +143,7 @@
         <i data-lucide="chevron-left" aria-hidden="true" class="w-6 h-6"></i>
       </button>
 
-      <img data-lightbox-target="image" src="<%= url_for(images.first.image.variant(:large)) %>" alt="<%= gallery_image_alt.call(0) %>" class="max-h-[85vh] max-w-full object-contain rounded-lg select-none">
+      <img data-lightbox-target="image" alt="" class="max-h-[85vh] max-w-full object-contain rounded-lg select-none opacity-0 transition-opacity duration-150 motion-reduce:transition-none">
 
       <button type="button" data-action="click->lightbox#next"
               class="absolute right-3 sm:right-6 inline-flex items-center justify-center w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-white"

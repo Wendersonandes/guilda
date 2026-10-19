@@ -1,47 +1,60 @@
-<%= content_for :title, "Editar perfil" %>
+<% content_for :no_sidebar, true %>
+<%= content_for :title, t("profiles.edit.title", default: "Editar perfil") %>
 
-<div class="flex items-center gap-2 mb-4">
-  <%= link_to public_path_for(current_actor), class: "text-zinc-400 hover:text-charcoal transition-colors" do %>
-    <i data-lucide="arrow-left" class="w-5 h-5"></i>
-  <% end %>
-  <span class="text-sm font-medium text-zinc-500">Voltar ao perfil</span>
-</div>
-
-<h1 class="text-2xl font-serif font-bold text-charcoal tracking-tight mb-6">Editar perfil</h1>
-
-<%= form_with model: @profile, url: my_profile_path, method: :patch, class: "bg-white rounded-lg border border-stone-border p-6 space-y-6" do |f| %>
-  <% if @profile.errors.any? %>
-    <div class="rounded-lg bg-red-50 p-4 text-sm text-red-600 border border-red-100 mb-6">
-      <ul class="list-disc pl-5">
-        <% @profile.errors.full_messages.each do |msg| %>
-          <li><%= msg %></li>
-        <% end %>
-      </ul>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+  <div class="lg:col-span-8 space-y-6 min-w-0">
+  <!-- Top Context Navigation & Header -->
+  <div class="space-y-3 pb-1">
+    <div>
+      <%= link_to public_path_for(current_actor), class: "inline-flex items-center gap-2 min-h-11 px-2.5 py-2 -ml-2.5 rounded-lg text-xs sm:text-sm font-medium text-zinc-600 hover:text-charcoal transition-colors group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-charcoal focus-visible:ring-offset-1" do %>
+        <i data-lucide="arrow-left" aria-hidden="true" class="w-4 h-4 text-zinc-400 group-hover:text-charcoal transition-colors"></i>
+        <span><%= t("profiles.edit.back_to_profile", default: "Voltar ao perfil") %></span>
+      <% end %>
     </div>
-  <% end %>
 
-  <%= f.fields_for :actor do |af| %>
-    <%= af.hidden_field :id %>
-    
-    <div class="space-y-4">
-      <h3 class="text-sm font-semibold text-charcoal border-b border-stone-100 pb-2">Informações básicas</h3>
+    <div>
+      <h1 class="text-2xl sm:text-3xl font-serif font-bold text-charcoal tracking-tight leading-tight"><%= t("profiles.edit.title", default: "Editar perfil") %></h1>
+      <p class="text-xs sm:text-sm text-zinc-600 mt-1 leading-relaxed"><%= t("profiles.edit.subtitle", default: "Atualize suas informações pessoais, áreas de atuação e contatos profissionais.") %></p>
+    </div>
+  </div>
+
+  <%= form_with model: @profile, url: my_profile_path, method: :patch, class: "bg-white rounded-xl border border-stone-border p-6 sm:p-8 space-y-6" do |f| %>
+    <% if @profile.errors.any? %>
+      <div role="alert" aria-live="assertive" class="rounded-lg bg-red-50 p-4 text-sm text-red-600 border border-red-100 mb-6">
+        <ul class="list-disc pl-5">
+          <% @profile.errors.full_messages.each do |msg| %>
+            <li><%= msg %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <%= f.fields_for :actor do |af| %>
+      <%= af.hidden_field :id %>
+      
+      <div class="space-y-4">
+        <h2 class="text-sm font-semibold text-charcoal border-b border-stone-border pb-2 flex items-center gap-1.5">
+          <i data-lucide="user" aria-hidden="true" class="w-4 h-4 text-zinc-400"></i>
+          <span><%= t("profiles.edit.basic_info", default: "Informações básicas") %></span>
+        </h2>
       
       <div class="space-y-1">
-        <%= af.label :name, "Nome", class: "block text-sm font-medium text-zinc-700" %>
-        <%= af.text_field :name, class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal transition-shadow" %>
+        <%= af.label :name, t("profiles.edit.name", default: "Nome"), class: "block text-sm font-medium text-zinc-700" %>
+        <%= af.text_field :name, autocomplete: "name", class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal transition-shadow" %>
       </div>
 
       <div class="space-y-1">
-        <%= af.label :email, "E-mail", class: "block text-sm font-medium text-zinc-700" %>
-        <%= af.email_field :email, class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal transition-shadow" %>
+        <%= af.label :email, t("profiles.edit.email", default: "E-mail"), class: "block text-sm font-medium text-zinc-700" %>
+        <%= af.email_field :email, autocomplete: "email", class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal transition-shadow" %>
       </div>
 
       <div class="space-y-1">
-        <%= af.label :description, "Bio", class: "block text-sm font-medium text-zinc-700" %>
-        <lexxy-editor name="profile[actor_attributes][description]"
+        <%= af.label :description, t("profiles.edit.bio", default: "Bio"), class: "block text-sm font-medium text-zinc-700" %>
+        <lexxy-editor id="profile_actor_attributes_description"
+                      name="profile[actor_attributes][description]"
                       value="<%= @profile.description %>"
                       preset="bio"
-                      placeholder="Fale um pouco sobre você..."
+                      placeholder="<%= t("profiles.edit.bio_placeholder", default: "Fale um pouco sobre você...") %>"
                       class="profile-bio-editor lexxy-content block w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-charcoal"></lexxy-editor>
       </div>
 
@@ -49,66 +62,69 @@
         <!-- Avatar Upload -->
         <%= render "shared/image_upload_field",
               form: af, attribute: :avatar, attachment: @profile.actor.avatar,
-              label: "Avatar", preview_classes: "w-12 h-12 rounded-full text-base",
+              label: t("profiles.edit.avatar", default: "Avatar"), preview_classes: "w-12 h-12 rounded-full text-base",
               initials: @profile.name.first.upcase %>
 
         <!-- Cover Image Upload -->
         <%= render "shared/image_upload_field",
               form: af, attribute: :cover_image, attachment: @profile.actor.cover_image,
-              label: "Imagem de capa", preview_classes: "w-12 h-8 rounded" %>
+              label: t("profiles.edit.cover_image", default: "Imagem de capa"), preview_classes: "w-12 h-8 rounded" %>
       </div>
     </div>
   <% end %>
 
-  <div class="border-t border-stone-100 pt-4 space-y-4">
-    <h3 class="text-sm font-semibold text-charcoal flex items-center gap-1.5 pb-1">
-      <i data-lucide="map-pin" class="w-4 h-4 text-zinc-400"></i>
-      <span>Localização</span>
-    </h3>
-    <div data-controller="location" class="grid grid-cols-2 gap-4">
+  <div class="border-t border-stone-border pt-4 space-y-4">
+    <h2 class="text-sm font-semibold text-charcoal flex items-center gap-1.5 pb-1">
+      <i data-lucide="map-pin" aria-hidden="true" class="w-4 h-4 text-zinc-400"></i>
+      <span><%= t("profiles.edit.location", default: "Localização") %></span>
+    </h2>
+    <div data-controller="location" data-location-select-text-value="<%= t("profiles.edit.select", default: "Selecione") %>" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <div class="space-y-1">
-        <%= f.label :country, "País", class: "block text-xs font-medium text-zinc-500" %>
+        <%= f.label :country, t("profiles.edit.country", default: "País"), class: "block text-sm font-medium text-zinc-700" %>
         <%= f.country_select :country, { only: ["BR"] }, {
+          autocomplete: "country",
           data: { location_target: "country", action: "change->location#countryChanged" },
           class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal"
         } %>
       </div>
       <div class="space-y-1">
-        <%= f.label :state, "Estado", class: "block text-xs font-medium text-zinc-500" %>
-        <%= f.select :state, @states || [], { include_blank: "Selecione", selected: state_code_for(@profile.state) }, {
+        <%= f.label :state, t("profiles.edit.state", default: "Estado"), class: "block text-sm font-medium text-zinc-700" %>
+        <%= f.select :state, @states || [], { include_blank: t("profiles.edit.select", default: "Selecione"), selected: state_code_for(@profile.state) }, {
+          autocomplete: "address-level1",
           data: { location_target: "state", action: "change->location#stateChanged" },
           class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal"
         } %>
       </div>
       <div class="space-y-1">
-        <%= f.label :city, "Cidade", class: "block text-xs font-medium text-zinc-500" %>
-        <%= f.select :city, @cities || [], { include_blank: "Selecione" }, {
+        <%= f.label :city, t("profiles.edit.city", default: "Cidade"), class: "block text-sm font-medium text-zinc-700" %>
+        <%= f.select :city, @cities || [], { include_blank: t("profiles.edit.select", default: "Selecione") }, {
+          autocomplete: "address-level2",
           data: { location_target: "city" },
           class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal"
         } %>
       </div>
       <div class="space-y-1">
-        <%= f.label :zipcode, "CEP", class: "block text-xs font-medium text-zinc-500" %>
-        <%= f.text_field :zipcode, class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal" %>
+        <%= f.label :zipcode, t("profiles.edit.zipcode", default: "CEP"), class: "block text-sm font-medium text-zinc-700" %>
+        <%= f.text_field :zipcode, autocomplete: "postal-code", class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal" %>
       </div>
-      <div class="col-span-2 space-y-1">
-        <%= f.label :address, "Endereço", class: "block text-xs font-medium text-zinc-500" %>
-        <%= f.text_field :address, class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal" %>
+      <div class="col-span-1 sm:col-span-2 space-y-1">
+        <%= f.label :address, t("profiles.edit.address", default: "Endereço"), class: "block text-sm font-medium text-zinc-700" %>
+        <%= f.text_field :address, autocomplete: "street-address", class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal" %>
       </div>
     </div>
   </div>
 
-  <div class="border-t border-stone-100 pt-4 space-y-4" data-controller="occupations">
+  <div class="border-t border-stone-border pt-4 space-y-4" data-controller="occupations">
     <div class="flex items-center justify-between pb-1">
-      <h3 class="text-sm font-semibold text-charcoal flex items-center gap-1.5">
-        <i data-lucide="briefcase" class="w-4 h-4 text-zinc-400"></i>
-        <span>Categorias Profissionais</span>
-      </h3>
-      <span class="text-xs text-zinc-500">Selecione até 3 áreas de atuação</span>
+      <h2 class="text-sm font-semibold text-charcoal flex items-center gap-1.5">
+        <i data-lucide="briefcase" aria-hidden="true" class="w-4 h-4 text-zinc-400"></i>
+        <span><%= t("profiles.edit.occupations_title", default: "Categorias Profissionais") %></span>
+      </h2>
+      <span class="text-xs text-zinc-500 font-medium"><%= t("profiles.edit.occupations_limit_hint", default: "Selecione até 3 áreas de atuação") %></span>
     </div>
     
-    <div data-occupations-target="warning" class="hidden rounded-lg bg-red-50 p-3 text-sm text-red-600 border border-red-100 transition-all">
-      Você já selecionou o limite máximo de 3 categorias.
+    <div data-occupations-target="warning" role="alert" aria-live="assertive" class="hidden rounded-lg bg-red-50 p-3 text-sm text-red-600 border border-red-100 transition-all">
+      <%= t("profiles.edit.occupations_limit_warning", default: "Você já selecionou o limite máximo de 3 categorias.") %>
     </div>
 
     <div class="flex flex-wrap gap-2">
@@ -123,7 +139,7 @@
                 }, 
                 name, nil %>
           
-          <div class="px-3 py-1.5 text-sm font-medium rounded-full border border-stone-200 bg-white text-zinc-600 hover:bg-stone-50 peer-checked:bg-charcoal peer-checked:text-white peer-checked:border-charcoal peer-checked:hover:bg-zinc-800 transition-all whitespace-nowrap">
+          <div class="min-h-10 sm:min-h-0 flex items-center px-3.5 py-2 sm:py-1.5 text-sm font-medium rounded-full border border-stone-200 bg-white text-zinc-600 hover:bg-stone-50 peer-checked:bg-charcoal peer-checked:text-white peer-checked:border-charcoal peer-checked:hover:bg-zinc-800 peer-focus-visible:ring-2 peer-focus-visible:ring-charcoal peer-focus-visible:ring-offset-1 transition-all whitespace-nowrap">
             <%= name %>
           </div>
         </label>
@@ -131,54 +147,64 @@
     </div>
   </div>
 
-  <div class="border-t border-stone-100 pt-4 space-y-4">
-    <h3 class="text-sm font-semibold text-charcoal flex items-center gap-1.5 pb-1">
-      <i data-lucide="clock" class="w-4 h-4 text-zinc-400"></i>
-      <span>Disponibilidade</span>
-    </h3>
+  <div class="border-t border-stone-border pt-4 space-y-4">
+    <h2 class="text-sm font-semibold text-charcoal flex items-center gap-1.5 pb-1">
+      <i data-lucide="clock" aria-hidden="true" class="w-4 h-4 text-zinc-400"></i>
+      <span><%= t("profiles.edit.availability_title", default: "Disponibilidade") %></span>
+    </h2>
     <div class="space-y-1">
-      <%= f.label :availability, "Disponibilidade para contratação", class: "block text-xs font-medium text-zinc-500" %>
+      <%= f.label :availability, t("profiles.edit.availability_label", default: "Disponibilidade para contratação"), class: "block text-sm font-medium text-zinc-700" %>
       <%= f.select :availability,
             options_for_select(Profile::AVAILABILITY_OPTIONS.map { |value, label| [label, value] }, @profile.availability),
-            { include_blank: "Selecione a disponibilidade" },
+            { include_blank: t("profiles.edit.availability_select", default: "Selecione a disponibilidade") },
             { class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal" } %>
     </div>
   </div>
 
-  <div class="border-t border-stone-100 pt-4 space-y-4">
-    <h3 class="text-sm font-semibold text-charcoal flex items-center gap-1.5 pb-1">
-      <i data-lucide="phone" class="w-4 h-4 text-zinc-400"></i>
-      <span>Informações de contato</span>
-    </h3>
-    <div class="grid grid-cols-2 gap-4">
+  <div class="border-t border-stone-border pt-4 space-y-4">
+    <h2 class="text-sm font-semibold text-charcoal flex items-center gap-1.5 pb-1">
+      <i data-lucide="phone" aria-hidden="true" class="w-4 h-4 text-zinc-400"></i>
+      <span><%= t("profiles.edit.contact_info", default: "Informações de contato") %></span>
+    </h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <div class="space-y-1">
-        <%= f.label :phone, "Telefone", class: "block text-xs font-medium text-zinc-500" %>
-        <%= f.text_field :phone, class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal" %>
+        <%= f.label :phone, t("profiles.edit.phone", default: "Telefone"), class: "block text-sm font-medium text-zinc-700" %>
+        <%= f.telephone_field :phone, autocomplete: "tel", inputmode: "tel", class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal" %>
       </div>
       <div class="space-y-1">
-        <%= f.label :mobile, "Celular", class: "block text-xs font-medium text-zinc-500" %>
-        <%= f.text_field :mobile, value: br_phone_display(@profile.mobile), placeholder: "(11) 98765-4321",
+        <%= f.label :mobile, t("profiles.edit.mobile", default: "Celular"), class: "block text-sm font-medium text-zinc-700" %>
+        <%= f.telephone_field :mobile, value: br_phone_display(@profile.mobile), placeholder: "(11) 98765-4321",
+              autocomplete: "tel", inputmode: "tel",
               data: { controller: "phone-mask", action: "input->phone-mask#format" },
               class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal" %>
       </div>
-      <div class="col-span-2 space-y-1">
-        <%= f.label :website, "Site", class: "block text-xs font-medium text-zinc-500" %>
-        <%= f.text_field :website, placeholder: "https://example.com", class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal" %>
+      <div class="col-span-1 sm:col-span-2 space-y-1">
+        <%= f.label :website, t("profiles.edit.website", default: "Site"), class: "block text-sm font-medium text-zinc-700" %>
+        <%= f.url_field :website, placeholder: "https://example.com", autocomplete: "url", class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal" %>
       </div>
-      <div class="col-span-2 space-y-1">
-        <%= f.label :instagram, "Instagram", class: "block text-xs font-medium text-zinc-500" %>
-        <%= f.text_field :instagram, placeholder: "@seu-perfil ou https://instagram.com/seu-perfil", class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal" %>
-        <p class="text-[11px] text-zinc-400"><%= t(".instagram_hint") %></p>
+      <div class="col-span-1 sm:col-span-2 space-y-1">
+        <%= f.label :instagram, t("profiles.edit.instagram", default: "Instagram"), class: "block text-sm font-medium text-zinc-700" %>
+        <%= f.text_field :instagram, placeholder: "@seu-perfil ou https://instagram.com/seu-perfil",
+              aria: { describedby: "profile_instagram_hint" },
+              class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal" %>
+        <p id="profile_instagram_hint" class="text-[11px] text-zinc-500 font-medium"><%= t(".instagram_hint") %></p>
       </div>
-      <div class="col-span-2 space-y-1">
-        <%= f.label :organization, "Organização", class: "block text-xs font-medium text-zinc-500" %>
-        <%= f.text_field :organization, class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal" %>
+      <div class="col-span-1 sm:col-span-2 space-y-1">
+        <%= f.label :organization, t("profiles.edit.organization", default: "Organização"), class: "block text-sm font-medium text-zinc-700" %>
+        <%= f.text_field :organization, autocomplete: "organization", class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal" %>
       </div>
     </div>
   </div>
 
-  <div class="flex items-center justify-between border-t border-stone-100 pt-5">
-    <%= link_to "Cancelar", public_path_for(current_actor), class: "text-sm font-medium text-zinc-500 hover:text-charcoal transition-colors" %>
-    <%= f.submit "Salvar alterações", class: "bg-charcoal hover:bg-zinc-800 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer" %>
+  <div class="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-between gap-3 border-t border-stone-border pt-5">
+    <%= link_to t("profiles.edit.cancel", default: "Cancelar"), public_path_for(current_actor), class: "inline-flex items-center justify-center min-h-11 px-4 py-2 text-sm font-medium text-zinc-600 hover:text-charcoal transition-colors rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-charcoal focus-visible:ring-offset-1" %>
+    <%= f.submit t("profiles.edit.save_changes", default: "Salvar alterações"), class: "inline-flex items-center justify-center min-h-11 bg-charcoal hover:bg-zinc-800 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-charcoal focus-visible:ring-offset-1" %>
   </div>
-<% end %>
+  <% end %>
+</div>
+
+  <!-- Right Sidebar Column (Desktop) -->
+  <aside class="hidden lg:block lg:col-span-4 min-w-0">
+    <%= render "shared/right_sidebar" %>
+  </aside>
+</div>

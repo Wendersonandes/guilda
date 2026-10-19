@@ -2,6 +2,9 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["country", "state", "city"]
+  static values = {
+    selectText: { type: String, default: "Selecione" }
+  }
 
   connect() {
     if (
@@ -14,12 +17,24 @@ export default class extends Controller {
     }
   }
 
+  disconnect() {
+    if (this.abortController) {
+      this.abortController.abort()
+    }
+  }
+
   countryChanged(event) {
     fetch(`/locations/states?country=${event.target.value}`)
-      .then((r) => r.text())
+      .then((r) => {
+        if (!r.ok) throw new Error("Network response was not ok")
+        return r.text()
+      })
       .then((html) => {
         this.stateTarget.innerHTML = html
         this.reloadCities()
+      })
+      .catch((error) => {
+        console.error("Error loading states:", error)
       })
   }
 
@@ -34,8 +49,18 @@ export default class extends Controller {
       "BR"
     const state = this.hasStateTarget ? this.stateTarget.value : ""
     if (state) {
-      fetch(`/locations/cities?state=${encodeURIComponent(state)}&country=${encodeURIComponent(country)}`)
-        .then((r) => r.text())
+      if (this.abortController) {
+        this.abortController.abort()
+      }
+      this.abortController = new AbortController()
+
+      fetch(`/locations/cities?state=${encodeURIComponent(state)}&country=${encodeURIComponent(country)}`, {
+        signal: this.abortController.signal
+      })
+        .then((r) => {
+          if (!r.ok) throw new Error("Network response was not ok")
+          return r.text()
+        })
         .then((html) => {
           if (this.hasCityTarget) {
             const currentCity = this.cityTarget.value
@@ -45,8 +70,14 @@ export default class extends Controller {
             }
           }
         })
+        .catch((error) => {
+          if (error.name !== "AbortError") {
+            console.error("Error loading cities:", error)
+          }
+        })
     } else if (this.hasCityTarget) {
-      this.cityTarget.innerHTML = "<option value=''>Select</option>"
+      const selectText = this.selectTextValue
+      this.cityTarget.innerHTML = `<option value=''>${selectText}</option>`
     }
   }
 }

@@ -233,8 +233,10 @@
                 <% if current_actor && current_actor.id == profile.actor.id %>
                   <%= link_to t(".edit_profile"), edit_my_profile_path, class: "text-xs font-semibold text-zinc-700 hover:text-charcoal transition-colors px-2 py-1 rounded hover:bg-stone-200/60", data: { turbo_frame: "_top" } %>
                 <% else %>
-                  <%= link_to t(".view_profile"), public_path_for(profile.actor), class: "text-xs font-semibold text-zinc-600 hover:text-charcoal transition-colors", data: { turbo_frame: "_top" } %>
-                  <%= render "shared/connection_button", actor: profile.actor %>
+                  <%= link_to public_path_for(profile.actor), class: "inline-flex items-center gap-1 text-xs font-semibold text-zinc-600 hover:text-charcoal transition-colors group/link", data: { turbo_frame: "_top" } do %>
+                    <span><%= t(".view_profile") %></span>
+                    <i data-lucide="arrow-right" class="w-3.5 h-3.5 text-zinc-400 group-hover/link:text-charcoal transition-colors" aria-hidden="true"></i>
+                  <% end %>
                 <% end %>
               </div>
             </div>
