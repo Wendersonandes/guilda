@@ -6,8 +6,10 @@
 <%
   scope = "my.projects.wizard"
   gallery_slots = Project::MAX_IMAGES - project.project_images.size
-  # Same default as the wizard (public), but keep the submitted choice when re-rendering errors.
-  public_checked = project.errors.any? ? project.visibility_public? : true
+  public_checked = project.new_record? && !project.errors.any? ? true : project.visibility_public?
+  submit_disabled = project.new_record? || project.title.blank? || project.about.blank? || project.project_images.empty?
+  publish_button_text = project.persisted? ? t("my.projects.edit.save_changes", default: "Salvar alterações") : t("#{scope}.publish")
+  draft_button_text = t("#{scope}.save_draft")
 %>
 <%= form_with model: [ :my, project ], class: "space-y-3 lg:space-y-0 lg:flex lg:flex-col lg:h-full lg:min-h-0" do |f| %>
   <% if project.errors.any? %>
@@ -81,6 +83,51 @@
         </div>
 
         <div class="space-y-3">
+          <% if project.persisted? && project.project_images.any? %>
+            <div class="space-y-2">
+              <div class="flex items-center justify-between text-xs text-zinc-500">
+                <span class="font-medium text-charcoal"><%= t("my.projects.edit.saved_images", default: "Imagens salvas") %></span>
+                <span class="text-[11px] text-zinc-400"><%= t("my.projects.edit.reorder_hint", default: "Arraste para reordenar") %></span>
+              </div>
+              <div data-controller="sortable" data-sortable-url-value="<%= reorder_my_project_images_path(project) %>" data-sortable-filter-value="a, button" class="grid grid-cols-3 sm:grid-cols-4 gap-2.5">
+                <% project.project_images.each do |image| %>
+                  <% is_cover = project.cover.attached? && project.cover.blob_id == image.image.blob_id %>
+                  <div data-id="<%= image.id %>" class="relative group rounded-lg overflow-hidden border <%= is_cover ? 'border-charcoal ring-2 ring-charcoal shadow-sm' : 'border-stone-border hover:border-stone-400' %> cursor-move transition-all">
+                    <%= image_tag image.image.variant(:thumb), class: "w-full h-24 object-cover select-none pointer-events-none" %>
+
+                    <% if is_cover %>
+                      <span class="absolute top-1.5 left-1.5 inline-flex items-center gap-1 bg-charcoal text-white text-[10px] font-semibold px-2 py-0.5 rounded shadow-sm select-none">
+                        <i data-lucide="star" class="w-3 h-3 fill-amber-400 text-amber-400"></i>
+                        <span>Capa</span>
+                      </span>
+                    <% else %>
+                      <%= link_to cover_my_project_image_path(project, image), data: { turbo_method: :post },
+                            title: t("my.projects.wizard.set_cover", default: "Definir como capa"),
+                            aria: { label: "Definir imagem como capa do projeto" },
+                            class: "absolute top-1.5 left-1.5 inline-flex items-center justify-center w-7 h-7 rounded-full bg-black/60 text-white/90 hover:text-white hover:bg-charcoal transition-colors cursor-pointer shadow-sm focus:outline-none focus:ring-2 focus:ring-white" do %>
+                        <i data-lucide="star" class="w-3.5 h-3.5"></i>
+                      <% end %>
+                    <% end %>
+
+                    <% if project.project_images.size > 1 %>
+                      <%= link_to my_project_image_path(project, image), data: { turbo_method: :delete, turbo_confirm: t("my.projects.form.remove_confirm", default: "Tem certeza que deseja remover esta imagem?") },
+                            title: t("my.projects.form.remove_image", default: "Remover imagem"),
+                            aria: { label: "Remover imagem da galeria" },
+                            class: "absolute top-1.5 right-1.5 inline-flex items-center justify-center w-7 h-7 rounded-full bg-black/60 text-white/90 hover:text-white hover:bg-red-600 transition-colors cursor-pointer shadow-sm focus:outline-none focus:ring-2 focus:ring-white" do %>
+                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                      <% end %>
+                    <% else %>
+                      <span class="absolute top-1.5 right-1.5 inline-flex items-center justify-center w-7 h-7 rounded-full bg-black/30 text-white/40 cursor-not-allowed shadow-sm"
+                            title="O projeto precisa ter pelo menos uma imagem">
+                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                      </span>
+                    <% end %>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+
           <% if gallery_slots.positive? %>
             <label for="project_gallery"
                    data-project-preview-target="dropzone"
@@ -172,12 +219,12 @@
     <div class="flex-none px-5 py-3 flex items-center justify-between gap-4 bg-stone-50/70 border-t border-stone-200 rounded-b-lg">
       <%= link_to t("my.projects.new.cancel"), my_projects_path,
             class: "text-sm font-medium text-zinc-500 hover:text-charcoal transition-colors py-1.5" %>
-      <%= f.submit (public_checked ? t("#{scope}.publish") : t("#{scope}.save_draft")),
-            disabled: true,
+      <%= f.submit (public_checked ? publish_button_text : draft_button_text),
+            disabled: submit_disabled,
             data: {
               project_preview_target: "submitButton",
-              publish_text: t("#{scope}.publish"),
-              draft_text: t("#{scope}.save_draft")
+              publish_text: publish_button_text,
+              draft_text: draft_button_text
             },
             class: "bg-charcoal hover:bg-zinc-800 text-white px-5 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer shadow-sm focus:outline-none focus:ring-2 focus:ring-charcoal focus:ring-offset-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-charcoal" %>
     </div>

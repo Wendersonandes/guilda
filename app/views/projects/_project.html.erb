@@ -10,8 +10,16 @@
   <article class="bg-white rounded-xl border border-stone-border overflow-hidden">
     <!-- 1. Hero / Cover Image -->
     <% if preview %>
-      <div data-project-preview-target="coverContainer" class="hidden w-full max-h-[500px] overflow-hidden bg-stone-100 flex items-center justify-center border-b border-stone-border"></div>
-      <div data-project-preview-target="coverPlaceholder" class="w-full aspect-[16/9] max-h-[380px] bg-stone-50 border-b border-stone-border flex flex-col items-center justify-center text-zinc-300 gap-2">
+      <% cover = project.cover_or_first %>
+      <% has_cover = cover&.attached? %>
+      <div data-project-preview-target="coverContainer" class="<%= "hidden" unless has_cover %> w-full max-h-[500px] overflow-hidden bg-stone-100 flex items-center justify-center border-b border-stone-border">
+        <% if has_cover %>
+          <%= image_tag cover.variant(:large),
+                alt: t("projects.show.cover_alt", title: project.title.presence || t("projects.show.untitled")),
+                class: "w-full max-h-[500px] object-cover" %>
+        <% end %>
+      </div>
+      <div data-project-preview-target="coverPlaceholder" class="<%= "hidden" if has_cover %> w-full aspect-[16/9] max-h-[380px] bg-stone-50 border-b border-stone-border flex flex-col items-center justify-center text-zinc-300 gap-2">
         <i data-lucide="image" class="w-10 h-10 stroke-1 text-zinc-300"></i>
         <span class="text-xs font-medium text-zinc-400"><%= t("projects.show.cover_placeholder") %></span>
       </div>

@@ -146,6 +146,11 @@ pt-BR:
         preview_label: "Pré-visualização"
       edit:
         title: "Editar projeto"
+        cancel: "Cancelar"
+        preview_label: "Pré-visualização"
+        save_changes: "Salvar alterações"
+        saved_images: "Imagens salvas"
+        reorder_hint: "Arraste para reordenar"
       wizard:
         progress_label: "Progresso"
         step_info: "Informações"

@@ -70,14 +70,34 @@ module My
       assert_select "input[type=submit][value='#{I18n.t("my.projects.wizard.save_draft")}']", count: 1
     end
 
-    test "renders the edit form with the gallery" do
-      project = @alice.actorable.projects.create!(title: "Meu Projeto", about: "<p>Sobre</p>")
+    test "renders the edit form with the gallery, live preview and split-screen layout" do
+      project = @alice.actorable.projects.create!(title: "Meu Projeto", about: "<p>Sobre</p>", visibility: :public)
+      project.project_images.create!(image: image_blob("img-1.png"))
 
       get edit_my_project_path(project)
 
       assert_response :success
-      assert_select "label[data-controller='dropzone']"
-      assert_select "input[type=file][name='project[gallery_signed_ids][]'][multiple]"
+      assert_select "h1", text: I18n.t("my.projects.edit.title")
+      assert_select "div[data-controller='project-preview']"
+      assert_select "[data-single-project-form]"
+      assert_select "[data-project-preview-target='titleText']", text: "Meu Projeto"
+      assert_select "label[data-controller='dropzone'] input[type=file][name='project[gallery_signed_ids][]'][multiple]"
+      assert_select "div.grid.grid-cols-12", count: 0
+      assert_select "[class*='lg:overflow-y-auto']", count: 2
+      assert_select "input[type=submit][value='#{I18n.t("my.projects.edit.save_changes")}']", count: 1
+      assert_select "input[type=submit][data-project-preview-target='submitButton']:not([disabled])", count: 1
+      assert_select "a[data-turbo-method='delete']", count: 0
+    end
+
+    test "renders delete link for existing images when project has multiple images" do
+      project = @alice.actorable.projects.create!(title: "Meu Projeto", about: "<p>Sobre</p>")
+      project.project_images.create!(image: image_blob("img-1.png"))
+      project.project_images.create!(image: image_blob("img-2.png"))
+
+      get edit_my_project_path(project)
+
+      assert_response :success
+      assert_select "a[data-turbo-method='delete']", count: 2
     end
 
     test "creates a project" do

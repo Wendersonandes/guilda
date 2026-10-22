@@ -12,7 +12,8 @@ export default class extends Controller {
   ]
 
   static values = {
-    maxImages: { type: Number, default: 10 }
+    maxImages: { type: Number, default: 10 },
+    existingImagesCount: { type: Number, default: 0 }
   }
 
   connect() {
@@ -20,6 +21,8 @@ export default class extends Controller {
     this.files = []
     this.coverFile = null
     this.titlePlaceholder = this.hasTitleTextTarget ? this.titleTextTarget.textContent : ""
+    this.initialGalleryHtml = this.hasGalleryTarget ? this.galleryTarget.innerHTML : ""
+    this.initialCoverHtml = this.hasCoverContainerTarget ? this.coverContainerTarget.innerHTML : ""
 
     this.editor = this.element.querySelector("lexxy-editor")
     if (this.editor) {
@@ -67,7 +70,8 @@ export default class extends Controller {
 
     const titleFilled = (this.titleInputTarget.value || "").trim() !== ""
     const aboutFilled = this.editor ? !this.blankHtml(this.editor.value) : false
-    const galleryFilled = this.files.length > 0
+    const totalImages = (this.existingImagesCountValue || 0) + this.files.length
+    const galleryFilled = totalImages > 0
 
     this.submitButtonTarget.disabled = !(titleFilled && aboutFilled && galleryFilled)
   }
@@ -88,21 +92,22 @@ export default class extends Controller {
     if (!incoming.length) return
 
     const max = this.maxImagesValue || 10
+    const availableSlots = Math.max(0, max - (this.existingImagesCountValue || 0))
     const existingKeys = new Set(this.files.map((f) => `${f.name}-${f.size}-${f.lastModified}`))
 
     for (const file of incoming) {
       const key = `${file.name}-${file.size}-${file.lastModified}`
-      if (!existingKeys.has(key) && this.files.length < max) {
+      if (!existingKeys.has(key) && this.files.length < availableSlots) {
         existingKeys.add(key)
         this.files.push(file)
       }
     }
 
-    if (this.files.length > 0 && !this.coverFile) {
+    if (this.files.length > 0 && !this.coverFile && (this.existingImagesCountValue || 0) === 0) {
       this.coverFile = this.files[0]
     }
 
-    if (this.files.length > 0) {
+    if (this.files.length > 0 || (this.existingImagesCountValue || 0) > 0) {
       this.clearGalleryError()
     }
 
@@ -149,58 +154,74 @@ export default class extends Controller {
   }
 
   renderGallery() {
-    const hasFiles = this.files.length > 0
+    const hasNewFiles = this.files.length > 0
+    const totalImages = (this.existingImagesCountValue || 0) + this.files.length
+    const hasAnyImages = totalImages > 0
     const markedIndex = this.coverIndex()
 
-    if (this.hasGalleryEmptyTarget) this.galleryEmptyTarget.classList.toggle("hidden", hasFiles)
-    if (this.hasGalleryInstructionsTarget) this.galleryInstructionsTarget.classList.toggle("hidden", !hasFiles)
-    this.coverIndexInputTarget.value = markedIndex === null ? "" : markedIndex
+    if (this.hasGalleryEmptyTarget) this.galleryEmptyTarget.classList.toggle("hidden", hasAnyImages)
+    if (this.hasGalleryInstructionsTarget) this.galleryInstructionsTarget.classList.toggle("hidden", !hasNewFiles)
+    if (this.hasCoverIndexInputTarget) {
+      this.coverIndexInputTarget.value = markedIndex === null ? "" : markedIndex
+    }
 
     this.updateSlotCount()
 
-    this.thumbnailsTarget.innerHTML = ""
-    this.files.forEach((file, index) => {
-      const isCover = index === markedIndex
-      const wrapper = document.createElement("div")
-      wrapper.dataset.id = index
-      wrapper.className = `relative rounded-lg overflow-hidden border cursor-move transition-all ${
-        isCover ? "border-charcoal ring-2 ring-charcoal shadow-sm" : "border-stone-border hover:border-stone-400"
-      }`
+    if (this.hasThumbnailsTarget) {
+      this.thumbnailsTarget.innerHTML = ""
+      this.files.forEach((file, index) => {
+        const isCover = index === markedIndex
+        const wrapper = document.createElement("div")
+        wrapper.dataset.id = index
+        wrapper.className = `relative rounded-lg overflow-hidden border cursor-move transition-all ${
+          isCover ? "border-charcoal ring-2 ring-charcoal shadow-sm" : "border-stone-border hover:border-stone-400"
+        }`
 
-      const coverElement = isCover
-        ? `<span class="absolute top-1.5 left-1.5 inline-flex items-center gap-1 bg-charcoal text-white text-[10px] font-semibold px-2 py-0.5 rounded shadow-sm select-none">
-             <i data-lucide="star" class="w-3 h-3 fill-amber-400 text-amber-400"></i>
-             <span>Capa</span>
-           </span>`
-        : `<button type="button" data-action="project-preview#selectCover" data-index="${index}"
-                   title="Definir como capa" aria-label="Definir imagem ${index + 1} como capa do projeto"
-                   class="absolute top-1.5 left-1.5 inline-flex items-center justify-center w-7 h-7 rounded-full bg-black/60 text-white/90 hover:text-white hover:bg-charcoal transition-colors cursor-pointer shadow-sm focus:outline-none focus:ring-2 focus:ring-white">
-             <i data-lucide="star" class="w-3.5 h-3.5"></i>
-           </button>`
+        const coverElement = isCover
+          ? `<span class="absolute top-1.5 left-1.5 inline-flex items-center gap-1 bg-charcoal text-white text-[10px] font-semibold px-2 py-0.5 rounded shadow-sm select-none">
+               <i data-lucide="star" class="w-3 h-3 fill-amber-400 text-amber-400"></i>
+               <span>Capa</span>
+             </span>`
+          : `<button type="button" data-action="project-preview#selectCover" data-index="${index}"
+                     title="Definir como capa" aria-label="Definir imagem ${index + 1} como capa do projeto"
+                     class="absolute top-1.5 left-1.5 inline-flex items-center justify-center w-7 h-7 rounded-full bg-black/60 text-white/90 hover:text-white hover:bg-charcoal transition-colors cursor-pointer shadow-sm focus:outline-none focus:ring-2 focus:ring-white">
+               <i data-lucide="star" class="w-3.5 h-3.5"></i>
+             </button>`
 
-      wrapper.innerHTML = `
-        <img src="${this.urlFor(file)}" class="w-full h-24 object-cover pointer-events-none select-none" alt="">
-        ${coverElement}
-        <button type="button" data-action="project-preview#removeImage" data-index="${index}"
-                title="Remover imagem" aria-label="Remover imagem ${index + 1} da galeria"
-                class="absolute top-1.5 right-1.5 inline-flex items-center justify-center w-7 h-7 rounded-full bg-black/60 text-white/90 hover:text-white hover:bg-red-600 transition-colors cursor-pointer shadow-sm focus:outline-none focus:ring-2 focus:ring-white">
-          <i data-lucide="x" class="w-3.5 h-3.5"></i>
-        </button>
-      `
-      this.thumbnailsTarget.appendChild(wrapper)
-    })
+        wrapper.innerHTML = `
+          <img src="${this.urlFor(file)}" class="w-full h-24 object-cover pointer-events-none select-none" alt="">
+          ${coverElement}
+          <button type="button" data-action="project-preview#removeImage" data-index="${index}"
+                  title="Remover imagem" aria-label="Remover imagem ${index + 1} da galeria"
+                  class="absolute top-1.5 right-1.5 inline-flex items-center justify-center w-7 h-7 rounded-full bg-black/60 text-white/90 hover:text-white hover:bg-red-600 transition-colors cursor-pointer shadow-sm focus:outline-none focus:ring-2 focus:ring-white">
+            <i data-lucide="x" class="w-3.5 h-3.5"></i>
+          </button>
+        `
+        this.thumbnailsTarget.appendChild(wrapper)
+      })
+    }
 
     if (window.initLucide) window.initLucide()
 
-    this.galleryTarget.innerHTML = ""
-    this.files.forEach((file) => {
-      const img = document.createElement("img")
-      img.src = this.urlFor(file)
-      img.className = "w-full aspect-[4/3] object-cover rounded-lg border border-stone-border"
-      img.alt = ""
-      this.galleryTarget.appendChild(img)
-    })
-    this.gallerySectionTarget.classList.toggle("hidden", !hasFiles)
+    if (this.hasGalleryTarget) {
+      if (hasNewFiles) {
+        this.galleryTarget.innerHTML = this.initialGalleryHtml || ""
+        this.files.forEach((file) => {
+          const img = document.createElement("img")
+          img.src = this.urlFor(file)
+          img.className = "w-full aspect-[4/3] object-cover rounded-lg border border-stone-border"
+          img.alt = ""
+          this.galleryTarget.appendChild(img)
+        })
+      } else if (this.initialGalleryHtml && this.initialGalleryHtml.trim() !== "") {
+        this.galleryTarget.innerHTML = this.initialGalleryHtml
+      } else {
+        this.galleryTarget.innerHTML = ""
+      }
+    }
+    if (this.hasGallerySectionTarget) {
+      this.gallerySectionTarget.classList.toggle("hidden", !hasAnyImages)
+    }
 
     this.updatePreviewCover()
     this.updateSubmitState()
@@ -210,19 +231,20 @@ export default class extends Controller {
     if (!this.hasSlotCountTarget) return
 
     const max = this.maxImagesValue || 10
-    const current = this.files.length
+    const existing = this.existingImagesCountValue || 0
+    const totalCurrent = existing + this.files.length
 
-    if (current === 0) {
+    if (totalCurrent === 0) {
       this.slotCountTarget.textContent = `Até ${max} imagens`
       this.slotCountTarget.classList.remove("text-amber-600")
     } else {
-      const remaining = max - current
+      const remaining = Math.max(0, max - totalCurrent)
       if (remaining === 0) {
         this.slotCountTarget.textContent = `Limite atingido (${max}/${max})`
         this.slotCountTarget.classList.add("text-amber-600")
       } else {
         const word = remaining === 1 ? "vaga restante" : "vagas restantes"
-        this.slotCountTarget.textContent = `${current}/${max} · ${remaining} ${word}`
+        this.slotCountTarget.textContent = `${totalCurrent}/${max} · ${remaining} ${word}`
         this.slotCountTarget.classList.remove("text-amber-600")
       }
     }
@@ -231,10 +253,14 @@ export default class extends Controller {
   updatePreviewCover() {
     if (!this.hasCoverContainerTarget || !this.hasCoverPlaceholderTarget) return
 
-    const file = this.coverFile || this.files[0] || null
+    const file = this.coverFile || (this.existingImagesCountValue === 0 ? this.files[0] : null)
 
     if (file) {
       this.coverContainerTarget.innerHTML = `<img src="${this.urlFor(file)}" alt="Capa do projeto" class="w-full max-h-[500px] object-cover">`
+      this.coverContainerTarget.classList.remove("hidden")
+      this.coverPlaceholderTarget.classList.add("hidden")
+    } else if (this.initialCoverHtml && this.initialCoverHtml.trim() !== "") {
+      this.coverContainerTarget.innerHTML = this.initialCoverHtml
       this.coverContainerTarget.classList.remove("hidden")
       this.coverPlaceholderTarget.classList.add("hidden")
     } else {
@@ -269,7 +295,8 @@ export default class extends Controller {
   }
 
   validateSubmission(event) {
-    if (this.files.length === 0) {
+    const totalImages = (this.existingImagesCountValue || 0) + this.files.length
+    if (totalImages === 0) {
       event.preventDefault()
       event.stopPropagation()
       this.showGalleryError()

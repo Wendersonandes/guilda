@@ -1,6 +1,36 @@
+<% content_for :no_sidebar, true %>
 <%= content_for :title, t(".title") %>
+<% content_for :compact_main, true %>
 
-<div class="max-w-lg mx-auto space-y-6">
-  <h1 class="text-2xl font-bold text-charcoal tracking-tight"><%= t(".title") %></h1>
-  <%= render "form", project: @project %>
+<div class="space-y-3 lg:flex lg:h-[calc(100vh-5.5rem)] lg:flex-col"
+     data-controller="project-preview"
+     data-project-preview-existing-images-count-value="<%= @project.project_images.size %>">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center lg:flex-none">
+    <!-- Left Column Header: Title -->
+    <div class="flex items-center justify-between gap-4 lg:pr-3">
+      <h1 class="text-2xl font-serif font-bold text-charcoal tracking-tight"><%= t(".title") %></h1>
+    </div>
+
+    <!-- Right Column Header: Preview Header label -->
+    <div class="hidden lg:flex items-center justify-between lg:pl-3">
+      <h2 class="text-xs font-semibold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
+        <i data-lucide="eye" class="w-3.5 h-3.5 text-zinc-400"></i>
+        <span><%= t(".preview_label") %></span>
+      </h2>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 gap-6 lg:pb-0 lg:flex lg:flex-1 lg:min-h-0">
+    <!-- Form Column -->
+    <div class="lg:flex-1 lg:min-h-0 lg:flex lg:flex-col lg:pr-3 lg:pb-3">
+      <%= render "single_form", project: @project %>
+    </div>
+
+    <!-- Live Preview Column -->
+    <div class="hidden lg:block lg:flex-1 lg:min-h-0 lg:overflow-y-auto lg:pl-3 lg:pb-3">
+      <div class="rounded-xl border border-stone-200/80 bg-stone-50/50 p-3 sm:p-4">
+        <%= render "projects/project", project: @project, images: @project.project_images, preview: true %>
+      </div>
+    </div>
+  </div>
 </div>
