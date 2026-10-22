@@ -55,4 +55,22 @@ class ContactTest < ActiveSupport::TestCase
     assert_equal inverse.id, contact.reload.inverse_id
     assert_equal contact.id, inverse.reload.inverse_id
   end
+
+  test "mutual connection is detected when both directions have ties" do
+    @sender.connect_to(@receiver, as: :follower)
+    contact = @sender.contact_to(@receiver)
+
+    assert_not contact.mutual?
+    assert_not @sender.mutual_with?(@receiver)
+    assert @receiver.followed_by?(@sender)
+    assert_not @sender.followed_by?(@receiver)
+    assert_equal 0, Contact.mutual.count
+
+    @receiver.connect_to(@sender, as: :follower)
+
+    assert contact.reload.mutual?
+    assert @sender.mutual_with?(@receiver)
+    assert @receiver.mutual_with?(@sender)
+    assert_equal 2, Contact.mutual.count
+  end
 end

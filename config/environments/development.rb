@@ -79,6 +79,7 @@ Rails.application.configure do
     Bullet.add_safelist type: :unused_eager_loading, class_name: "Activity", association: :likes
     Bullet.add_safelist type: :unused_eager_loading, class_name: "Activity", association: :owner
     Bullet.add_safelist type: :unused_eager_loading, class_name: "ActivityObject", association: :received_actions
+    Bullet.add_safelist type: :unused_eager_loading, class_name: "Contact", association: :inverse
 
     # Project covers: cover_or_first falls back to the first gallery image, so the eager-loaded
     # side that is not reached for a given dataset is flagged as unused.

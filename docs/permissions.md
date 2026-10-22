@@ -69,7 +69,7 @@ index on `(action) WHERE object IS NULL`.
 
 ### Custom relations (`Relation::Custom`)
 Seeded per actor from `SocialStream.custom_relations` (`config/initializers/social_stream.rb`)
-when the actor is created (`Relation::Custom.defaults_for`). Profiles get `friend`, `colleague`,
+when the actor is created (`Relation::Custom.defaults_for`). Profiles get `follower`, `colleague`,
 `acquaintance`; groups and the site get their role relations (below).
 
 ## 4. Role → capability matrix

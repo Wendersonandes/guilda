@@ -49,7 +49,7 @@ class RelationTest < ActiveSupport::TestCase
     bob = users(:bob)
     bob_actor = create_profile_for(bob)
 
-    actor.connect_to(bob_actor, as: "friend")
+    actor.connect_to(bob_actor, as: "follower")
     allowed = Relation.allow(bob_actor, :read, :activity)
     assert allowed.exists?
   end

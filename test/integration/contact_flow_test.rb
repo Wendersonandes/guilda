@@ -12,13 +12,13 @@ class ContactFlowTest < ActionDispatch::IntegrationTest
   end
 
   test "full contact flow: connect → verify tie → check permissions" do
-    @alice_actor.connect_to(@bob_actor, as: "friend")
+    @alice_actor.connect_to(@bob_actor, as: "follower")
 
     assert @alice_actor.connected_with?(@bob_actor)
     assert_not @bob_actor.connected_with?(@alice_actor)
 
-    friend_rel = @alice_actor.relation_custom("friend")
-    tie = @alice_actor.sent_ties.find_by(relation: friend_rel)
+    follower_rel = @alice_actor.relation_custom("follower")
+    tie = @alice_actor.sent_ties.find_by(relation: follower_rel)
     assert tie
     assert tie.positive?
 
@@ -32,15 +32,15 @@ class ContactFlowTest < ActionDispatch::IntegrationTest
     sign_in @alice
 
     # Simulate POST from suggestions bar
-    post contacts_path(actor_id: @bob_actor.slug, as: "friend"), as: :turbo_stream
+    post contacts_path(actor_id: @bob_actor.slug, as: "follower"), as: :turbo_stream
     assert_response :success
 
     # Verify connection was established
     assert @alice_actor.reload.connected_with?(@bob_actor)
-    
-    # Check that bob is in Alice's friend relation
-    friend_rel = @alice_actor.relation_custom("friend")
-    tie = @alice_actor.sent_ties.find_by(relation: friend_rel)
+
+    # Check that bob is in Alice's follower relation
+    follower_rel = @alice_actor.relation_custom("follower")
+    tie = @alice_actor.sent_ties.find_by(relation: follower_rel)
     assert tie
     assert_equal @bob_actor, tie.contact.receiver
 
@@ -58,16 +58,16 @@ class ContactFlowTest < ActionDispatch::IntegrationTest
 
 
   test "contacts_for filters by relation" do
-    @alice_actor.connect_to(@bob_actor, as: "friend")
+    @alice_actor.connect_to(@bob_actor, as: "follower")
 
-    contacts = @alice_actor.contacts_for("friend")
+    contacts = @alice_actor.contacts_for("follower")
     assert_includes contacts, @bob_actor
     assert_equal 1, contacts.count
   end
 
   test "bidirectional tie establishes mutual permissions" do
-    @alice_actor.connect_to(@bob_actor, as: "friend")
-    @bob_actor.connect_to(@alice_actor, as: "friend")
+    @alice_actor.connect_to(@bob_actor, as: "follower")
+    @bob_actor.connect_to(@alice_actor, as: "follower")
 
     assert @alice_actor.allow?(@bob_actor, :read, :activity)
     assert @bob_actor.allow?(@alice_actor, :read, :activity)

@@ -15,18 +15,21 @@ class ContactsControllerTest < ActionDispatch::IntegrationTest
     get contacts_path
     assert_response :success
     assert_select "[role='status'][aria-live='polite']"
+    assert_select "div.grid-cols-12.gap-6", count: 0
+    assert_select "aside", count: 1
+    assert_select "aside turbo-frame#sidebar_suggestions", count: 1
   end
 
   test "should create contact" do
     assert_difference("Contact.count", 1) do
-      post contacts_path, params: { actor_id: @bob.slug, as: :friend }
+      post contacts_path, params: { actor_id: @bob.slug, as: :follower }
     end
     assert_redirected_to contacts_path
   end
 
   test "should create contact via turbo stream rendering in-place templates" do
     assert_difference("Contact.count", 1) do
-      post contacts_path, params: { actor_id: @bob.slug, as: :friend }, headers: { "HTTP_REFERER" => "/custom_referer" }, as: :turbo_stream
+      post contacts_path, params: { actor_id: @bob.slug, as: :follower }, headers: { "HTTP_REFERER" => "/custom_referer" }, as: :turbo_stream
     end
     assert_response :success
     assert_match /turbo-stream action="replace" target="connection_actor_#{@bob.id}"/, response.body
@@ -36,14 +39,14 @@ class ContactsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create contact via turbo stream redirecting when referer is contacts path" do
     assert_difference("Contact.count", 1) do
-      post contacts_path, params: { actor_id: @bob.slug, as: :friend }, headers: { "HTTP_REFERER" => "/contacts" }, as: :turbo_stream
+      post contacts_path, params: { actor_id: @bob.slug, as: :follower }, headers: { "HTTP_REFERER" => "/contacts" }, as: :turbo_stream
     end
     assert_response :see_other
     assert_redirected_to "/contacts"
   end
 
   test "should destroy contact" do
-    @alice.connect_to(@bob, as: :friend)
+    @alice.connect_to(@bob, as: :follower)
     contact = Contact.last
 
     assert_difference("Contact.count", -1) do
@@ -53,7 +56,7 @@ class ContactsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should destroy contact via turbo stream rendering in-place templates" do
-    @alice.connect_to(@bob, as: :friend)
+    @alice.connect_to(@bob, as: :follower)
     contact = Contact.last
 
     assert_difference("Contact.count", -1) do
@@ -69,7 +72,7 @@ class ContactsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should destroy contact via turbo stream redirecting when referer is contacts path" do
-    @alice.connect_to(@bob, as: :friend)
+    @alice.connect_to(@bob, as: :follower)
     contact = Contact.last
 
     assert_difference("Contact.count", -1) do
@@ -90,16 +93,16 @@ class ContactsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get pending action" do
-    @bob.connect_to(@alice, as: :friend)
+    @bob.connect_to(@alice, as: :follower)
     get pending_contacts_path
     assert_response :success
-    assert_match /Solicitações pendentes/, response.body
+    assert_match /Quem segue você/, response.body
     assert_match /#{@bob.name}/, response.body
   end
 
   test "should filter contacts by city" do
-    @alice.connect_to(@bob, as: :friend)
-    @bob.connect_to(@alice, as: :friend)
+    @alice.connect_to(@bob, as: :follower)
+    @bob.connect_to(@alice, as: :follower)
 
     @bob.actorable.update!(city: "Belo Horizonte")
 
@@ -113,8 +116,8 @@ class ContactsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should filter contacts by occupation" do
-    @alice.connect_to(@bob, as: :friend)
-    @bob.connect_to(@alice, as: :friend)
+    @alice.connect_to(@bob, as: :follower)
+    @bob.connect_to(@alice, as: :follower)
 
     @bob.actorable.update!(occupation_list: [ "Escrita de Projetos" ])
 
@@ -128,8 +131,8 @@ class ContactsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should filter contacts by text query q" do
-    @alice.connect_to(@bob, as: :friend)
-    @bob.connect_to(@alice, as: :friend)
+    @alice.connect_to(@bob, as: :follower)
+    @bob.connect_to(@alice, as: :follower)
 
     get contacts_path(q: @bob.name)
     assert_response :success
@@ -142,11 +145,23 @@ class ContactsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "clear filters link includes turbo advance and top attributes" do
-    @alice.connect_to(@bob, as: :friend)
-    @bob.connect_to(@alice, as: :friend)
+    @alice.connect_to(@bob, as: :follower)
+    @bob.connect_to(@alice, as: :follower)
 
     get contacts_path(city: "Belo Horizonte")
     assert_response :success
     assert_select "a[href='#{contacts_path}'][data-turbo-action='advance'][data-turbo-frame='_top']", text: /Limpar todos os filtros/
+  end
+
+  test "renders mutual connection badge when connection is reciprocal" do
+    @alice.connect_to(@bob, as: :follower)
+    get contacts_path
+    assert_response :success
+    assert_select "span[title='#{I18n.t('contacts.index.mutual_badge_title')}']", count: 0
+
+    @bob.connect_to(@alice, as: :follower)
+    get contacts_path
+    assert_response :success
+    assert_select "span[title='#{I18n.t('contacts.index.mutual_badge_title')}']", text: /Mútuo/
   end
 end

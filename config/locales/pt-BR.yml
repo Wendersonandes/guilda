@@ -29,7 +29,7 @@ pt-BR:
   activity:
     description:
       follow: "%{author} começou a seguir %{owner}"
-      make_friend: "%{author} e %{owner} agora são amigos"
+      make_friend: "%{author} e %{owner} agora se seguem mutuamente"
       join: "%{author} conectou-se com %{owner}"
       like: "%{author} curtiu isto"
       update: "%{author} atualizou o perfil"
@@ -349,7 +349,7 @@ pt-BR:
   contacts:
     index:
       title: "Contatos"
-      subtitle: "Encontre rapidamente profissionais da sua rede de conexões"
+      subtitle: "Encontre rapidamente os profissionais que você segue"
       search_label: "Buscar contato"
       search_placeholder: "Buscar por nome..."
       category_label: "Categoria Profissional"
@@ -358,21 +358,23 @@ pt-BR:
       all_cities: "Todas as cidades"
       active_filters: "Filtros ativos:"
       results_count:
-        one: "1 contato na sua rede"
-        other: "%{count} contatos na sua rede"
+        one: "Você segue 1 profissional"
+        other: "Você segue %{count} profissionais"
       filtered_results_count:
-        one: "1 contato encontrado"
-        other: "%{count} contatos encontrados"
+        one: "1 profissional encontrado"
+        other: "%{count} profissionais encontrados"
       clear_filters: "Limpar todos os filtros"
       view_profile: "Ver perfil"
-      remove: "Remover contato"
-      remove_confirm: "Tem certeza de que deseja remover %{name} dos seus contatos?"
+      remove: "Deixar de seguir"
+      remove_confirm: "Tem certeza de que deseja deixar de seguir %{name}?"
       empty_title: "Nenhum contato encontrado"
       empty_subtitle: "Tente refinar os filtros aplicados para localizar quem procura."
-      no_contacts_title: "Sua rede de contatos ainda está vazia"
-      no_contacts_subtitle: "Conecte-se com profissionais e fornecedores para formar sua equipe e acompanhar seus trabalhos."
+      no_contacts_title: "Você ainda não segue nenhum profissional"
+      no_contacts_subtitle: "Siga profissionais e fornecedores para acompanhar seus trabalhos e atualizações no feed."
       explore_profiles: "Explorar profissionais"
-      pending_section_title: "Solicitações pendentes"
+      pending_section_title: "Seguidores"
+      mutual_badge: "Mútuo"
+      mutual_badge_title: "Vocês se seguem mutuamente"
 
   # === Profiles / Actors ======================================================
   profiles:
@@ -516,17 +518,24 @@ pt-BR:
       whatsapp_message: "Olá, %{name}! Vi seu perfil na Guilda e gostaria de conversar."
       whatsapp_message_from: "Olá, %{name}! Sou %{sender} e vi seu perfil na Guilda. Gostaria de conversar."
     sidebar_pending_contacts:
-      title: "Solicitações pendentes"
-      subtitle: "Pessoas que querem se conectar com você"
-      wants_to_connect: "quer se conectar"
-      accept: "Aceitar"
-      decline: "Recusar"
+      title: "Quem segue você"
+      subtitle: "Profissionais que seguem você e você ainda não segue"
+      follows_you: "segue você"
+      follow_back: "Seguir de volta"
     sidebar_suggestions:
       suggested: "Sugerido"
-      connect: "Conectar"
+      follow: "Seguir"
+      connect: "Seguir"
     connection_button:
-      remove: "Remover contato"
-      connect: "Conectar"
+      follow: "Seguir"
+      follow_back: "Seguir de volta"
+      following: "Seguindo"
+      unfollow: "Deixar de seguir"
+      follows_you: "Segue você"
+      mutual: "Mútuo"
+      mutual_title: "Vocês se seguem mutuamente"
+      remove: "Deixar de seguir"
+      connect: "Seguir"
     activity:
       via: "via"
       in_reply_to: "em resposta a"

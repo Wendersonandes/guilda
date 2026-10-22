@@ -11,9 +11,9 @@
             <span class="text-[9px] text-zinc-400 truncate uppercase tracking-wider mt-0.5"><%= t(".suggested") %></span>
           </div>
         </div>
-        <%= button_to contacts_path(actor_id: contact.receiver.slug, as: :friend), method: :post, form_class: "flex-shrink-0", class: "flex items-center gap-1 text-[11px] bg-white text-brand hover:bg-brand hover:text-white font-semibold px-2 py-1 rounded-md border border-stone-300 transition-all cursor-pointer" do %>
+        <%= button_to contacts_path(actor_id: contact.receiver.slug, as: :follower), method: :post, form_class: "flex-shrink-0", class: "flex items-center gap-1 text-[11px] bg-white text-brand hover:bg-brand hover:text-white font-semibold px-2 py-1 rounded-md border border-stone-300 transition-all cursor-pointer" do %>
           <i data-lucide="user-plus" class="w-3 h-3 flex-shrink-0"></i>
-          <span><%= t(".connect") %></span>
+          <span><%= t(".follow", default: t(".connect")) %></span>
         <% end %>
       </div>
     <% end %>

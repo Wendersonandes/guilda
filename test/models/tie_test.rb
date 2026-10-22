@@ -37,10 +37,10 @@ class TieTest < ActiveSupport::TestCase
   end
 
   test "validates relation belongs to sender for custom relations" do
-    @sender.connect_to(@receiver, as: "friend")
-    friend_relation = @sender.relation_custom("friend")
+    @sender.connect_to(@receiver, as: "follower")
+    follower_relation = @sender.relation_custom("follower")
 
-    tie = Tie.new(contact: @contact, relation: friend_relation)
+    tie = Tie.new(contact: @contact, relation: follower_relation)
     assert tie.valid?
   end
 

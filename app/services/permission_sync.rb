@@ -66,8 +66,17 @@ class PermissionSync
       config = SocialStream.custom_relations.with_indifferent_access[subject_type]
       next 0 if config.nil?
 
+      # Migrate legacy "Friend" custom relation to "Follower"
+      if subject_type == "profile" && (friend_rel = actor.relation_custom("friend")) && actor.relation_custom("follower").nil?
+        friend_rel.update!(name: "Follower")
+      end
+
       config.sum do |name, cfg|
-        relation = actor.relation_custom(name)
+        relation = actor.relation_custom(name) || Relation::Custom.create!(
+          actor: actor,
+          name: cfg[:name],
+          receiver_type: cfg[:receiver_type]
+        )
         next 0 unless relation
 
         Array(cfg[:permissions]).count do |action, object|

@@ -87,6 +87,15 @@ class Contact < ApplicationRecord
          .where(arel_table[:inverse_id].eq(nil).or(Contact.arel_table.alias("inverse_contacts")[:ties_count].eq(0)))
   }
 
+  # Contacts that are mutually connected (both sides established).
+  #
+  # @return [ActiveRecord::Relation<Contact>]
+  scope :mutual, -> {
+    active.positive.not_reflexive
+          .joins("INNER JOIN contacts AS inverse_contacts ON inverse_contacts.id = contacts.inverse_id")
+          .where(Contact.arel_table.alias("inverse_contacts")[:ties_count].gt(0))
+  }
+
   validates :sender, :receiver, presence: true
   validates :sender_id, uniqueness: { scope: :receiver_id }
 
@@ -112,6 +121,7 @@ class Contact < ApplicationRecord
   def replied?
     inverse_id.present? && inverse&.established?
   end
+  alias_method :mutual?, :replied?
 
   # The {#inverse} contact, creating it (from receiver to sender) when it does not exist yet.
   #

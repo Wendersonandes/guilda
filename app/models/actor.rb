@@ -183,7 +183,7 @@ class Actor < ApplicationRecord
 
   # Finds a {Relation::Custom} owned by this actor by its (case-insensitive) name.
   #
-  # @param name [String, Symbol] the relation name (e.g. "friend").
+  # @param name [String, Symbol] the relation name (e.g. "follower").
   # @return [Relation::Custom, nil]
   def relation_custom(name)
     if relations.loaded?
@@ -335,6 +335,25 @@ class Actor < ApplicationRecord
   # @return [Boolean]
   def connected_with?(other_actor)
     sent_contacts.find_by(receiver: other_actor)&.established?
+  end
+
+  # Whether this actor is followed by +other_actor+.
+  #
+  # @param other_actor [Actor]
+  # @return [Boolean]
+  def followed_by?(other_actor)
+    return false unless other_actor
+    other_actor.connected_with?(self)
+  end
+
+  # Whether this actor and +other_actor+ follow each other mutually.
+  #
+  # @param other_actor [Actor]
+  # @return [Boolean]
+  def mutual_with?(other_actor)
+    return false unless other_actor
+    contact = sent_contacts.find_by(receiver: other_actor)
+    contact&.mutual? || false
   end
 
   # Whether this actor has a {Tie} to +actor+ using a relation named +relation_name+.

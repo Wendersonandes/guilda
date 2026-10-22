@@ -210,10 +210,10 @@ puts "  Editais e Projetos: +Ana(member) +Bruno(member) +Elisa(member)"
 
 # ── Contacts (follows) ──────────────────────────────────────────
 puts "\nCreating contacts..."
-actors[:ana].connect_to(actors[:bruno], as: "friend")
-actors[:ana].connect_to(actors[:carla], as: "friend")
+actors[:ana].connect_to(actors[:bruno], as: "follower")
+actors[:ana].connect_to(actors[:carla], as: "follower")
 actors[:bruno].connect_to(actors[:diego], as: "colleague")
-actors[:carla].connect_to(actors[:elisa], as: "friend")
+actors[:carla].connect_to(actors[:elisa], as: "follower")
 actors[:diego].connect_to(actors[:ana],   as: "acquaintance")
 actors[:elisa].connect_to(actors[:bruno], as: "acquaintance")
 actors[:elisa].connect_to(actors[:carla], as: "colleague")

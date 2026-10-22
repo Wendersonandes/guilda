@@ -61,7 +61,7 @@ module SocialStream
 
   self.custom_relations = {
     "profile" => {
-      "friend" =>     { name: "Friend",     permissions: [ [ "create", "activity" ], [ "read",   "activity" ], [ "follow", nil ], [ "create", "post" ], [ "read", "post" ], [ "create", "comment" ], [ "read", "comment" ] ], receiver_type: "Profile" },
+      "follower" =>   { name: "Follower",   permissions: [ [ "create", "activity" ], [ "read",   "activity" ], [ "follow", nil ], [ "create", "post" ], [ "read", "post" ], [ "create", "comment" ], [ "read", "comment" ] ], receiver_type: "Profile" },
       "colleague" =>  { name: "Colleague",  permissions: [ [ "read",   "activity" ], [ "read",   "post" ],     [ "read",   "comment" ] ],                                                                     receiver_type: "Profile" },
       "acquaintance" => { name: "Acquaintance", permissions: [ [ "read",   "activity" ], [ "read",   "post" ],     [ "read",   "comment" ] ],                                                                 receiver_type: "Profile" }
     },
