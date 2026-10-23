@@ -3,6 +3,8 @@
 #
 # @see ActorPolicy
 class ActorsController < ApplicationController
+  ROLE_PRIORITY = %w[admin editor moderator professional tester member silenced banned].freeze
+
   skip_before_action :authenticate_user!, only: [ :show ]
   skip_after_action :verify_policy_scoped, only: [ :index ]
 
@@ -13,12 +15,12 @@ class ActorsController < ApplicationController
     authorize Actor
     @actors = Actor.name_search(params[:q])
                    .where.not(id: params[:exclude].presence&.split(","))
-                   .includes(:actorable, avatar_attachment: :blob)
+                   .includes(avatar_attachment: :blob)
                    .limit(20)
 
     respond_to do |format|
       format.html do
-        @actors = Actor.includes(:actorable, avatar_attachment: :blob)
+        @actors = Actor.includes(avatar_attachment: :blob)
                        .alphabetic
         @pagy, @actors = pagy(@actors, limit: 24)
       end
@@ -31,7 +33,14 @@ class ActorsController < ApplicationController
                     .where(contacts: { sender_id: site_actor.id, receiver_id: actor_ids })
                     .select("contacts.receiver_id", "relations.name as relation_name")
 
-          actor_roles = ties.each_with_object({}) { |tie, hash| hash[tie.receiver_id] = tie.relation_name.downcase }
+          actor_roles = {}
+          ties.each do |tie|
+            current = actor_roles[tie.receiver_id]
+            new_role = tie.relation_name.downcase
+            if current.nil? || (ROLE_PRIORITY.index(new_role) || 99) < (ROLE_PRIORITY.index(current) || 99)
+              actor_roles[tie.receiver_id] = new_role
+            end
+          end
 
           render json: @actors.map { |a|
             {
