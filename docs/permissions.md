@@ -41,6 +41,7 @@ index on `(action) WHERE object IS NULL`.
 | `read` | read the object |
 | `update` | update the object |
 | `destroy` | delete the object |
+| `publish` | publish publicly (project or profile directory) |
 | `follow` | subscribe to updates (`object: nil`) |
 | `represent` | act on behalf of another actor (`object: nil`) |
 
@@ -53,6 +54,8 @@ index on `(action) WHERE object IS NULL`.
 | `member` | group membership management |
 | `admin` | admin panels access |
 | `role` | role assignment (site) |
+| `project` | portfolio projects |
+| `profile` | profile visibility in directory/searches |
 
 `object: nil` applies the action broadly (only `follow` and `represent` today).
 
@@ -97,18 +100,22 @@ Hierarchy is **linear**: `owner ⊇ admin ⊇ moderator ⊇ member ⊇ silenced`
 
 ### Site (`custom_relations["site"]`)
 
-| capability | member | moderator | editor | admin | silenced | banned |
-|---|:--:|:--:|:--:|:--:|:--:|:--:|
-| `read` activity / post / comment | ✓ | ✓ | ✓ | ✓ | ✓ | – |
-| `create` activity / post / comment | ✓ | – | ✓ | ✓ | – | – |
-| `update` activity / post / comment | – | – | ✓ | ✓ | – | – |
-| `destroy` activity / post / comment | – | ✓ | – | ✓ | – | – |
-| `represent` | – | – | – | ✓ | – | – |
-| `read admin` | – | – | – | ✓ | – | – |
-| `update role` | – | – | – | ✓ | – | – |
+| capability | member | professional | tester | moderator | editor | admin | silenced | banned |
+|---|:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
+| `read` activity / post / comment | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | – |
+| `create` activity / post / comment | ✓ | ✓ | ✓ | – | ✓ | ✓ | – | – |
+| `update` activity / post / comment | – | – | – | – | ✓ | ✓ | – | – |
+| `destroy` activity / post / comment | – | – | – | ✓ | ✓ | ✓ | – | – |
+| `follow` | ✓ | ✓ | ✓ | – | – | ✓ | – | – |
+| `read profile` | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | – |
+| `publish profile` | – | ✓ | ✓ | – | – | ✓ | – | – |
+| `create project` | ✓ | ✓ | ✓ | – | – | ✓ | – | – |
+| `publish project` | – | ✓ | ✓ | – | – | ✓ | – | – |
+| `represent` | – | – | – | – | – | ✓ | – | – |
+| `read admin` | – | – | – | – | – | ✓ | – | – |
+| `update role` | – | – | – | – | – | ✓ | – | – |
 
-The site hierarchy is **not** linear: `editor` has `create/update`, while `moderator` has
-`destroy`. Do not assume a generic superset order for site roles.
+The site hierarchy is **composable**: actors can hold multiple roles simultaneously (e.g. `member` + `moderator`, or `professional` + `editor`), and permissions combine additively via `Actor#can?`. Punitive roles (`silenced` and `banned`) replace positive roles. If an actor loses `publish:project` permission, their public projects automatically revert to `draft`. Banned users are denied login in Devise.
 
 ## 5. API
 

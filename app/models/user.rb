@@ -67,6 +67,15 @@ class User < ApplicationRecord
   end
   alias_method :has_permission?, :can?
 
+  # Whether the user can authenticate. Banned users have no site activity read permissions.
+  def active_for_authentication?
+    super && (current_profile.nil? || current_profile.can?(:read, :activity, Site.instance))
+  end
+
+  def inactive_message
+    (current_profile && !current_profile.can?(:read, :activity, Site.instance)) ? :banned : super
+  end
+
   validates :email, presence: true, uniqueness: true
   validates :profile_name, presence: true, on: :create
 

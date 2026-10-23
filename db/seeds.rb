@@ -5,7 +5,7 @@ ActiveJob::Base.queue_adapter = :async
 
 # Clear database and reset cached singletons
 puts "  Cleaning database..."
-[Relation::Public, Relation::Follow, Relation::Reject, Relation::Owner, Relation::LocalAdmin].each do |klass|
+[ Relation::Public, Relation::Follow, Relation::Reject, Relation::Owner, Relation::LocalAdmin ].each do |klass|
   klass.instance_variable_set(:@instance, nil)
 end
 
@@ -34,7 +34,13 @@ permissions = Permission.instances([
   [ :create, :comment ],
   [ :read,   :comment ],
   [ :update, :comment ],
-  [ :destroy, :comment ]
+  [ :destroy, :comment ],
+  [ :read,   :admin ],
+  [ :update, :role ],
+  [ :read,   :profile ],
+  [ :publish, :profile ],
+  [ :create, :project ],
+  [ :publish, :project ]
 ])
 puts "  Permissions: #{permissions.size} created"
 
@@ -57,7 +63,7 @@ users_data = [
     instagram: "anasilva",
     availability: "freelance",
     description: "Artista visual contemporânea focada em pintura a óleo de grande formato e instalações urbanas. Graduada em Belas Artes pela USP.",
-    occupations: ["Design de Portfólio"]
+    occupations: [ "Design de Portfólio" ]
   },
   {
     email: "bruno@example.com",
@@ -69,7 +75,7 @@ users_data = [
     instagram: "brunocosta.expografia",
     availability: "full_time",
     description: "Arquiteto e expógrafo com 10 anos de experiência desenhando fluxos e espaços expositivos para museus e galerias.",
-    occupations: ["Expografia", "Montagem de Exposições"]
+    occupations: [ "Expografia", "Montagem de Exposições" ]
   },
   {
     email: "carla@example.com",
@@ -81,7 +87,7 @@ users_data = [
     instagram: "carlamendescultura",
     availability: "freelance",
     description: "Especialista em redação de projetos culturais para leis de incentivo (Rouanet/ProAC) e editais públicos.",
-    occupations: ["Escrita de Projetos", "Prestação de Contas", "Produção Cultural"]
+    occupations: [ "Escrita de Projetos", "Prestação de Contas", "Produção Cultural" ]
   },
   {
     email: "diego@example.com",
@@ -93,7 +99,7 @@ users_data = [
     instagram: "diegorochafoto",
     availability: "full_time",
     description: "Fotógrafo especializado em registrar exposições, montagens e catálogo de obras de arte com fidelidade de cor.",
-    occupations: ["Assessoria de Comunicação"]
+    occupations: [ "Assessoria de Comunicação" ]
   },
   {
     email: "elisa@example.com",
@@ -105,7 +111,7 @@ users_data = [
     instagram: "elisatorreslog",
     availability: "unavailable",
     description: "Logística especializada em artes visuais. Transporte seguro de acervo, embalagem climatizada e laudo de estado para obras.",
-    occupations: ["Transporte de Obras", "Produção de Exposições"]
+    occupations: [ "Transporte de Obras", "Produção de Exposições" ]
   }
 ]
 
@@ -117,7 +123,7 @@ users_data.each do |data|
     user.profile_name = data[:name]
     user.save!
   end
-  
+
   # Update custom profile attributes
   profile = user.current_profile.actorable
   profile.update!(
@@ -145,8 +151,11 @@ actors = users.transform_values { |u| u.current_profile }
 # ── Site & Global Roles ────────────────────────────────────────
 puts "\nSetting up global roles..."
 site_actor = Site.instance.actor
+actors.each_value do |actor|
+  GroupMembershipService.new(site_actor, actor).add(role: "professional")
+end
 GroupMembershipService.new(site_actor, actors[:ana]).add(role: "admin")
-puts "  Site: #{Site.instance.name}, Admin: Ana"
+puts "  Site: #{Site.instance.name}, Admin: Ana, Professionals: #{actors.keys.join(', ')}"
 
 # ── Groups ──────────────────────────────────────────────────────
 puts "\nCreating groups..."

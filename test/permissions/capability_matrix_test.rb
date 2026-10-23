@@ -12,27 +12,53 @@ class CapabilityMatrixTest < ActiveSupport::TestCase
   SITE = {
     admin: [
       [ :create, :activity ], [ :read, :activity ], [ :update, :activity ], [ :destroy, :activity ],
+      [ :follow, nil ],
       [ :represent, nil ],
       [ :create, :post ], [ :read, :post ], [ :update, :post ], [ :destroy, :post ],
       [ :create, :comment ], [ :read, :comment ], [ :update, :comment ], [ :destroy, :comment ],
-      [ :read, :admin ], [ :update, :role ]
+      [ :read, :admin ], [ :update, :role ],
+      [ :read, :profile ], [ :publish, :profile ],
+      [ :create, :project ], [ :publish, :project ]
     ],
     editor: [
-      [ :create, :activity ], [ :read, :activity ], [ :update, :activity ],
-      [ :create, :post ], [ :read, :post ], [ :update, :post ],
-      [ :create, :comment ], [ :read, :comment ], [ :update, :comment ]
+      [ :create, :activity ], [ :read, :activity ], [ :update, :activity ], [ :destroy, :activity ],
+      [ :create, :post ], [ :read, :post ], [ :update, :post ], [ :destroy, :post ],
+      [ :create, :comment ], [ :read, :comment ], [ :update, :comment ], [ :destroy, :comment ],
+      [ :read, :profile ]
     ],
     moderator: [
       [ :read, :activity ], [ :destroy, :activity ],
       [ :read, :post ], [ :destroy, :post ],
-      [ :read, :comment ], [ :destroy, :comment ]
+      [ :read, :comment ], [ :destroy, :comment ],
+      [ :read, :profile ]
     ],
     member: [
-      [ :read, :activity ], [ :create, :activity ],
-      [ :read, :post ], [ :create, :post ],
-      [ :read, :comment ], [ :create, :comment ]
+      [ :create, :activity ], [ :read, :activity ],
+      [ :follow, nil ],
+      [ :create, :post ], [ :read, :post ],
+      [ :create, :comment ], [ :read, :comment ],
+      [ :read, :profile ],
+      [ :create, :project ]
     ],
-    silenced: [ [ :read, :activity ], [ :read, :post ], [ :read, :comment ] ],
+    professional: [
+      [ :create, :activity ], [ :read, :activity ],
+      [ :follow, nil ],
+      [ :create, :post ], [ :read, :post ],
+      [ :create, :comment ], [ :read, :comment ],
+      [ :read, :profile ], [ :publish, :profile ],
+      [ :create, :project ], [ :publish, :project ]
+    ],
+    tester: [
+      [ :create, :activity ], [ :read, :activity ],
+      [ :follow, nil ],
+      [ :create, :post ], [ :read, :post ],
+      [ :create, :comment ], [ :read, :comment ],
+      [ :read, :profile ], [ :publish, :profile ],
+      [ :create, :project ], [ :publish, :project ]
+    ],
+    silenced: [
+      [ :read, :activity ], [ :read, :post ], [ :read, :comment ], [ :read, :profile ]
+    ],
     banned: []
   }.freeze
 

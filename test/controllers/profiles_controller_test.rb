@@ -85,6 +85,21 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_select "h2", text: /Bob Incomplete/, count: 0
   end
 
+  test "should not include member role profiles in directory unless they have professional role" do
+    sign_in @user
+    other_user = users(:bob)
+    other_actor = create_profile_for(other_user, name: "Bob Member Only", role: "member")
+
+    get profiles_path
+    assert_response :success
+    assert_select "h2", text: /Bob Member Only/, count: 0
+
+    GroupMembershipService.new(Site.instance.actor, other_actor).add_role("professional")
+    get profiles_path
+    assert_response :success
+    assert_select "h2", text: /Bob Member Only/
+  end
+
   test "should filter profiles index by availability" do
     sign_in @user
     other_user = users(:bob)

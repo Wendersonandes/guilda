@@ -14,12 +14,12 @@ class ProfilesController < ApplicationController
   def index
     authorize Actor, :index?
 
-    @cities = Profile.where(wizard_complete: true).where.not(city: [ nil, "" ]).order(:city).pluck(:city).uniq
+    @cities = Profile.listed_in_directory.where.not(city: [ nil, "" ]).order(:city).pluck(:city).uniq
     @occupations = Profile::OCCUPATIONS.map { |o| o["name"] }
 
-    @profiles = Profile.joins(:actor)
+    @profiles = Profile.listed_in_directory
+                       .joins(:actor)
                        .includes(:occupations, :projects, actor: [ avatar_attachment: :blob, cover_image_attachment: :blob ])
-                       .where(wizard_complete: true)
                        .order("actors.name ASC")
 
     if params[:q].present?

@@ -36,7 +36,7 @@ class UserTest < ActiveSupport::TestCase
     @alice = users(:alice)
     @bob_actor = create_profile_for(@bob, name: "Bob")
     @alice_actor = create_profile_for(@alice, name: "Alice")
-    
+
     # Create a group
     @group = Group.new(privacy: :public_group)
     @group.build_actor(name: "Test Group User")
@@ -64,5 +64,15 @@ class UserTest < ActiveSupport::TestCase
     end
 
     assert_not @bob.has_role?(:member, @group)
+  end
+
+  test "banned user cannot authenticate" do
+    assert @bob.active_for_authentication?
+
+    GroupMembershipService.new(Site.instance.actor, @bob_actor).add(role: "banned")
+    @bob.reload
+
+    assert_not @bob.active_for_authentication?
+    assert_equal :banned, @bob.inactive_message
   end
 end

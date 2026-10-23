@@ -47,6 +47,20 @@ class Profile < ApplicationRecord
 
   enum :availability, { full_time: 0, freelance: 1, unavailable: 2 }
 
+  # Profiles that have completed their wizard and have permission to publish their profile
+  # on the Site (e.g. professional or tester role), making them visible in directory listings.
+  scope :listed_in_directory, -> {
+    site_actor_id = Site.instance.actor&.id
+    publish_perm_ids = Permission.where(action: :publish, object: :profile).select(:id)
+    allowed_rel_ids = RelationPermission.where(permission_id: publish_perm_ids).select(:relation_id)
+    tied_actor_ids = Tie.joins(:contact)
+                        .where(contacts: { sender_id: site_actor_id }, relation_id: allowed_rel_ids)
+                        .select("contacts.receiver_id")
+
+    where(wizard_complete: true)
+      .where(id: Actor.where(id: tied_actor_ids, actorable_type: "Profile").select(:actorable_id))
+  }
+
   AVAILABILITY_OPTIONS = {
     "full_time" => "Tempo integral",
     "freelance" => "Freelance",
@@ -81,8 +95,8 @@ class Profile < ApplicationRecord
   validate :instagram_format, if: -> { instagram.present? }
 
   FORM_STEPS = {
-    location: [:country, :state, :city],
-    occupation: [:occupation_list]
+    location: [ :country, :state, :city ],
+    occupation: [ :occupation_list ]
   }.freeze
 
   validates :country, :state, :city, presence: true, if: -> { required_for_step?(:location) }
@@ -91,7 +105,7 @@ class Profile < ApplicationRecord
 
   acts_as_taggable_on :occupations
 
-  OCCUPATIONS = YAML.load_file(Rails.root.join('config', 'occupations.yml'))['occupations'].freeze
+  OCCUPATIONS = YAML.load_file(Rails.root.join("config", "occupations.yml"))["occupations"].freeze
 
   def required_for_step?(step)
     # Full-model validation when form_step is nil (e.g. after wizard is complete)
@@ -121,11 +135,11 @@ class Profile < ApplicationRecord
   end
 
   def self.ransackable_attributes(auth_object = nil)
-    ["city", "state"]
+    [ "city", "state" ]
   end
 
   def self.ransackable_associations(auth_object = nil)
-    ["actor"]
+    [ "actor" ]
   end
 
   private
@@ -173,6 +187,4 @@ class Profile < ApplicationRecord
       errors.add(:occupation_list, "selecione pelo menos 1 categoria")
     end
   end
-
-
 end

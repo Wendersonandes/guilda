@@ -1,6 +1,10 @@
 pt-BR:
   hello: "Olá, mundo"
 
+  devise:
+    failure:
+      banned: "Sua conta foi suspensa por violar as políticas da plataforma."
+
   # === Core domain (models, notifiers, helpers) ===============================
   notifications:
     post_published:
@@ -135,11 +139,21 @@ pt-BR:
     projects:
       index:
         title: "Meus Projetos"
+        subtitle: "Gerencie e organize os projetos do seu portfólio. Arraste ou use o teclado para definir a ordem de exibição no seu perfil público."
         new: "Novo projeto"
-        empty: "Você ainda não cadastrou nenhum projeto."
+        empty_title: "Nenhum projeto cadastrado"
+        empty: "Você ainda não cadastrou nenhum projeto no seu portfólio."
+        empty_cta: "Criar primeiro projeto"
         edit: "Editar"
+        view_public: "Visualizar no site (abre em nova aba)"
         delete: "Excluir"
-        delete_confirm: "Tem certeza de que deseja excluir este projeto?"
+        delete_confirm: "Tem certeza de que deseja excluir o projeto \"%{title}\"? Esta ação não pode ser desfeita."
+        reorder_handle: "Reordenar %{title}: pressione as setas para cima ou para baixo para reposicionar"
+        reorder_hint: "Arraste para reordenar"
+        count:
+          one: "1 projeto"
+          other: "%{count} projetos"
+        reorder_announced: "Projeto movido para a posição %{position} de %{total}."
       new:
         title: "Adicione um novo Projeto"
         cancel: "Cancelar"

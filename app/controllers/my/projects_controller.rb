@@ -31,6 +31,9 @@ module My
 
       @project.valid?
       @project.errors.add(:gallery, :blank) if gallery_signed_ids.blank?
+      if @project.visibility_public? && !current_actor.can?(:publish, :project)
+        @project.errors.add(:visibility, t("activerecord.errors.models.project.attributes.visibility.unauthorized", default: "A publicação de projetos requer uma conta profissional."))
+      end
 
       if @project.errors.empty? && @project.save
         ingest_gallery
@@ -48,6 +51,13 @@ module My
     # PATCH/PUT /my/projects/:id
     def update
       authorize @project
+
+      if project_params[:visibility].to_s == "public" && !current_actor.can?(:publish, :project)
+        @project.assign_attributes(project_params)
+        @project.errors.add(:visibility, t("activerecord.errors.models.project.attributes.visibility.unauthorized", default: "A publicação de projetos requer uma conta profissional."))
+        render :edit, status: :unprocessable_entity
+        return
+      end
 
       if @project.update(project_params)
         ingest_gallery

@@ -10,10 +10,28 @@ module My
       sign_in @alice_user
     end
 
-    test "index lists the profile's projects" do
+    test "index lists the profile's projects with 8/4 layout and accessible actions" do
+      project = @alice.actorable.projects.create!(title: "Projeto Alpha", about: "<p>Sobre</p>", visibility: :public)
+      project.project_images.create!(image: image_blob("img-1.png"))
+
       get my_projects_path
 
       assert_response :success
+      assert_select "h1", text: I18n.t("my.projects.index.title")
+      assert_select "div.grid.grid-cols-1.lg\\:grid-cols-12"
+      assert_select "aside.hidden.lg\\:block.lg\\:col-span-4"
+      assert_select "ul[role='list'][data-controller='sortable'][data-sortable-handle-value='[data-sortable-handle]']"
+      assert_select "button[data-sortable-handle]"
+      assert_select "button[aria-label='#{I18n.t("my.projects.index.delete")} #{project.title}']"
+      assert_select "a[href='#{new_my_project_path}']", text: I18n.t("my.projects.index.new")
+    end
+
+    test "index renders empty state with CTA when profile has no projects" do
+      get my_projects_path
+
+      assert_response :success
+      assert_select "h2", text: I18n.t("my.projects.index.empty_title")
+      assert_select "a[href='#{new_my_project_path}']", text: I18n.t("my.projects.index.empty_cta")
     end
 
     test "renders the new form" do
@@ -158,6 +176,24 @@ module My
       }
 
       assert_predicate Project.find_by(title: "Público"), :visibility_public?
+    end
+
+    test "member cannot publish a public project but can create drafts" do
+      GroupMembershipService.new(Site.instance.actor, @alice).add(role: "member")
+      signed_id = image_blob("foto.png").signed_id
+
+      post my_projects_path, params: {
+        project: { title: "Projeto Bloqueado", about: "<p>Sobre</p>", visibility: "public", gallery_signed_ids: [ signed_id ] }
+      }
+
+      assert_response :unprocessable_entity
+      assert_nil Project.find_by(title: "Projeto Bloqueado")
+
+      post my_projects_path, params: {
+        project: { title: "Projeto Rascunho Permitido", about: "<p>Sobre</p>", visibility: "draft", gallery_signed_ids: [ signed_id ] }
+      }
+      assert_redirected_to my_projects_path
+      assert_predicate Project.find_by(title: "Projeto Rascunho Permitido"), :visibility_draft?
     end
 
     test "sets the cover from the selected gallery image" do

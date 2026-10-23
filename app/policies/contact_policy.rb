@@ -9,7 +9,7 @@ class ContactPolicy < ApplicationPolicy
   end
 
   def create?
-    user.present?
+    user.present? && actor.present? && actor.can?(:follow, nil, Site.instance)
   end
 
   def destroy?

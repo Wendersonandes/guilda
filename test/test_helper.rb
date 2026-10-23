@@ -20,10 +20,11 @@ module ActiveSupport
       FeatureFlags.names.each { |name| Flipper.enable(name) }
     end
 
-    def create_profile_for(user, name: nil)
+    def create_profile_for(user, name: nil, role: "professional")
       actor = ProfileCreation.new(user, name: name || user.email.split("@").first).call
-      actor.actorable.update!(wizard_complete: true, country: "BR", state: "SP", city: "São Paulo", occupation_list: ["Developer"])
+      actor.actorable.update!(wizard_complete: true, country: "BR", state: "SP", city: "São Paulo", occupation_list: [ "Developer" ])
       user.update!(current_profile: actor)
+      GroupMembershipService.new(Site.instance.actor, actor).add(role: role) if role && role != "member"
       actor
     end
 
@@ -57,7 +58,11 @@ module ActiveSupport
         [ :update, :member ],
         [ :destroy, :member ],
         [ :read,   :admin ],
-        [ :update, :role ]
+        [ :update, :role ],
+        [ :read,   :profile ],
+        [ :publish, :profile ],
+        [ :create, :project ],
+        [ :publish, :project ]
       ])
 
       # Clear singleton caches for fresh records per test
@@ -70,6 +75,8 @@ module ActiveSupport
       Relation::Reject.instance
       Relation::Owner.instance
       Relation::LocalAdmin.instance
+
+      PermissionSync.new.call
     end
   end
 end

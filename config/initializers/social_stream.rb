@@ -55,7 +55,11 @@ module SocialStream
       [ "update", "comment" ],
       [ "destroy", "comment" ],
       [ "read",   "admin" ],
-      [ "update", "role" ]
+      [ "update", "role" ],
+      [ "read",   "profile" ],
+      [ "publish", "profile" ],
+      [ "create", "project" ],
+      [ "publish", "project" ]
     ]
   }.freeze
 
@@ -140,6 +144,7 @@ module SocialStream
           [ "read",   "activity" ],
           [ "update",  "activity" ],
           [ "destroy", "activity" ],
+          [ "follow", nil ],
           [ "represent", nil ],
           [ "create", "post" ],
           [ "read",   "post" ],
@@ -150,7 +155,11 @@ module SocialStream
           [ "update",  "comment" ],
           [ "destroy", "comment" ],
           [ "read",   "admin" ],
-          [ "update", "role" ]
+          [ "update", "role" ],
+          [ "read",   "profile" ],
+          [ "publish", "profile" ],
+          [ "create", "project" ],
+          [ "publish", "project" ]
         ],
         receiver_type: "Profile"
       },
@@ -160,12 +169,16 @@ module SocialStream
           [ "create", "activity" ],
           [ "read",   "activity" ],
           [ "update", "activity" ],
+          [ "destroy", "activity" ],
           [ "create", "post" ],
           [ "read",   "post" ],
           [ "update", "post" ],
+          [ "destroy", "post" ],
           [ "create", "comment" ],
           [ "read",   "comment" ],
-          [ "update", "comment" ]
+          [ "update", "comment" ],
+          [ "destroy", "comment" ],
+          [ "read",   "profile" ]
         ],
         receiver_type: "Profile"
       },
@@ -177,19 +190,57 @@ module SocialStream
           [ "read",   "post" ],
           [ "destroy", "post" ],
           [ "read",   "comment" ],
-          [ "destroy", "comment" ]
+          [ "destroy", "comment" ],
+          [ "read",   "profile" ]
         ],
         receiver_type: "Profile"
       },
       "member" => {
         name: "Member",
         permissions: [
-          [ "read",   "activity" ],
           [ "create", "activity" ],
-          [ "read",   "post" ],
+          [ "read",   "activity" ],
+          [ "follow", nil ],
           [ "create", "post" ],
+          [ "read",   "post" ],
+          [ "create", "comment" ],
           [ "read",   "comment" ],
-          [ "create", "comment" ]
+          [ "read",   "profile" ],
+          [ "create", "project" ]
+        ],
+        receiver_type: "Profile"
+      },
+      "professional" => {
+        name: "Professional",
+        permissions: [
+          [ "create", "activity" ],
+          [ "read",   "activity" ],
+          [ "follow", nil ],
+          [ "create", "post" ],
+          [ "read",   "post" ],
+          [ "create", "comment" ],
+          [ "read",   "comment" ],
+          [ "read",   "profile" ],
+          [ "publish", "profile" ],
+          [ "create", "project" ],
+          [ "publish", "project" ]
+        ],
+        receiver_type: "Profile"
+      },
+      "tester" => {
+        name: "Tester",
+        permissions: [
+          [ "create", "activity" ],
+          [ "read",   "activity" ],
+          [ "follow", nil ],
+          [ "create", "post" ],
+          [ "read",   "post" ],
+          [ "create", "comment" ],
+          [ "read",   "comment" ],
+          [ "read",   "profile" ],
+          [ "publish", "profile" ],
+          [ "create", "project" ],
+          [ "publish", "project" ]
         ],
         receiver_type: "Profile"
       },
@@ -198,7 +249,8 @@ module SocialStream
         permissions: [
           [ "read", "activity" ],
           [ "read", "post" ],
-          [ "read", "comment" ]
+          [ "read", "comment" ],
+          [ "read", "profile" ]
         ],
         receiver_type: "Profile"
       },

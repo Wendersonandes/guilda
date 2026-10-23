@@ -5,6 +5,7 @@
 class CommentPolicy < ApplicationPolicy
   def create?
     return false unless user.present? && actor.present?
+    return false unless actor.can?(:create, :comment, Site.instance)
 
     owner = record.activity_object&.owner
     return true if owner.nil?
@@ -22,10 +23,14 @@ class CommentPolicy < ApplicationPolicy
   end
 
   def update?
-    actor && record.author_id == actor.id
+    return false unless actor
+    return true if actor.can?(:update, :comment, Site.instance)
+    record.author_id == actor.id && actor.can?(:create, :comment, Site.instance)
   end
 
   def destroy?
+    return false unless actor
+    return true if actor.can?(:destroy, :comment, Site.instance)
     author_or_owner?
   end
 

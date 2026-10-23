@@ -15,6 +15,8 @@ class ActivityPolicy < ApplicationPolicy
 
   def create?
     return false unless user.present? && actor.present?
+    return false unless actor.can?(:create, :activity, Site.instance)
+
     if record.parent_id.present?
       return false unless ActivityPolicy.new(user, record.parent).show?
     end
@@ -32,11 +34,15 @@ class ActivityPolicy < ApplicationPolicy
   end
 
   def update?
-    actor && record.author_id == actor.id
+    return false unless actor
+    return true if actor.can?(:update, :activity, Site.instance)
+    record.author_id == actor.id && actor.can?(:create, :activity, Site.instance)
   end
 
   def destroy?
-    actor && record.author_id == actor.id
+    return false unless actor
+    return true if actor.can?(:destroy, :activity, Site.instance)
+    record.author_id == actor.id
   end
 
   def flag?

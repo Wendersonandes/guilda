@@ -67,12 +67,12 @@ class Actor < ApplicationRecord
   has_many :owned_activities, class_name: "Activity", foreign_key: :owner_id, dependent: :destroy
 
   has_one_attached :avatar do |attachable|
-    attachable.variant :thumb, resize_to_fill: [100, 100]
-    attachable.variant :medium, resize_to_fill: [300, 300]
+    attachable.variant :thumb, resize_to_fill: [ 100, 100 ]
+    attachable.variant :medium, resize_to_fill: [ 300, 300 ]
   end
 
   has_one_attached :cover_image do |attachable|
-    attachable.variant :thumb, resize_to_fill: [800, 300]
+    attachable.variant :thumb, resize_to_fill: [ 800, 300 ]
   end
 
   validates :name, presence: true
@@ -214,7 +214,7 @@ class Actor < ApplicationRecord
   def activity_relations
     rels = relations.allowing(:read, :activity)
     if actorable_type == "Group"
-      rels = Relation.where(id: rels.pluck(:id) + [Relation::Owner.instance.id])
+      rels = Relation.where(id: rels.pluck(:id) + [ Relation::Owner.instance.id ])
     end
     rels
   end
@@ -438,7 +438,7 @@ class Actor < ApplicationRecord
   # @return [void]
   def add_role(role, other)
     other_actor = other.is_a?(Actor) ? other : other.actor
-    other_actor.connect_to(self, as: role)
+    GroupMembershipService.new(other_actor, self).add_role(role.to_s)
     self.connect_to(other_actor, as: "follow")
   end
 
@@ -494,7 +494,7 @@ class Actor < ApplicationRecord
   end
 
   def self.ransackable_attributes(auth_object = nil)
-    ["name", "description"]
+    [ "name", "description" ]
   end
 
   def self.ransackable_associations(auth_object = nil)

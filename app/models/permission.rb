@@ -30,8 +30,8 @@
 # @see Relation           The role permissions are attached to.
 # @see RelationPermission The join model between relations and permissions.
 class Permission < ApplicationRecord
-  enum :action, { create: 0, read: 1, update: 2, destroy: 3, follow: 4, represent: 5 }, prefix: :action
-  enum :object, { activity: 0, post: 2, comment: 3, group: 4, member: 5, admin: 6, role: 7 }, prefix: :object
+  enum :action, { create: 0, read: 1, update: 2, destroy: 3, follow: 4, represent: 5, publish: 6 }, prefix: :action
+  enum :object, { activity: 0, post: 2, comment: 3, group: 4, member: 5, admin: 6, role: 7, project: 8, profile: 9 }, prefix: :object
 
   has_many :relation_permissions, dependent: :destroy
   has_many :relations, through: :relation_permissions

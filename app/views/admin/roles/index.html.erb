@@ -43,6 +43,8 @@
             <option value="admin">Administrador</option>
             <option value="editor">Editor</option>
             <option value="moderator">Moderador</option>
+            <option value="professional">Profissional</option>
+            <option value="tester">Tester</option>
             <option value="member">Membro</option>
             <option value="silenced">Silenciado</option>
             <option value="banned">Banido</option>
@@ -60,11 +62,13 @@
   </div>
 
   <% sections = [
-       { role: "admin",     label: "Administradores", items: @admins,     color: "bg-blue-50 text-blue-700 border-blue-100" },
-       { role: "editor",    label: "Editores",        items: @editors,    color: "bg-gray-100 text-gray-700 border-gray-200" },
-       { role: "moderator", label: "Moderadores",     items: @moderators, color: "bg-green-50 text-green-700 border-green-100" },
-       { role: "silenced",  label: "Silenciados",     items: @silenced,   color: "bg-yellow-50 text-yellow-750 border-yellow-200/50" },
-       { role: "banned",    label: "Banidos",         items: @banned,     color: "bg-red-50 text-red-700 border-red-100" }
+       { role: "admin",        label: "Administradores", items: @admins,        color: "bg-blue-50 text-blue-700 border-blue-100" },
+       { role: "editor",       label: "Editores",        items: @editors,       color: "bg-gray-100 text-gray-700 border-gray-200" },
+       { role: "moderator",    label: "Moderadores",     items: @moderators,    color: "bg-green-50 text-green-700 border-green-100" },
+       { role: "professional", label: "Profissionais",   items: @professionals, color: "bg-purple-50 text-purple-700 border-purple-100" },
+       { role: "tester",       label: "Testers",         items: @testers,       color: "bg-indigo-50 text-indigo-700 border-indigo-100" },
+       { role: "silenced",     label: "Silenciados",     items: @silenced,      color: "bg-yellow-50 text-yellow-750 border-yellow-200/50" },
+       { role: "banned",       label: "Banidos",         items: @banned,        color: "bg-red-50 text-red-700 border-red-100" }
      ] %>
 
   <% sections.each do |section| %>
@@ -88,7 +92,7 @@
             <div class="flex items-center gap-2">
               <%= form_with url: admin_role_path(actor), method: :patch, class: "flex items-center gap-1.5" do |f| %>
                 <%= f.hidden_field :from_role, value: section[:role] %>
-                <%= f.select :to_role, [["Administrador", "admin"], ["Editor", "editor"], ["Moderador", "moderator"], ["Membro", "member"], ["Silenciado", "silenced"], ["Banido", "banned"]], { selected: section[:role] }, { class: "text-xs border border-gray-300 rounded px-2 py-1 bg-white focus:outline-none" } %>
+                <%= f.select :to_role, [["Administrador", "admin"], ["Editor", "editor"], ["Moderador", "moderator"], ["Profissional", "professional"], ["Tester", "tester"], ["Membro", "member"], ["Silenciado", "silenced"], ["Banido", "banned"]], { selected: section[:role] }, { class: "text-xs border border-gray-300 rounded px-2 py-1 bg-white focus:outline-none" } %>
                 <%= f.submit "Salvar", class: "text-xs bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1.2 rounded-md font-medium cursor-pointer border-0 shadow-sm transition-colors" %>
               <% end %>
             </div>

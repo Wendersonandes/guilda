@@ -5,6 +5,7 @@ import Sortable from "sortablejs"
 // new order by PATCHing the ordered list of `[data-id]` values. It always emits a `sortable:end`
 // event (with the new `ids`) so consumers can react to the reorder without persisting it.
 export default class extends Controller {
+  static targets = [ "status" ]
   static values = { url: String, handle: String, filter: String }
 
   connect() {
@@ -18,6 +19,45 @@ export default class extends Controller {
 
   disconnect() {
     this.sortable?.destroy()
+  }
+
+  handleKeydown(event) {
+    if (event.key !== "ArrowUp" && event.key !== "ArrowDown") return
+
+    const handle = event.currentTarget
+    const item = handle.closest("[data-id]")
+    if (!item) return
+
+    if (event.key === "ArrowUp") {
+      const prev = item.previousElementSibling
+      if (prev && prev.hasAttribute("data-id")) {
+        event.preventDefault()
+        this.element.insertBefore(item, prev)
+        handle.focus()
+        this.end()
+        this.announceMove(item)
+      }
+    } else if (event.key === "ArrowDown") {
+      const next = item.nextElementSibling
+      if (next && next.hasAttribute("data-id")) {
+        event.preventDefault()
+        this.element.insertBefore(next, item)
+        handle.focus()
+        this.end()
+        this.announceMove(item)
+      }
+    }
+  }
+
+  announceMove(item) {
+    const ids = this.orderedIds()
+    const index = ids.indexOf(item.dataset.id)
+    if (index === -1) return
+
+    const statusEl = this.hasStatusTarget ? this.statusTarget : this.element.querySelector("[data-sortable-status]")
+    if (statusEl) {
+      statusEl.textContent = `Posição alterada para ${index + 1} de ${ids.length}.`
+    }
   }
 
   end() {
@@ -34,6 +74,12 @@ export default class extends Controller {
         "X-CSRF-Token": document.querySelector("meta[name=csrf-token]")?.content
       },
       body: JSON.stringify({ ids })
+    }).then((response) => {
+      if (!response.ok) {
+        console.warn("Reorder request failed with status:", response.status)
+      }
+    }).catch((error) => {
+      console.error("Reorder network error:", error)
     })
   }
 

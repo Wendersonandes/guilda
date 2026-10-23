@@ -14,7 +14,7 @@ class ProjectPolicy < ApplicationPolicy
   end
 
   def create?
-    profile? && actor.present?
+    profile? && actor.present? && actor.can?(:create, :project, Site.instance)
   end
   alias_method :new?, :create?
 
@@ -22,6 +22,10 @@ class ProjectPolicy < ApplicationPolicy
     owner?
   end
   alias_method :edit?, :update?
+
+  def publish?
+    owner? && actor.can?(:publish, :project, Site.instance)
+  end
 
   def destroy?
     owner?

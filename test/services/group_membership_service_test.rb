@@ -71,6 +71,56 @@ class GroupMembershipServiceTest < ActiveSupport::TestCase
     assert_empty @group_actor.member_roles_for(@bob_actor)
   end
 
+  test "add_role adds role additively on site" do
+    site_actor = Site.instance.actor
+    GroupMembershipService.new(site_actor, @bob_actor).add(role: "member")
+    assert site_actor.has_relation_with?(@bob_actor, "Member")
+    assert_not @bob_actor.can?(:publish, :project, site_actor)
+
+    GroupMembershipService.new(site_actor, @bob_actor).add_role("professional")
+    assert site_actor.has_relation_with?(@bob_actor, "Member")
+    assert site_actor.has_relation_with?(@bob_actor, "Professional")
+    assert @bob_actor.can?(:publish, :project, site_actor)
+  end
+
+  test "silenced replaces all positive roles and adding positive role clears silenced" do
+    site_actor = Site.instance.actor
+    GroupMembershipService.new(site_actor, @bob_actor).add(role: "member")
+    GroupMembershipService.new(site_actor, @bob_actor).add_role("professional")
+    assert site_actor.has_relation_with?(@bob_actor, "Member")
+    assert site_actor.has_relation_with?(@bob_actor, "Professional")
+
+    # Apply silenced
+    GroupMembershipService.new(site_actor, @bob_actor).add(role: "silenced")
+    assert site_actor.has_relation_with?(@bob_actor, "Silenced")
+    assert_not site_actor.has_relation_with?(@bob_actor, "Member")
+    assert_not site_actor.has_relation_with?(@bob_actor, "Professional")
+    assert_not @bob_actor.can?(:create, :post, site_actor)
+
+    # Re-grant member
+    GroupMembershipService.new(site_actor, @bob_actor).add(role: "member")
+    assert site_actor.has_relation_with?(@bob_actor, "Member")
+    assert_not site_actor.has_relation_with?(@bob_actor, "Silenced")
+    assert @bob_actor.can?(:create, :post, site_actor)
+  end
+
+  test "losing publish project permission automatically reverts public projects to draft" do
+    site_actor = Site.instance.actor
+    GroupMembershipService.new(site_actor, @bob_actor).add(role: "professional")
+    assert @bob_actor.can?(:publish, :project, site_actor)
+
+    profile = @bob_actor.actorable
+    project = profile.projects.create!(title: "Meu Portfólio", about: "<p>Sobre</p>", visibility: :public)
+    assert project.visibility_public?
+
+    # Downgrade to member (who cannot publish projects)
+    GroupMembershipService.new(site_actor, @bob_actor).add(role: "member")
+    assert_not @bob_actor.can?(:publish, :project, site_actor)
+
+    project.reload
+    assert project.visibility_draft?, "Project should revert to draft when publisher loses publish permission"
+  end
+
   private
 
   def create_group_with_admin(admin_actor)

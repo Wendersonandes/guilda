@@ -15,6 +15,8 @@ class Admin::RolesController < ApplicationController
     @admins = @site_actor.contacts_for("admin").includes(:avatar_attachment).to_a
     @editors = @site_actor.contacts_for("editor").includes(:avatar_attachment).to_a
     @moderators = @site_actor.contacts_for("moderator").includes(:avatar_attachment).to_a
+    @professionals = @site_actor.contacts_for("professional").includes(:avatar_attachment).to_a
+    @testers = @site_actor.contacts_for("tester").includes(:avatar_attachment).to_a
     @silenced = @site_actor.contacts_for("silenced").includes(:avatar_attachment).to_a
     @banned = @site_actor.contacts_for("banned").includes(:avatar_attachment).to_a
     @total_members = @site_actor.contacts_for("member").count
