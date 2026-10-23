@@ -76,6 +76,8 @@ pt-BR:
     notifications_all_read: "Todas as notificações foram marcadas como lidas."
     role_assigned: "Papel atribuído."
     role_updated: "Papel atualizado."
+    role_removed: "Papel removido."
+    admin_role_protected: "O papel de Administrador só pode ser gerenciado via linha de comando ou console."
     invite_sent: "Convite enviado."
     already_member: "Você já é membro."
     request_already_pending: "Sua solicitação já está pendente."
@@ -617,6 +619,59 @@ pt-BR:
         title: "Reenviar desbloqueio"
         subtitle: "Receba um novo e-mail de desbloqueio"
         submit: "Reenviar desbloqueio"
+  # === Admin ==================================================================
+  admin:
+    roles:
+      index:
+        title: "Papéis da Plataforma"
+        subtitle: "Gerencie as permissões globais de %{site_name} · %{count} membros no total"
+        search_panel_title: "Buscar e alterar papel do usuário"
+        search_label: "Buscar membros da plataforma"
+        search_placeholder: "Buscar membros da plataforma por nome..."
+        current_role: "Papel atual:"
+        current_roles: "Papéis atuais:"
+        no_role: "Sem papel especial atribuído"
+        no_results: "Nenhum membro encontrado"
+        save: "Salvar"
+        save_role_for: "Salvar papel de %{name}"
+        add_role: "Adicionar papel"
+        add_role_for: "Adicionar papel para %{name}"
+        remove_role: "Remover papel"
+        remove_role_confirm: "Tem certeza de que deseja remover o papel de %{role} de %{name}?"
+        select_role_label: "Alterar papel de %{name}"
+        new_role_label: "Novo papel para %{name}"
+        managed_via_cli: "Gerenciado via console"
+        empty_title: "Sem papéis especiais"
+        empty_subtitle: "Todos os usuários possuem as permissões padrão de membro."
+      roles:
+        admin:
+          singular: "Administrador"
+          plural: "Administradores"
+        editor:
+          singular: "Editor"
+          plural: "Editores"
+        moderator:
+          singular: "Moderador"
+          plural: "Moderadores"
+        professional:
+          singular: "Profissional"
+          plural: "Profissionais"
+        tester:
+          singular: "Tester"
+          plural: "Testers"
+        member:
+          singular: "Membro"
+          plural: "Membros"
+        silenced:
+          singular: "Silenciado"
+          plural: "Silenciados"
+        banned:
+          singular: "Banido"
+          plural: "Banidos"
+        none:
+          singular: "Sem papel"
+          plural: "Sem papéis"
+
     shared:
       links:
         or: "ou"

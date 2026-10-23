@@ -2,7 +2,7 @@ Rails.application.routes.draw do
   devise_for :users
 
   # Core social — perfil e grupos
-  resources :profile_steps, only: [:show, :update]
+  resources :profile_steps, only: [ :show, :update ]
   resources :actors, only: [ :index, :show ]
   resource :my_profile, path: "my/profile", only: [ :show, :edit, :update ], controller: "profiles"
   resources :profiles, only: [ :index ]
@@ -79,7 +79,7 @@ Rails.application.routes.draw do
     resources :permissions, only: [ :index ]
     resources :ties, only: [ :index, :show ]
     resources :audiences, only: [ :index ]
-    resources :roles, only: [ :index, :create, :update ]
+    resources :roles, only: [ :index, :create, :update, :destroy ]
   end
 
   # Feature flags dashboard (Flipper) — restricted to signed-in site admins via AdminConstraint.

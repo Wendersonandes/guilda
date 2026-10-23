@@ -17,6 +17,10 @@ class Admin::RolePolicy < ApplicationPolicy
     role_manager?
   end
 
+  def destroy?
+    role_manager?
+  end
+
   private
 
   # Whether the acting actor may manage site roles (+update role+).

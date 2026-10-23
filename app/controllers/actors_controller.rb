@@ -34,21 +34,25 @@ class ActorsController < ApplicationController
                     .select("contacts.receiver_id", "relations.name as relation_name")
 
           actor_roles = {}
+          actor_all_roles = Hash.new { |h, k| h[k] = [] }
           ties.each do |tie|
-            current = actor_roles[tie.receiver_id]
             new_role = tie.relation_name.downcase
+            actor_all_roles[tie.receiver_id] << new_role unless actor_all_roles[tie.receiver_id].include?(new_role)
+            current = actor_roles[tie.receiver_id]
             if current.nil? || (ROLE_PRIORITY.index(new_role) || 99) < (ROLE_PRIORITY.index(current) || 99)
               actor_roles[tie.receiver_id] = new_role
             end
           end
 
           render json: @actors.map { |a|
+            roles_for_actor = actor_all_roles[a.id].sort_by { |r| ROLE_PRIORITY.index(r) || 99 }
             {
               id: a.id,
               name: a.name,
               slug: a.slug,
               type: a.actorable_type,
               role: actor_roles[a.id] || "none",
+              roles: roles_for_actor,
               avatar_url: a.avatar.attached? ? rails_representation_path(a.avatar.variant(:thumb)) : nil
             }
           }

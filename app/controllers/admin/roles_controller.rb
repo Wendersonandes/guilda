@@ -6,8 +6,11 @@
 # @see Admin::RolePolicy
 # @see Relation::LocalAdmin
 class Admin::RolesController < ApplicationController
+  PROTECTED_ROLES = %w[admin].freeze
+
   before_action :set_site_actor
-  skip_after_action :verify_policy_scoped, only: [ :index, :create ]
+  before_action :ensure_not_admin_role, only: [ :create, :update, :destroy ]
+  skip_after_action :verify_policy_scoped, only: [ :index, :create, :destroy ]
 
   # Lists members of the site grouped by role. Authorized via +Admin::RolePolicy#index?+.
   def index
@@ -22,12 +25,12 @@ class Admin::RolesController < ApplicationController
     @total_members = @site_actor.contacts_for("member").count
   end
 
-  # Assigns a role to an actor on the site, delegating to {GroupMembershipService#add}.
+  # Assigns a role to an actor additively on the site, delegating to {GroupMembershipService#add_role}.
   # Authorized via +Admin::RolePolicy#create?+.
   def create
     authorize @site_actor, policy_class: Admin::RolePolicy
     member = find_actor(params[:actor_id])
-    GroupMembershipService.new(@site_actor, member).add(role: params[:to_role] || "member")
+    GroupMembershipService.new(@site_actor, member).add_role(params[:to_role] || "member")
     redirect_to admin_roles_path, notice: t("flash.role_assigned")
   end
 
@@ -43,10 +46,26 @@ class Admin::RolesController < ApplicationController
     redirect_to admin_roles_path, notice: t("flash.role_updated")
   end
 
+  # Removes a specific role from an actor on the site, delegating to {GroupMembershipService#remove}.
+  # Authorized via +Admin::RolePolicy#destroy?+.
+  def destroy
+    authorize @site_actor, policy_class: Admin::RolePolicy
+    member = find_actor(params[:id])
+    GroupMembershipService.new(@site_actor, member).remove(role: params[:role])
+    redirect_to admin_roles_path, notice: t("flash.role_removed")
+  end
+
   private
 
   def set_site_actor
     @site_actor = Site.instance.actor
+  end
+
+  def ensure_not_admin_role
+    roles = [ params[:to_role], params[:from_role], params[:role] ].compact.map { |r| r.to_s.downcase }
+    if (roles & PROTECTED_ROLES).any?
+      redirect_to admin_roles_path, alert: t("flash.admin_role_protected")
+    end
   end
 
   def find_actor(value)

@@ -1,44 +1,135 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["query", "results", "actorSlug", "actorName", "currentRole", "currentRoleLabel", "newRole", "detail", "saveBtn"]
+  static targets = [
+    "query",
+    "results",
+    "actorSlug",
+    "actorName",
+    "currentRolesContainer",
+    "newRole",
+    "detail",
+    "form",
+    "saveBtn"
+  ]
+
+  static values = {
+    roles: Object,
+    noRoleText: { type: String, default: "Sem papel especial atribuído" },
+    noResultsText: { type: String, default: "Nenhum membro encontrado" },
+    removeConfirmTemplate: { type: String, default: "Tem certeza de que deseja remover o papel de __ROLE__ de __NAME__?" },
+    removeRoleText: { type: String, default: "Remover papel" },
+    managedViaCliText: { type: String, default: "Gerenciado via console" },
+    url: { type: String, default: "/actors.json" }
+  }
 
   connect() {
     this.selectedActor = null
+    this.abortController = null
+    this.debounceTimer = null
+    this.boundClickOutside = this.clickOutside.bind(this)
+    document.addEventListener("click", this.boundClickOutside)
+  }
+
+  disconnect() {
+    if (this.debounceTimer) clearTimeout(this.debounceTimer)
+    if (this.abortController) this.abortController.abort()
+    document.removeEventListener("click", this.boundClickOutside)
   }
 
   search() {
     const q = this.queryTarget.value.trim()
+
+    if (this.debounceTimer) clearTimeout(this.debounceTimer)
+
     if (q.length < 2) {
-      this.resultsTarget.classList.add("hidden")
+      this.closeResults()
       this.detailTarget.classList.add("hidden")
       return
     }
 
-    fetch(`/actors.json?q=${encodeURIComponent(q)}&include_site_roles=true`)
-      .then(r => r.json())
-      .then(actors => {
-        if (actors.length === 0) {
-          this.resultsTarget.innerHTML = '<p class="px-3 py-2 text-sm text-gray-400">No results</p>'
-        } else {
-          this.resultsTarget.innerHTML = actors.map(a => {
-            const roleLabel = a.role === "none" ? "No role" : a.role.charAt(0).toUpperCase() + a.role.slice(1)
-            return `
-              <button type="button"
-                      data-action="click->role-search#select"
-                      data-slug="${a.slug}"
-                      data-name="${a.name}"
-                      data-role="${a.role}"
-                      class="w-full text-left px-3 py-2 text-sm hover:bg-blue-50 flex items-center gap-2">
-                <span class="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center text-xs font-bold text-gray-500">${a.name[0] || "?"}</span>
-                <span>${a.name}</span>
-                <span class="text-xs text-gray-400 ml-auto">${roleLabel}</span>
-              </button>
-            `
-          }).join("")
-        }
-        this.resultsTarget.classList.remove("hidden")
+    this.debounceTimer = setTimeout(() => {
+      this.performSearch(q)
+    }, 250)
+  }
+
+  performSearch(query) {
+    if (this.abortController) this.abortController.abort()
+    this.abortController = new AbortController()
+
+    const searchUrl = `${this.urlValue}?q=${encodeURIComponent(query)}&include_site_roles=true`
+
+    fetch(searchUrl, {
+      signal: this.abortController.signal,
+      headers: { "Accept": "application/json" }
+    })
+      .then((r) => r.json())
+      .then((actors) => {
+        this.renderResults(actors)
       })
+      .catch((error) => {
+        if (error.name !== "AbortError") {
+          console.error("Role search failed:", error)
+        }
+      })
+  }
+
+  renderResults(actors) {
+    this.resultsTarget.replaceChildren()
+
+    if (actors.length === 0) {
+      const emptyItem = document.createElement("p")
+      emptyItem.className = "px-3.5 py-2.5 text-xs text-zinc-500 italic"
+      emptyItem.textContent = this.noResultsTextValue
+      this.resultsTarget.appendChild(emptyItem)
+    } else {
+      actors.forEach((a) => {
+        const btn = document.createElement("button")
+        btn.type = "button"
+        btn.setAttribute("role", "option")
+        btn.dataset.action = "click->role-search#select"
+        btn.dataset.slug = a.slug
+        btn.dataset.name = a.name
+        btn.dataset.role = a.role
+        btn.dataset.roles = JSON.stringify(a.roles || (a.role && a.role !== "none" ? [a.role] : []))
+        btn.className = "w-full text-left px-3.5 py-2.5 text-xs hover:bg-stone-50 flex items-center gap-2.5 transition-colors cursor-pointer border-0 bg-transparent text-charcoal focus-visible:outline-none focus-visible:bg-stone-100"
+
+        const avatarWrapper = document.createElement("div")
+        avatarWrapper.className = "w-6 h-6 rounded-full bg-stone-100 border border-stone-200 overflow-hidden flex items-center justify-center text-[10px] font-semibold text-charcoal flex-shrink-0"
+
+        if (a.avatar_url) {
+          const img = document.createElement("img")
+          img.src = a.avatar_url
+          img.alt = ""
+          img.className = "w-full h-full object-cover"
+          avatarWrapper.appendChild(img)
+        } else {
+          avatarWrapper.textContent = (a.name || "?").charAt(0).toUpperCase()
+        }
+
+        const nameSpan = document.createElement("span")
+        nameSpan.className = "font-medium text-charcoal truncate"
+        nameSpan.textContent = a.name
+
+        const rolesList = a.roles && a.roles.length > 0 ? a.roles : (a.role && a.role !== "none" ? [a.role] : [])
+        const roleLabel = rolesList.length > 0
+          ? rolesList.map(r => this.roleLabelFor(r)).join(", ")
+          : this.noRoleTextValue
+
+        const roleSpan = document.createElement("span")
+        roleSpan.className = "text-[11px] text-zinc-500 ml-auto flex-shrink-0 max-w-[160px] truncate"
+        roleSpan.textContent = roleLabel
+
+        btn.appendChild(avatarWrapper)
+        btn.appendChild(nameSpan)
+        btn.appendChild(roleSpan)
+
+        this.resultsTarget.appendChild(btn)
+      })
+    }
+
+    this.resultsTarget.classList.remove("hidden")
+    this.queryTarget.setAttribute("aria-expanded", "true")
   }
 
   select(event) {
@@ -47,62 +138,131 @@ export default class extends Controller {
     this.queryTarget.value = btn.dataset.name
     this.actorNameTarget.textContent = btn.dataset.name
     this.actorSlugTarget.value = btn.dataset.slug
-    this.currentRoleTarget.value = btn.dataset.role
 
-    const roleLabel = btn.dataset.role === "none" ? "None (not assigned)" : btn.dataset.role.charAt(0).toUpperCase() + btn.dataset.role.slice(1)
-    this.currentRoleLabelTarget.textContent = roleLabel
-
-    if (btn.dataset.role !== "none") {
-      this.newRoleTarget.value = btn.dataset.role
-    } else {
-      this.newRoleTarget.value = "member"
+    let roles = []
+    try {
+      roles = JSON.parse(btn.dataset.roles || "[]")
+    } catch {
+      roles = btn.dataset.role && btn.dataset.role !== "none" ? [btn.dataset.role] : []
     }
 
-    this.resultsTarget.classList.add("hidden")
+    this.renderCurrentRoles(roles, btn.dataset.name)
+
+    const assignableRoles = Object.keys(this.hasRolesValue ? this.rolesValue : {})
+      .filter(r => r !== "admin")
+    const availableRole = assignableRoles.find(r => !roles.includes(r)) || "member"
+    this.newRoleTarget.value = availableRole
+
+    this.closeResults()
     this.detailTarget.classList.remove("hidden")
   }
 
-  save() {
-    if (!this.selectedActor) return
+  renderCurrentRoles(roles, actorName) {
+    if (!this.hasCurrentRolesContainerTarget) return
 
-    const hasRole = this.currentRoleTarget.value !== "none"
-    const form = document.createElement("form")
-    form.method = "POST"
-    form.style.display = "none"
+    this.currentRolesContainerTarget.replaceChildren()
 
-    const csrfToken = document.querySelector("[name='csrf-token']")?.content
-    if (csrfToken) {
-      const csrfInput = document.createElement("input")
-      csrfInput.type = "hidden"
-      csrfInput.name = "authenticity_token"
-      csrfInput.value = csrfToken
-      form.appendChild(csrfInput)
+    if (roles.length === 0) {
+      const span = document.createElement("span")
+      span.className = "text-xs text-zinc-500 italic"
+      span.textContent = this.noRoleTextValue
+      this.currentRolesContainerTarget.appendChild(span)
+      return
     }
 
-    if (hasRole) {
-      form.action = this.saveBtnTarget.dataset.submitUrl + this.selectedActor
-      ;[
-        ["_method", "patch"],
-        ["from_role", this.currentRoleTarget.value],
-        ["to_role", this.newRoleTarget.value]
-      ].forEach(pair => appendInput(form, pair))
-    } else {
-      form.action = this.saveBtnTarget.dataset.submitUrl.replace(/\/$/, "")
-      ;[
-        ["actor_id", this.selectedActor],
-        ["to_role", this.newRoleTarget.value]
-      ].forEach(pair => appendInput(form, pair))
-    }
+    roles.forEach((role) => {
+      if (role === "admin") {
+        const badge = document.createElement("span")
+        badge.className = "inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-md bg-stone-100 text-charcoal border border-stone-200"
 
-    document.body.appendChild(form)
-    form.submit()
+        const label = document.createElement("span")
+        label.textContent = this.roleLabelFor(role)
+        badge.appendChild(label)
+
+        const lockIcon = document.createElement("span")
+        lockIcon.className = "inline-flex items-center text-zinc-400 ml-0.5"
+        lockIcon.title = this.managedViaCliTextValue
+        lockIcon.setAttribute("aria-label", this.managedViaCliTextValue)
+        lockIcon.innerHTML = `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>`
+        badge.appendChild(lockIcon)
+
+        this.currentRolesContainerTarget.appendChild(badge)
+        return
+      }
+
+      const badge = document.createElement("span")
+      badge.className = "inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-md bg-stone-100 text-charcoal border border-stone-200"
+
+      const label = document.createElement("span")
+      label.textContent = this.roleLabelFor(role)
+      badge.appendChild(label)
+
+      const deleteForm = document.createElement("form")
+      deleteForm.action = `/admin/roles/${encodeURIComponent(this.selectedActor)}`
+      deleteForm.method = "post"
+      deleteForm.className = "inline-flex items-center"
+
+      const confirmMsg = this.removeConfirmTemplateValue
+        .replace("__ROLE__", this.roleLabelFor(role))
+        .replace("__NAME__", actorName)
+      deleteForm.dataset.turboConfirm = confirmMsg
+
+      const methodInput = document.createElement("input")
+      methodInput.type = "hidden"
+      methodInput.name = "_method"
+      methodInput.value = "delete"
+      deleteForm.appendChild(methodInput)
+
+      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content
+      if (csrfToken) {
+        const tokenInput = document.createElement("input")
+        tokenInput.type = "hidden"
+        tokenInput.name = "authenticity_token"
+        tokenInput.value = csrfToken
+        deleteForm.appendChild(tokenInput)
+      }
+
+      const roleInput = document.createElement("input")
+      roleInput.type = "hidden"
+      roleInput.name = "role"
+      roleInput.value = role
+      deleteForm.appendChild(roleInput)
+
+      const delBtn = document.createElement("button")
+      delBtn.type = "submit"
+      delBtn.className = "text-zinc-400 hover:text-red-600 transition-colors p-0.5 ml-0.5 rounded cursor-pointer border-0 bg-transparent inline-flex items-center"
+      delBtn.title = this.removeRoleTextValue
+      delBtn.setAttribute("aria-label", `${this.removeRoleTextValue} ${this.roleLabelFor(role)} de ${actorName}`)
+      delBtn.innerHTML = `<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>`
+      deleteForm.appendChild(delBtn)
+
+      badge.appendChild(deleteForm)
+      this.currentRolesContainerTarget.appendChild(badge)
+    })
   }
-}
 
-function appendInput(form, [name, value]) {
-  const input = document.createElement("input")
-  input.type = "hidden"
-  input.name = name
-  input.value = value
-  form.appendChild(input)
+  closeResults() {
+    this.resultsTarget.classList.add("hidden")
+    this.queryTarget.setAttribute("aria-expanded", "false")
+  }
+
+  clickOutside(event) {
+    if (!this.element.contains(event.target)) {
+      this.closeResults()
+    }
+  }
+
+  handleKeydown(event) {
+    if (event.key === "Escape") {
+      this.closeResults()
+    }
+  }
+
+  roleLabelFor(roleKey) {
+    if (!roleKey || roleKey === "none") {
+      return this.noRoleTextValue
+    }
+    const rolesMap = this.hasRolesValue ? this.rolesValue : {}
+    return rolesMap[roleKey] || (roleKey.charAt(0).toUpperCase() + roleKey.slice(1))
+  }
 }

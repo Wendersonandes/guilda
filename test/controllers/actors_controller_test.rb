@@ -102,5 +102,6 @@ class ActorsControllerTest < ActionDispatch::IntegrationTest
     json = response.parsed_body
     assert_equal 1, json.size
     assert_equal "professional", json.first["role"]
+    assert_equal [ "professional", "member" ], json.first["roles"]
   end
 end

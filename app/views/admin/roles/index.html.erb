@@ -1,114 +1,184 @@
-<%= content_for :title, "Papéis da Plataforma" %>
+<% content_for :no_sidebar, true %>
+<%= content_for :title, t(".title") %>
 
-<div class="max-w-3xl mx-auto space-y-6" data-controller="role-search">
-  <div class="flex items-center justify-between">
-    <div>
-      <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Papéis da Plataforma</h1>
-      <p class="text-xs text-gray-500 mt-0.5">
-        Gerencie as permissões globais de <strong><%= Site.instance.name %></strong>
-        &middot; <strong><%= @total_members %></strong> membros no total
+<% all_role_options = [
+     [t("admin.roles.roles.admin.singular"), "admin"],
+     [t("admin.roles.roles.editor.singular"), "editor"],
+     [t("admin.roles.roles.moderator.singular"), "moderator"],
+     [t("admin.roles.roles.professional.singular"), "professional"],
+     [t("admin.roles.roles.tester.singular"), "tester"],
+     [t("admin.roles.roles.member.singular"), "member"],
+     [t("admin.roles.roles.silenced.singular"), "silenced"],
+     [t("admin.roles.roles.banned.singular"), "banned"]
+   ] %>
+
+<% role_options_map = all_role_options.to_h { |label, key| [key, label] } %>
+<% assignable_role_options = all_role_options.reject { |_, key| key == "admin" } %>
+
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+  <!-- Main Column: Roles Management -->
+  <div class="lg:col-span-8 space-y-6 min-w-0"
+       data-controller="role-search"
+       data-role-search-roles-value="<%= role_options_map.to_json %>"
+       data-role-search-no-role-text-value="<%= t('.no_role') %>"
+       data-role-search-no-results-text-value="<%= t('.no_results') %>"
+       data-role-search-managed-via-cli-text-value="<%= t('.managed_via_cli') %>"
+       data-role-search-remove-confirm-template-value="<%= t('.remove_role_confirm', role: '__ROLE__', name: '__NAME__') %>"
+       data-role-search-remove-role-text-value="<%= t('.remove_role') %>"
+       data-role-search-url-value="<%= actors_path(format: :json) %>">
+
+    <!-- Header -->
+    <div class="pb-2 border-b border-stone-border space-y-1">
+      <h1 class="text-2xl sm:text-3xl font-serif font-bold text-charcoal tracking-tight"><%= t(".title") %></h1>
+      <p class="text-sm text-zinc-500 leading-relaxed">
+        <%= t(".subtitle", site_name: Site.instance.name, count: @total_members) %>
       </p>
     </div>
-  </div>
 
-  <!-- User Role Search Panel -->
-  <div class="bg-gray-50/50 border border-gray-200/80 rounded-xl p-5 shadow-sm space-y-3">
-    <h3 class="text-sm font-semibold text-gray-900 flex items-center gap-1.5">
-      <i data-lucide="search" class="w-4 h-4 text-blue-600"></i>
-      <span>Buscar e alterar papel do usuário</span>
-    </h3>
-    <div class="relative">
-      <input type="text"
-             data-role-search-target="query"
-             data-action="input->role-search#search"
-             placeholder="Buscar membros da plataforma por nome..."
-             class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
-             autocomplete="off">
-      <div data-role-search-target="results"
-           class="absolute z-10 w-full bg-white border border-gray-200 rounded-lg shadow-lg mt-1 hidden max-h-48 overflow-y-auto divide-y divide-gray-50">
-      </div>
-    </div>
-    <input type="hidden" data-role-search-target="actorSlug">
-    <input type="hidden" data-role-search-target="currentRole">
-    
-    <div data-role-search-target="detail" class="mt-3 hidden">
-      <div class="bg-white border border-gray-200 rounded-lg px-4 py-3 flex items-center justify-between shadow-sm">
-        <div>
-          <p class="text-sm font-semibold text-gray-900" data-role-search-target="actorName"></p>
-          <p class="text-xs text-gray-400 font-medium">Papel atual: <span class="font-bold text-gray-600" data-role-search-target="currentRoleLabel"></span></p>
-        </div>
-        <div class="flex items-center gap-2">
-          <select data-role-search-target="newRole"
-                  class="text-xs border border-gray-300 rounded px-2.5 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-            <option value="admin">Administrador</option>
-            <option value="editor">Editor</option>
-            <option value="moderator">Moderador</option>
-            <option value="professional">Profissional</option>
-            <option value="tester">Tester</option>
-            <option value="member">Membro</option>
-            <option value="silenced">Silenciado</option>
-            <option value="banned">Banido</option>
-          </select>
-          <button data-action="click->role-search#save"
-                  data-role-search-target="saveBtn"
-                  data-submit-url="<%= admin_roles_path %>/"
-                  class="inline-flex items-center gap-1 text-xs bg-blue-600 hover:bg-blue-700 text-white font-medium px-3 py-1.5 rounded-md shadow-sm transition-colors cursor-pointer border-0">
-            <i data-lucide="save" class="w-3.5 h-3.5"></i>
-            <span>Salvar</span>
-          </button>
+    <!-- User Role Search Panel -->
+    <div class="bg-white border border-stone-border rounded-lg p-4 sm:p-5 space-y-3.5">
+      <h2 class="text-sm font-semibold text-charcoal flex items-center gap-2">
+        <i data-lucide="search" aria-hidden="true" class="w-4 h-4 text-zinc-500"></i>
+        <span><%= t(".search_panel_title") %></span>
+      </h2>
+
+      <div class="relative" data-action="keydown->role-search#handleKeydown">
+        <label for="role_search_query" class="sr-only"><%= t(".search_label") %></label>
+        <input type="text"
+               id="role_search_query"
+               data-role-search-target="query"
+               data-action="input->role-search#search"
+               placeholder="<%= t('.search_placeholder') %>"
+               role="combobox"
+               aria-autocomplete="list"
+               aria-expanded="false"
+               aria-controls="role_search_results"
+               class="w-full border border-stone-300 rounded-lg px-3 py-2 text-sm bg-white text-charcoal placeholder:text-zinc-400 focus:outline-none focus:border-charcoal focus:ring-1 focus:ring-charcoal transition-colors"
+               autocomplete="off">
+
+        <div id="role_search_results"
+             role="listbox"
+             aria-live="polite"
+             data-role-search-target="results"
+             class="absolute z-10 w-full bg-white border border-stone-border rounded-lg shadow-md mt-1 hidden max-h-56 overflow-y-auto divide-y divide-stone-100">
         </div>
       </div>
-    </div>
-  </div>
 
-  <% sections = [
-       { role: "admin",        label: "Administradores", items: @admins,        color: "bg-blue-50 text-blue-700 border-blue-100" },
-       { role: "editor",       label: "Editores",        items: @editors,       color: "bg-gray-100 text-gray-700 border-gray-200" },
-       { role: "moderator",    label: "Moderadores",     items: @moderators,    color: "bg-green-50 text-green-700 border-green-100" },
-       { role: "professional", label: "Profissionais",   items: @professionals, color: "bg-purple-50 text-purple-700 border-purple-100" },
-       { role: "tester",       label: "Testers",         items: @testers,       color: "bg-indigo-50 text-indigo-700 border-indigo-100" },
-       { role: "silenced",     label: "Silenciados",     items: @silenced,      color: "bg-yellow-50 text-yellow-750 border-yellow-200/50" },
-       { role: "banned",       label: "Banidos",         items: @banned,        color: "bg-red-50 text-red-700 border-red-100" }
-     ] %>
-
-  <% sections.each do |section| %>
-    <% next if section[:items].none? %>
-    <div class="space-y-3">
-      <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-1">
-        <%= section[:label] %> (<%= section[:items].count %>)
-      </h3>
-      <div class="space-y-2">
-        <% section[:items].each do |actor| %>
-          <div class="flex items-center justify-between bg-white border border-gray-200/60 rounded-xl p-4 shadow-sm hover:border-gray-300 transition-all duration-200">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-500 font-bold text-sm border border-gray-200 flex-shrink-0">
-                <%= actor.name[0].upcase %>
+      <!-- Detail Box when user is selected from search -->
+      <div data-role-search-target="detail" class="mt-3 hidden">
+        <div class="bg-stone-50 border border-stone-border rounded-lg p-3.5 sm:p-4 space-y-3">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2.5 border-b border-stone-200/60">
+            <div class="min-w-0">
+              <p class="text-sm font-semibold text-charcoal truncate" data-role-search-target="actorName"></p>
+              <div class="flex flex-wrap items-center gap-2 mt-1">
+                <span class="text-xs text-zinc-500 font-normal"><%= t(".current_roles") %></span>
+                <div data-role-search-target="currentRolesContainer" class="flex flex-wrap items-center gap-1.5"></div>
               </div>
-              <div>
-                <p class="text-sm font-semibold text-gray-900"><%= link_to actor.name, public_path_for(actor), class: "hover:text-blue-600 transition-colors" %></p>
-                <span class="text-[10px] font-medium px-2 py-0.5 rounded border <%= section[:color] %>"><%= section[:label].singularize %></span>
-              </div>
-            </div>
-            <div class="flex items-center gap-2">
-              <%= form_with url: admin_role_path(actor), method: :patch, class: "flex items-center gap-1.5" do |f| %>
-                <%= f.hidden_field :from_role, value: section[:role] %>
-                <%= f.select :to_role, [["Administrador", "admin"], ["Editor", "editor"], ["Moderador", "moderator"], ["Profissional", "professional"], ["Tester", "tester"], ["Membro", "member"], ["Silenciado", "silenced"], ["Banido", "banned"]], { selected: section[:role] }, { class: "text-xs border border-gray-300 rounded px-2 py-1 bg-white focus:outline-none" } %>
-                <%= f.submit "Salvar", class: "text-xs bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1.2 rounded-md font-medium cursor-pointer border-0 shadow-sm transition-colors" %>
-              <% end %>
             </div>
           </div>
-        <% end %>
-      </div>
-    </div>
-  <% end %>
 
-  <% if sections.all? { |s| s[:items].none? } %>
-    <div class="text-center text-gray-500 py-16 bg-white rounded-xl border border-gray-200/80 p-8 shadow-sm">
-      <div class="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-3 border border-gray-100">
-        <i data-lucide="shield-alert" class="w-6 h-6 text-gray-400"></i>
+          <%= form_with url: admin_roles_path, method: :post, html: { data: { role_search_target: "form" }, class: "flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1" } do |f| %>
+            <%= hidden_field_tag :actor_id, "", data: { role_search_target: "actorSlug" } %>
+
+            <div class="flex items-center gap-2 flex-1">
+              <label for="search_new_role" class="text-xs font-medium text-zinc-600 whitespace-nowrap"><%= t(".add_role") %>:</label>
+              <%= select_tag :to_role, options_for_select(assignable_role_options), id: "search_new_role", data: { role_search_target: "newRole" }, class: "text-xs border border-stone-300 rounded-lg px-2.5 py-1.5 bg-white text-charcoal focus:outline-none focus:border-charcoal focus:ring-1 focus:ring-charcoal transition-colors min-h-[36px] max-w-xs w-full" %>
+            </div>
+
+            <div class="flex items-center gap-2 flex-shrink-0 self-end sm:self-auto">
+              <%= button_tag type: :submit, data: { role_search_target: "saveBtn" }, class: "inline-flex items-center gap-1.5 text-xs bg-charcoal hover:bg-zinc-800 text-white font-medium px-3.5 py-1.5 rounded-lg transition-colors cursor-pointer border-0 min-h-[36px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-charcoal focus-visible:ring-offset-1" do %>
+                <i data-lucide="plus" aria-hidden="true" class="w-3.5 h-3.5"></i>
+                <span><%= t(".add_role") %></span>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
       </div>
-      <h3 class="text-base font-semibold text-gray-900">Sem papéis especiais</h3>
-      <p class="text-sm text-gray-500 mt-1 max-w-sm mx-auto">Todos os usuários possuem as permissões padrão de membro.</p>
     </div>
-  <% end %>
+
+    <% sections = [
+         { role: "admin",        items: @admins,        color: "bg-charcoal text-white" },
+         { role: "editor",       items: @editors,       color: "bg-stone-100 text-zinc-800 border border-stone-200" },
+         { role: "moderator",    items: @moderators,    color: "bg-stone-100 text-zinc-800 border border-stone-200" },
+         { role: "professional", items: @professionals, color: "bg-stone-100 text-zinc-800 border border-stone-200" },
+         { role: "tester",       items: @testers,       color: "bg-stone-100 text-zinc-700 border border-stone-200" },
+         { role: "silenced",     items: @silenced,      color: "bg-amber-50 text-amber-800 border border-amber-200" },
+         { role: "banned",       items: @banned,        color: "bg-red-50 text-red-800 border border-red-200" }
+       ] %>
+
+    <% sections.each do |section| %>
+      <% next if section[:items].none? %>
+      <div class="space-y-3">
+        <h2 class="text-xs font-semibold text-zinc-500 uppercase tracking-wider px-1">
+          <%= t("admin.roles.roles.#{section[:role]}.plural") %> (<%= section[:items].count %>)
+        </h2>
+        <div class="space-y-2">
+          <% section[:items].each do |actor| %>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white border border-stone-border rounded-lg p-3.5 sm:p-4 hover:border-stone-400/80 transition-colors">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="w-10 h-10 rounded-full bg-stone-100 border border-stone-200 overflow-hidden flex items-center justify-center text-charcoal font-semibold text-sm flex-shrink-0">
+                  <% if actor.avatar.attached? %>
+                    <%= image_tag actor.avatar.variant(:thumb), alt: "", loading: "lazy", decoding: "async", class: "w-full h-full object-cover" %>
+                  <% else %>
+                    <span><%= actor.name.to_s.first&.upcase || "?" %></span>
+                  <% end %>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <p class="text-sm font-semibold text-charcoal truncate">
+                    <%= link_to actor.name, public_path_for(actor), class: "hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-charcoal rounded transition-colors" %>
+                  </p>
+                  <div class="mt-1">
+                    <span class="inline-flex items-center text-xs font-medium px-2.5 py-0.5 rounded-full <%= section[:color] %>">
+                      <%= t("admin.roles.roles.#{section[:role]}.singular") %>
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <% if section[:role] == "admin" %>
+                <div class="flex items-center gap-1.5 text-xs text-zinc-500 bg-stone-100 border border-stone-200 px-3 py-1.5 rounded-lg min-h-[36px] self-end sm:self-auto">
+                  <i data-lucide="lock" aria-hidden="true" class="w-3.5 h-3.5 text-zinc-400"></i>
+                  <span><%= t("admin.roles.index.managed_via_cli") %></span>
+                </div>
+              <% else %>
+                <div class="flex items-center gap-2 flex-shrink-0 self-end sm:self-auto">
+                  <%= form_with url: admin_role_path(actor), method: :patch, class: "flex items-center gap-2" do |f| %>
+                    <%= f.hidden_field :from_role, value: section[:role] %>
+                    <label for="to_role_<%= actor.id %>_<%= section[:role] %>" class="sr-only">
+                      <%= t("admin.roles.index.select_role_label", name: actor.name) %>
+                    </label>
+                    <%= f.select :to_role, assignable_role_options, { selected: section[:role] }, { id: "to_role_#{actor.id}_#{section[:role]}", class: "text-xs border border-stone-300 rounded-lg px-2.5 py-1.5 bg-white text-charcoal focus:outline-none focus:border-charcoal focus:ring-1 focus:ring-charcoal transition-colors min-h-[36px]" } %>
+                    <%= f.submit t("admin.roles.index.save"), aria: { label: t("admin.roles.index.save_role_for", name: actor.name) }, class: "text-xs bg-charcoal hover:bg-zinc-800 text-white px-3.5 py-1.5 rounded-lg font-medium cursor-pointer border-0 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-charcoal focus-visible:ring-offset-1 min-h-[36px]" %>
+                  <% end %>
+
+                  <%= button_to admin_role_path(actor, role: section[:role]),
+                                method: :delete,
+                                data: { turbo_confirm: t("admin.roles.index.remove_role_confirm", role: t("admin.roles.roles.#{section[:role]}.singular"), name: actor.name) },
+                                aria: { label: t("admin.roles.index.remove_role") },
+                                class: "p-2 text-zinc-400 hover:text-red-600 rounded-lg hover:bg-stone-100 transition-colors min-h-[36px] min-w-[36px] inline-flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500",
+                                title: t("admin.roles.index.remove_role") do %>
+                    <i data-lucide="trash-2" aria-hidden="true" class="w-4 h-4"></i>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <% if sections.all? { |s| s[:items].none? } %>
+      <div class="text-center text-zinc-500 px-6 py-16 bg-white rounded-lg border border-stone-border">
+        <div class="w-12 h-12 bg-stone-50 rounded-full flex items-center justify-center mx-auto mb-3 border border-stone-200">
+          <i data-lucide="shield-alert" aria-hidden="true" class="w-6 h-6 text-zinc-400"></i>
+        </div>
+        <h2 class="text-base font-semibold text-charcoal"><%= t(".empty_title") %></h2>
+        <p class="text-sm text-zinc-500 mt-1 max-w-sm mx-auto"><%= t(".empty_subtitle") %></p>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Right Sidebar Column (Desktop) -->
+  <aside class="hidden lg:block lg:col-span-4 min-w-0">
+    <%= render "shared/right_sidebar" %>
+  </aside>
 </div>
