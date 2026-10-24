@@ -73,6 +73,7 @@ class Actor < ApplicationRecord
 
   has_one_attached :cover_image do |attachable|
     attachable.variant :thumb, resize_to_fill: [ 800, 300 ]
+    attachable.variant :banner, resize_to_fill: [ 1600, 600 ]
   end
 
   validates :name, presence: true

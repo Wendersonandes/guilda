@@ -5,8 +5,9 @@
 # @see Profile
 # @see ActorPolicy
 class ProfilesController < ApplicationController
-  # The directory is the public application root, reachable while signed out.
+  # The directory and public profile pages are reachable while signed out.
   skip_before_action :authenticate_user!, only: [ :index ]
+  skip_before_action :authenticate_user!, only: [ :show ], if: -> { params[:id].present? }
   before_action :set_profile, only: [ :edit, :update ]
   skip_after_action :verify_policy_scoped, only: [ :index ]
 
@@ -42,8 +43,28 @@ class ProfilesController < ApplicationController
     @pagy, @profiles = pagy(@profiles, limit: 12)
   end
 
+  # GET /profiles/:id (public profile dossier) or GET /my/profile (redirects to current actor's public page)
   def show
-    redirect_to public_path_for(current_actor)
+    if params[:id].blank?
+      skip_authorization
+      redirect_to public_path_for(current_actor)
+      return
+    end
+
+    @actor = Actor.where(actorable_type: "Profile")
+                  .includes(avatar_attachment: :blob, cover_image_attachment: :blob, actorable: :occupations)
+                  .find_by!(slug: params[:id])
+    @profile = @actor.actorable
+    authorize @actor
+
+    @activities = policy_scope(Activity).where(author: @actor)
+                                        .roots.recent
+                                        .includes(:owner, { author: :avatar_attachment }, :user_author, { activity_objects: { mentions: :actor } }, { parent: :author })
+    @pagy, @activities = pagy(@activities)
+
+    projects = @profile.projects
+    projects = projects.publicly_visible unless @actor == current_actor
+    @projects = projects.with_cover_or_first.includes(:rich_text_about).ordered
   end
 
   include ApplicationHelper

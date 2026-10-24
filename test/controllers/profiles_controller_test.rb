@@ -306,4 +306,113 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_match "Projeto Rascunho", response.body
   end
+
+  test "my_profile redirects signed-in user to their public profile path" do
+    sign_in @user
+
+    get my_profile_path
+
+    assert_redirected_to profile_path(@actor)
+  end
+
+  test "contact card invites to contact another professional" do
+    bob_user = users(:bob)
+    bob_actor = create_profile_for(bob_user, name: "Bob")
+    bob_actor.actorable.update!(mobile: "11999999999")
+
+    get profile_path(bob_actor)
+
+    assert_response :success
+    assert_match I18n.t("shared.contact_card.title"), response.body
+    assert_no_match I18n.t("shared.contact_card.own_title"), response.body
+  end
+
+  test "whatsapp link prefills the guest message with the professional's name" do
+    bob_user = users(:bob)
+    bob_actor = create_profile_for(bob_user, name: "Bob")
+    bob_actor.actorable.update!(mobile: "11999999999")
+
+    get profile_path(bob_actor)
+
+    assert_match %r{wa\.me/5511999999999\?text=Ol%C3%A1%2C%20Bob}, response.body
+  end
+
+  test "guest sees the sign-up call to action in the sidebar" do
+    bob_user = users(:bob)
+    bob_actor = create_profile_for(bob_user, name: "Bob")
+
+    get profile_path(bob_actor)
+
+    assert_match I18n.t("shared.right_sidebar.guest_title"), response.body
+  end
+
+  test "contact card shows the owner's contact info on their own profile" do
+    @actor.actorable.update!(mobile: "11999999999")
+    sign_in @user
+
+    get profile_path(@actor)
+
+    assert_response :success
+    assert_match I18n.t("shared.contact_card.own_title"), response.body
+    assert_no_match I18n.t("shared.contact_card.title"), response.body
+  end
+
+  test "whatsapp link prefills the signed-in sender's message" do
+    bob_user = users(:bob)
+    bob_actor = create_profile_for(bob_user, name: "Bob")
+    bob_actor.actorable.update!(mobile: "11999999999")
+    sign_in @user
+
+    get profile_path(bob_actor)
+
+    assert_match %r{\?text=Ol%C3%A1%2C%20Bob%21%20Sou%20#{ERB::Util.url_encode(@actor.name)}}, response.body
+  end
+
+  test "signed-in visitor does not see the sign-up call to action" do
+    bob_user = users(:bob)
+    bob_actor = create_profile_for(bob_user, name: "Bob")
+    sign_in @user
+
+    get profile_path(bob_actor)
+
+    assert_no_match I18n.t("shared.right_sidebar.guest_title"), response.body
+  end
+
+  test "profile owner sees edit profile action and global new project in nav" do
+    sign_in @user
+
+    get profile_path(@actor)
+
+    assert_response :success
+    assert_match I18n.t("profiles.show.edit_profile"), response.body
+    assert_match I18n.t("shared.nav.new_project"), response.body
+    assert_match I18n.t("profiles.show.tab_portfolio"), response.body
+    assert_match I18n.t("profiles.show.tab_activity"), response.body
+  end
+
+  test "visitor sees connection button instead of owner edit profile" do
+    bob_user = users(:bob)
+    bob_actor = create_profile_for(bob_user, name: "Bob")
+    sign_in @user
+
+    get profile_path(bob_actor)
+
+    assert_response :success
+    assert_no_match I18n.t("profiles.show.edit_profile"), response.body
+    assert_match I18n.t("shared.connection_button.follow"), response.body
+  end
+
+  test "shows pending followers on the owner's own profile" do
+    bob_user = users(:bob)
+    bob_actor = create_profile_for(bob_user, name: "Bob")
+    bob_actor.connect_to(@actor, as: :follower)
+
+    sign_in @user
+
+    get profile_path(@actor)
+
+    assert_response :success
+    assert_match I18n.t("shared.sidebar_pending_contacts.title"), response.body
+    assert_match "Bob", response.body
+  end
 end

@@ -1,8 +1,7 @@
 <%# locals: (actor:) %>
-<% is_profile = actor.actorable.is_a?(Profile) %>
-<% profile = is_profile ? actor.actorable : nil %>
+<% profile = actor.actorable %>
 <% own_profile = actor == current_actor %>
-<% has_contact = actor.email.present? || (profile && (profile.mobile.present? || profile.website.present? || profile.instagram.present?)) %>
+<% has_contact = actor.email.present? || profile.mobile.present? || profile.website.present? || profile.instagram.present? %>
 
 <div class="bg-white rounded-lg border border-stone-border p-5 space-y-4">
   <!-- 1. Identity: Profile Name -->
@@ -15,68 +14,66 @@
   <!-- 2. Sobre (Bio / Descrição) -->
   <% if actor.description.present? %>
     <div class="space-y-1.5 pt-3.5 border-t border-stone-100">
-      <h3 class="text-xs font-semibold uppercase tracking-wider text-zinc-500">
+      <h2 class="text-xs font-semibold uppercase tracking-wider text-muted">
         <%= t(".about", default: "Sobre") %>
-      </h3>
-      <div class="text-sm text-zinc-600 leading-relaxed space-y-2">
+      </h2>
+      <div class="text-sm text-zinc-600 leading-relaxed space-y-2 max-w-[65ch]">
         <%= sanitize(actor.description) %>
       </div>
     </div>
   <% end %>
 
-  <% if is_profile && profile %>
-    <!-- 3. Atuação (Ocupações) -->
-    <% if profile.occupations.any? %>
-      <div class="space-y-2 pt-3.5 border-t border-stone-100">
-        <h3 class="text-xs font-semibold uppercase tracking-wider text-zinc-500">
-          <%= t(".occupations", default: "Atuação") %>
-        </h3>
-        <div class="flex flex-wrap gap-1.5">
-          <% profile.occupations.each do |occupation| %>
-            <%= link_to profiles_path(occupation: occupation.name),
-                        class: "inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-stone-100 text-zinc-800 hover:bg-stone-200 hover:text-charcoal transition-colors",
-                        title: t("profiles.index.view_all_in_category", default: "Ver profissionais de %{name}", name: occupation.name) do %>
-              <span><%= occupation.name %></span>
-            <% end %>
+  <!-- 3. Atuação (Ocupações) -->
+  <% if profile.occupations.any? %>
+    <div class="space-y-2 pt-3.5 border-t border-stone-100">
+      <h2 class="text-xs font-semibold uppercase tracking-wider text-muted">
+        <%= t(".occupations", default: "Atuação") %>
+      </h2>
+      <div class="flex flex-wrap gap-1.5">
+        <% profile.occupations.each do |occupation| %>
+          <%= link_to profiles_path(occupation: occupation.name),
+                      class: "inline-flex items-center px-3 py-2 sm:py-1 rounded-full text-xs font-medium bg-stone-100 text-zinc-800 hover:bg-stone-200 hover:text-charcoal transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-charcoal focus-visible:ring-offset-1",
+                      title: t("profiles.index.view_all_in_category", default: "Ver profissionais de %{name}", name: occupation.name) do %>
+            <span><%= occupation.name %></span>
           <% end %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- 4. Disponibilidade & Localização -->
+  <% if profile.availability.present? || profile.city.present? || profile.state.present? %>
+    <div class="space-y-2 pt-3.5 border-t border-stone-100 text-xs">
+      <% if profile.availability.present? %>
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full <%= profile.unavailable? ? 'bg-zinc-400' : 'bg-emerald-500' %> flex-shrink-0" aria-hidden="true"></span>
+          <span class="font-medium <%= profile.unavailable? ? 'text-zinc-600' : 'text-emerald-800' %>">
+            <%= profile.availability_label %>
+          </span>
         </div>
-      </div>
-    <% end %>
+      <% end %>
 
-    <!-- 4. Disponibilidade & Localização -->
-    <% if profile.availability.present? || profile.city.present? || profile.state.present? %>
-      <div class="space-y-2 pt-3.5 border-t border-stone-100 text-xs">
-        <% if profile.availability.present? %>
-          <div class="flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full <%= profile.unavailable? ? 'bg-zinc-400' : 'bg-emerald-500' %> flex-shrink-0" aria-hidden="true"></span>
-            <span class="font-medium <%= profile.unavailable? ? 'text-zinc-600' : 'text-emerald-800' %>">
-              <%= profile.availability_label %>
-            </span>
-          </div>
-        <% end %>
-
-        <% if profile.city.present? || profile.state.present? %>
-          <div class="flex items-center gap-2 text-zinc-600">
-            <i data-lucide="map-pin" class="w-3.5 h-3.5 text-zinc-400 flex-shrink-0" aria-hidden="true"></i>
-            <span><%= [profile.city, profile.state].reject(&:blank?).join(", ") %></span>
-          </div>
-        <% end %>
-      </div>
-    <% end %>
+      <% if profile.city.present? || profile.state.present? %>
+        <div class="flex items-center gap-2 text-zinc-600">
+          <i data-lucide="map-pin" class="w-3.5 h-3.5 text-zinc-400 flex-shrink-0" aria-hidden="true"></i>
+          <span><%= [profile.city, profile.state].reject(&:blank?).join(", ") %></span>
+        </div>
+      <% end %>
+    </div>
   <% end %>
 
   <!-- 5. Action: Follow (Visitor) or Edit Profile (Owner) -->
   <div class="pt-3.5 border-t border-stone-100">
     <% if own_profile %>
-      <%= link_to edit_my_profile_path, class: "w-full inline-flex items-center justify-center gap-1.5 text-xs bg-white text-zinc-700 hover:bg-stone-50 hover:text-charcoal font-medium px-4 py-2.5 rounded-lg border border-stone-300 transition-colors" do %>
-        <i data-lucide="edit-3" class="w-3.5 h-3.5 text-zinc-500"></i>
-        <span><%= t("actors.show.edit_profile") %></span>
+      <%= link_to edit_my_profile_path, class: "w-full min-h-11 sm:min-h-0 inline-flex items-center justify-center gap-1.5 text-xs bg-white text-zinc-700 hover:bg-stone-50 hover:text-charcoal font-medium px-4 py-2.5 rounded-lg border border-stone-300 transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-charcoal focus-visible:ring-offset-1" do %>
+        <i data-lucide="edit-3" class="w-3.5 h-3.5 text-zinc-500" aria-hidden="true"></i>
+        <span><%= t("profiles.show.edit_profile") %></span>
       <% end %>
     <% elsif current_actor %>
       <%= render "shared/connection_button", actor: actor, full_width: true %>
     <% else %>
-      <%= link_to new_user_session_path, class: "w-full inline-flex items-center justify-center gap-1.5 text-xs bg-charcoal hover:bg-zinc-800 text-white font-medium px-4 py-2.5 rounded-lg transition-colors cursor-pointer shadow-xs focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-charcoal" do %>
-        <i data-lucide="user-plus" class="w-3.5 h-3.5 text-zinc-300"></i>
+      <%= link_to new_user_session_path, class: "w-full min-h-11 sm:min-h-0 inline-flex items-center justify-center gap-1.5 text-xs bg-charcoal hover:bg-zinc-800 text-white font-medium px-4 py-2.5 rounded-lg transition-colors cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-charcoal" do %>
+        <i data-lucide="user-plus" class="w-3.5 h-3.5 text-zinc-300" aria-hidden="true"></i>
         <span><%= t("shared.connection_button.follow") %></span>
       <% end %>
     <% end %>
@@ -85,41 +82,23 @@
   <!-- 6. Canais de Contato Direto -->
   <div class="pt-3.5 border-t border-stone-100 space-y-3">
     <div class="flex items-center justify-between">
-      <%
-        card_title = if own_profile
-          t(".own_title")
-        elsif is_profile
-          t(".title")
-        else
-          t(".group_title")
-        end
-      %>
-      <h3 class="text-xs font-semibold uppercase tracking-wider text-zinc-500 flex items-center gap-1.5">
-        <i data-lucide="contact-round" class="w-3.5 h-3.5 text-zinc-400"></i>
-        <span><%= card_title %></span>
-      </h3>
+      <h2 class="text-xs font-semibold uppercase tracking-wider text-muted flex items-center gap-1.5">
+        <i data-lucide="contact-round" class="w-3.5 h-3.5 text-zinc-400" aria-hidden="true"></i>
+        <span><%= own_profile ? t(".own_title") : t(".title") %></span>
+      </h2>
       <% if own_profile %>
-        <%= link_to edit_my_profile_path, class: "inline-flex items-center py-1 px-1 -mr-1 text-xs font-medium text-zinc-500 hover:text-charcoal transition-colors", title: t(".edit_profile", default: "Editar perfil") do %>
+        <%= link_to edit_my_profile_path, class: "inline-flex items-center py-2 sm:py-1 px-2 -mr-2 text-xs font-medium text-muted hover:text-charcoal rounded-md transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-charcoal", title: t(".edit_profile", default: "Editar perfil") do %>
           <span class="hover:underline"><%= t(".edit_short") %></span>
         <% end %>
       <% end %>
     </div>
 
     <% unless has_contact %>
-      <%
-        empty_text = if own_profile
-          t(".own_empty")
-        elsif is_profile
-          t(".empty")
-        else
-          t(".group_empty")
-        end
-      %>
       <div class="py-1 text-center space-y-2">
-        <p class="text-xs text-zinc-500 leading-relaxed"><%= empty_text %></p>
+        <p class="text-xs text-muted leading-relaxed"><%= own_profile ? t(".own_empty") : t(".empty") %></p>
         <% if own_profile %>
-          <%= link_to edit_my_profile_path, class: "inline-flex items-center gap-1 text-xs text-charcoal hover:text-brand font-medium underline transition-colors" do %>
-            <i data-lucide="plus" class="w-3 h-3"></i>
+          <%= link_to edit_my_profile_path, class: "inline-flex items-center gap-1 py-1.5 px-2 rounded-md text-xs text-charcoal hover:text-brand font-medium underline transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-charcoal" do %>
+            <i data-lucide="plus" class="w-3 h-3" aria-hidden="true"></i>
             <span><%= t(".add_contacts") %></span>
           <% end %>
         <% end %>
@@ -133,29 +112,29 @@
               data-controller="clipboard"
               data-clipboard-full-value="<%= actor.email %>">
             <div class="flex items-center gap-2.5 min-w-0 flex-1">
-              <div class="w-7 h-7 rounded-md bg-stone-100 flex items-center justify-center text-zinc-500 flex-shrink-0 group-hover:text-charcoal transition-colors">
-                <i data-lucide="mail" class="w-3.5 h-3.5"></i>
+              <div class="w-7 h-7 rounded-md bg-stone-100 flex items-center justify-center text-muted flex-shrink-0 group-hover:text-charcoal transition-colors">
+                <i data-lucide="mail" class="w-3.5 h-3.5" aria-hidden="true"></i>
               </div>
               <div class="min-w-0 flex-1">
-                <p class="text-xs uppercase font-semibold tracking-wider text-zinc-500 leading-none mb-0.5"><%= t(".email_label") %></p>
+                <p class="text-xs uppercase font-semibold tracking-wider text-muted leading-none mb-0.5"><%= t(".email_label") %></p>
                 <span data-clipboard-target="masked" class="text-xs font-medium text-zinc-800 truncate block select-all"><%= masked_email(actor.email) %></span>
               </div>
             </div>
             <div class="flex items-center gap-2 flex-shrink-0">
-              <span data-clipboard-target="feedback" role="status" aria-live="polite" class="hidden text-xs font-semibold text-emerald-600"><%= t(".copied") %></span>
+              <span data-clipboard-target="feedback" role="status" aria-live="polite" class="hidden text-xs font-semibold text-emerald-700"><%= t(".copied") %></span>
               <button type="button"
                       data-clipboard-target="button"
                       data-action="click->clipboard#copy"
                       aria-label="<%= t(".copy_email") %>"
                       title="<%= t(".copy_email") %>"
-                      class="w-9 h-9 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-zinc-500 hover:text-charcoal hover:bg-stone-100 transition-colors cursor-pointer bg-transparent border-0 p-0 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-charcoal">
-                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                      class="w-11 h-11 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-muted hover:text-charcoal hover:bg-stone-100 transition-colors cursor-pointer bg-transparent border-0 p-0 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-charcoal">
+                <i data-lucide="copy" class="w-3.5 h-3.5" aria-hidden="true"></i>
               </button>
             </div>
           </li>
         <% end %>
 
-        <% if profile && profile.mobile.present? %>
+        <% if profile.mobile.present? %>
           <%
             wa_message = if current_actor
               t(".whatsapp_message_from", name: actor.name, sender: current_actor.name)
@@ -165,44 +144,44 @@
           %>
           <li class="py-2 flex items-center justify-between gap-3 group">
             <div class="flex items-center gap-2.5 min-w-0 flex-1">
-              <div class="w-7 h-7 rounded-md bg-stone-100 flex items-center justify-center text-zinc-500 flex-shrink-0 group-hover:text-charcoal transition-colors">
-                <i data-lucide="smartphone" class="w-3.5 h-3.5"></i>
+              <div class="w-7 h-7 rounded-md bg-stone-100 flex items-center justify-center text-muted flex-shrink-0 group-hover:text-charcoal transition-colors">
+                <i data-lucide="smartphone" class="w-3.5 h-3.5" aria-hidden="true"></i>
               </div>
               <div class="min-w-0 flex-1">
-                <p class="text-xs uppercase font-semibold tracking-wider text-zinc-500 leading-none mb-0.5"><%= t(".phone_label") %></p>
+                <p class="text-xs uppercase font-semibold tracking-wider text-muted leading-none mb-0.5"><%= t(".phone_label") %></p>
                 <span class="text-xs font-medium text-zinc-800 truncate block"><%= br_phone_display(profile.mobile) %></span>
               </div>
             </div>
             <% if (wa = whatsapp_url(profile.mobile, text: wa_message)) %>
-              <%= link_to wa, target: "_blank", rel: "noopener", title: t(".whatsapp"), class: "inline-flex items-center gap-1.5 text-xs font-medium text-emerald-800 bg-emerald-50 hover:bg-emerald-100/80 border border-emerald-200/60 px-2.5 py-1.5 rounded-md transition-colors flex-shrink-0" do %>
-                <i data-lucide="message-circle" class="w-3.5 h-3.5 text-emerald-600"></i>
+              <%= link_to wa, target: "_blank", rel: "noopener", title: t(".whatsapp"), class: "min-h-11 sm:min-h-0 inline-flex items-center gap-1.5 text-xs font-medium text-emerald-800 bg-emerald-50 hover:bg-emerald-100/80 border border-emerald-200/60 px-3 py-2 sm:px-2.5 sm:py-1.5 rounded-md transition-colors flex-shrink-0 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-charcoal focus-visible:ring-offset-1" do %>
+                <i data-lucide="message-circle" class="w-3.5 h-3.5 text-emerald-600" aria-hidden="true"></i>
                 <span><%= t(".whatsapp") %></span>
               <% end %>
             <% end %>
           </li>
         <% end %>
 
-        <% if profile && profile.website.present? %>
+        <% if profile.website.present? %>
           <% website_display = profile.website.sub(%r{\Ahttps?://(www\.)?}, "").chomp("/") %>
           <li class="py-2">
-            <%= link_to profile.website, target: "_blank", rel: "noopener", class: "flex items-center justify-between gap-3 group/link -mx-1.5 px-1.5 py-1 rounded-md hover:bg-stone-50 transition-colors", title: t(".open_link") do %>
+            <%= link_to profile.website, target: "_blank", rel: "noopener", class: "min-h-11 sm:min-h-0 flex items-center justify-between gap-3 group/link -mx-1.5 px-1.5 py-1.5 sm:py-1 rounded-md hover:bg-stone-50 transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-charcoal", title: t(".open_link") do %>
               <div class="flex items-center gap-2.5 min-w-0 flex-1">
-                <div class="w-7 h-7 rounded-md bg-stone-100 flex items-center justify-center text-zinc-500 flex-shrink-0 group-hover/link:text-charcoal group-hover/link:bg-stone-200/60 transition-colors">
-                  <i data-lucide="globe" class="w-3.5 h-3.5"></i>
+                <div class="w-7 h-7 rounded-md bg-stone-100 flex items-center justify-center text-muted flex-shrink-0 group-hover/link:text-charcoal group-hover/link:bg-stone-200/60 transition-colors">
+                  <i data-lucide="globe" class="w-3.5 h-3.5" aria-hidden="true"></i>
                 </div>
                 <div class="min-w-0 flex-1">
-                  <p class="text-xs uppercase font-semibold tracking-wider text-zinc-500 leading-none mb-0.5"><%= t(".website_label") %></p>
+                  <p class="text-xs uppercase font-semibold tracking-wider text-muted leading-none mb-0.5"><%= t(".website_label") %></p>
                   <span class="text-xs font-medium text-zinc-800 group-hover/link:text-brand truncate block transition-colors"><%= website_display %></span>
                 </div>
               </div>
               <div class="w-7 h-7 rounded-md flex items-center justify-center text-zinc-400 group-hover/link:text-charcoal transition-colors flex-shrink-0">
-                <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                <i data-lucide="external-link" class="w-3.5 h-3.5" aria-hidden="true"></i>
               </div>
             <% end %>
           </li>
         <% end %>
 
-        <% if profile && profile.instagram.present? %>
+        <% if profile.instagram.present? %>
           <%
             handle = profile.instagram.sub(%r{\Ahttps?://(www\.)?instagram\.com/}i, "")
                                      .delete_prefix("@")
@@ -210,18 +189,18 @@
                                      .presence || profile.instagram
           %>
           <li class="py-2">
-            <%= link_to instagram_url(profile.instagram), target: "_blank", rel: "noopener", class: "flex items-center justify-between gap-3 group/link -mx-1.5 px-1.5 py-1 rounded-md hover:bg-stone-50 transition-colors", title: t(".open_link") do %>
+            <%= link_to instagram_url(profile.instagram), target: "_blank", rel: "noopener", class: "min-h-11 sm:min-h-0 flex items-center justify-between gap-3 group/link -mx-1.5 px-1.5 py-1.5 sm:py-1 rounded-md hover:bg-stone-50 transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-charcoal", title: t(".open_link") do %>
               <div class="flex items-center gap-2.5 min-w-0 flex-1">
-                <div class="w-7 h-7 rounded-md bg-stone-100 flex items-center justify-center text-zinc-500 flex-shrink-0 group-hover/link:text-charcoal group-hover/link:bg-stone-200/60 transition-colors">
-                  <i data-lucide="instagram" class="w-3.5 h-3.5"></i>
+                <div class="w-7 h-7 rounded-md bg-stone-100 flex items-center justify-center text-muted flex-shrink-0 group-hover/link:text-charcoal group-hover/link:bg-stone-200/60 transition-colors">
+                  <i data-lucide="instagram" class="w-3.5 h-3.5" aria-hidden="true"></i>
                 </div>
                 <div class="min-w-0 flex-1">
-                  <p class="text-xs uppercase font-semibold tracking-wider text-zinc-500 leading-none mb-0.5"><%= t(".instagram_label") %></p>
+                  <p class="text-xs uppercase font-semibold tracking-wider text-muted leading-none mb-0.5"><%= t(".instagram_label") %></p>
                   <span class="text-xs font-medium text-zinc-800 group-hover/link:text-brand truncate block transition-colors"><%= "@#{handle}" %></span>
                 </div>
               </div>
               <div class="w-7 h-7 rounded-md flex items-center justify-center text-zinc-400 group-hover/link:text-charcoal transition-colors flex-shrink-0">
-                <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                <i data-lucide="external-link" class="w-3.5 h-3.5" aria-hidden="true"></i>
               </div>
             <% end %>
           </li>

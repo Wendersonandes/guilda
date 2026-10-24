@@ -5,8 +5,7 @@ Rails.application.routes.draw do
   resources :profile_steps, only: [ :show, :update ]
   resources :actors, only: [ :index, :show ]
   resource :my_profile, path: "my/profile", only: [ :show, :edit, :update ], controller: "profiles"
-  resources :profiles, only: [ :index ]
-  resources :profiles, only: [ :show ], controller: "actors"
+  resources :profiles, only: [ :index, :show ]
 
   # Portfolio — projetos do perfil (público via slug)
   resources :projects, only: [ :show ]

@@ -71,20 +71,17 @@ class ActorsController < ApplicationController
     end
   end
 
-  # An actor's profile page with its authored root activities, paginated and scoped through
-  # +ActivityPolicy::Scope+. Authorized via +ActorPolicy#show?+.
+  # Redirects an actor slug lookup to its canonical public page (+/profiles/:slug+ or +/groups/:id+).
+  # Authorized via +ActorPolicy#show?+.
   def show
     @actor = Actor.find_by!(slug: params[:id])
     authorize @actor
-    @activities = policy_scope(Activity).where(author: @actor)
-                                        .roots.recent
-                                        .includes(:owner, { author: :avatar_attachment }, :user_author, { activity_objects: { mentions: :actor } }, { parent: :author })
-    @pagy, @activities = pagy(@activities)
 
-    if @actor.actorable.is_a?(Profile)
-      projects = @actor.actorable.projects
-      projects = projects.publicly_visible unless @actor == current_actor
-      @projects = projects.with_cover_or_first.includes(:rich_text_about).ordered
+    case @actor.actorable_type
+    when "Profile", "Group"
+      redirect_to public_path_for(@actor)
+    else
+      redirect_to root_path
     end
   end
 end

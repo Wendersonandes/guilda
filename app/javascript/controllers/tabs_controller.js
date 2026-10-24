@@ -6,7 +6,7 @@ export default class extends Controller {
   static values = {
     defaultTab: { type: String, default: "" },
     activeClasses: { type: Array, default: ["border-charcoal", "text-charcoal", "font-semibold"] },
-    inactiveClasses: { type: Array, default: ["border-transparent", "text-zinc-500", "hover:text-charcoal", "hover:border-stone-300"] }
+    inactiveClasses: { type: Array, default: ["border-transparent", "text-muted", "hover:text-charcoal", "hover:border-stone-300"] }
   }
 
   connect() {

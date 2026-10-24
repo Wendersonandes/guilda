@@ -1,19 +1,19 @@
-<div class="lg:sticky lg:top-20 space-y-5">
+<div class="<%= 'lg:sticky lg:top-20' unless @actor.present? %> space-y-5">
   <% if @actor.present? %>
     <%= render "shared/contact_card", actor: @actor %>
   <% end %>
 
   <% unless current_actor %>
     <div class="hidden lg:block bg-white rounded-lg border border-stone-border p-5 space-y-3">
-      <h3 class="text-sm font-semibold text-charcoal flex items-center gap-1.5">
-        <i data-lucide="user-plus" class="w-4 h-4 text-brand"></i>
+      <h2 class="text-sm font-semibold text-charcoal flex items-center gap-1.5">
+        <i data-lucide="user-plus" class="w-4 h-4 text-brand" aria-hidden="true"></i>
         <span><%= t(".guest_title") %></span>
-      </h3>
-      <p class="text-xs text-zinc-500 leading-relaxed"><%= t(".guest_subtitle") %></p>
+      </h2>
+      <p class="text-xs text-muted leading-relaxed"><%= t(".guest_subtitle") %></p>
       <%= link_to t(".guest_sign_up"), new_user_registration_path,
-            class: "block text-center bg-brand hover:bg-brand-hover text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer" %>
+            class: "block text-center bg-brand hover:bg-brand-hover text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-1" %>
       <%= link_to t(".guest_sign_in"), new_user_session_path,
-            class: "block text-center text-xs font-medium text-zinc-500 hover:text-charcoal transition-colors" %>
+            class: "block text-center text-xs font-medium text-muted hover:text-charcoal py-1 rounded-md transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-charcoal" %>
     </div>
   <% end %>
 
@@ -38,11 +38,11 @@
       <% if feature_enabled?(:suggestions) %>
         <div class="space-y-4">
           <div>
-            <h3 class="text-sm font-semibold text-charcoal flex items-center gap-1.5">
-              <i data-lucide="sparkles" class="w-4 h-4 text-brand"></i>
+            <h2 class="text-sm font-semibold text-charcoal flex items-center gap-1.5">
+              <i data-lucide="sparkles" class="w-4 h-4 text-brand" aria-hidden="true"></i>
               <span><%= t(".suggestions_title") %></span>
-            </h3>
-            <p class="text-xs text-zinc-500 mt-0.5"><%= t(".suggestions_subtitle") %></p>
+            </h2>
+            <p class="text-xs text-muted mt-0.5"><%= t(".suggestions_subtitle") %></p>
           </div>
 
           <%= turbo_frame_tag "sidebar_suggestions",

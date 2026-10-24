@@ -5,78 +5,14 @@ class ActorsControllerTest < ActionDispatch::IntegrationTest
     seed_permissions_and_relations
     @alice = users(:alice)
     @alice_actor = create_profile_for(@alice, name: "Alice")
-    @alice_actor.actorable.update!(mobile: "11999999999")
     @bob = users(:bob)
     @bob_actor = create_profile_for(@bob, name: "Bob")
-    @bob_actor.actorable.update!(mobile: "11999999999")
   end
 
-  test "contact card invites to contact another professional" do
-    get profile_path(@bob_actor)
+  test "show redirects profile actor to canonical profile path" do
+    get actor_path(@bob_actor)
 
-    assert_response :success
-    assert_match I18n.t("shared.contact_card.title"), response.body
-    assert_no_match I18n.t("shared.contact_card.own_title"), response.body
-  end
-
-  test "whatsapp link prefills the guest message with the professional's name" do
-    get profile_path(@bob_actor)
-
-    assert_match %r{wa\.me/5511999999999\?text=Ol%C3%A1%2C%20Bob}, response.body
-  end
-
-  test "guest sees the sign-up call to action in the sidebar" do
-    get profile_path(@bob_actor)
-
-    assert_match I18n.t("shared.right_sidebar.guest_title"), response.body
-  end
-
-  test "contact card shows the owner's contact info on their own profile" do
-    sign_in @alice
-
-    get profile_path(@alice_actor)
-
-    assert_response :success
-    assert_match I18n.t("shared.contact_card.own_title"), response.body
-    assert_no_match I18n.t("shared.contact_card.title"), response.body
-  end
-
-  test "whatsapp link prefills the signed-in sender's message" do
-    sign_in @alice
-
-    get profile_path(@bob_actor)
-
-    assert_match %r{\?text=Ol%C3%A1%2C%20Bob%21%20Sou%20Alice}, response.body
-  end
-
-  test "signed-in visitor does not see the sign-up call to action" do
-    sign_in @alice
-
-    get profile_path(@bob_actor)
-
-    assert_no_match I18n.t("shared.right_sidebar.guest_title"), response.body
-  end
-
-  test "profile owner sees edit profile action and global new project in nav" do
-    sign_in @alice
-
-    get profile_path(@alice_actor)
-
-    assert_response :success
-    assert_match I18n.t("actors.show.edit_profile"), response.body
-    assert_match I18n.t("shared.nav.new_project"), response.body
-    assert_match I18n.t("actors.show.tab_portfolio"), response.body
-    assert_match I18n.t("actors.show.tab_activity"), response.body
-  end
-
-  test "visitor sees connection button instead of owner edit profile" do
-    sign_in @alice
-
-    get profile_path(@bob_actor)
-
-    assert_response :success
-    assert_no_match I18n.t("actors.show.edit_profile"), response.body
-    assert_match I18n.t("shared.connection_button.connect"), response.body
+    assert_redirected_to profile_path(@bob_actor)
   end
 
   test "index json returns actor search results without unused eager loading" do

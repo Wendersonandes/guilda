@@ -132,11 +132,14 @@ O Guilda adota um sistema essencialmente bidimensional e plano, em conformidade 
 ### Navigation
 - **Style, typography, default/hover/active states**: Fundo branco (`bg-white`), borda inferior fina (`border-b border-stone-200`), fixado no topo (`fixed top-0 left-0 right-0 z-50`). Altura de 56px (`h-14`). Links de navegação usando fonte sans-serif, tamanho pequeno/médio (`text-sm font-medium`), cor do texto secundário (`text-zinc-600 hover:text-zinc-900 transition-colors`).
 
-### Layout de 3 Colunas (Desktop)
-- **Implementação**: Grid de 12 colunas em desktop (`grid grid-cols-1 lg:grid-cols-12 gap-6`).
+### Layouts de Grade (Desktop)
+- **Layout Padrão de 3 Colunas (Feed e Listagens)**: Grid de 12 colunas (`grid grid-cols-1 lg:grid-cols-12 gap-6`).
   - **Coluna 1 (Esquerda)**: Ocupa 3 colunas (`lg:col-span-3`). Menu lateral de links rápidos.
-  - **Coluna 2 (Meio)**: Ocupa 6 colunas (`lg:col-span-6`). Concentra 60% do espaço horizontal e exibe o conteúdo principal (Feed, Portfólio, Projetos).
-  - **Coluna 3 (Direita)**: Ocupa 3 colunas (`lg:col-span-3`). Sidebar lateral com anúncios, recomendações e sugestões de serviços.
+  - **Coluna 2 (Meio)**: Ocupa 6 colunas (`lg:col-span-6`). Concentra o fluxo principal (Feed).
+  - **Coluna 3 (Direita)**: Ocupa 3 colunas (`lg:col-span-3`). Sidebar lateral com recomendações e sugestões.
+- **Layout Assimétrico de Dossiê 8/4 (Perfis e Portfólios)**: Grid de 12 colunas (`grid grid-cols-1 lg:grid-cols-12 gap-x-8`) sem sidebar esquerda (`content_for :no_sidebar, true`).
+  - **Coluna Principal (Esquerda, `lg:col-span-8`)**: Moldura visual (capa + avatar) e galeria de projetos/portfólio em 2 colunas.
+  - **Coluna de Dossiê (Direita, `lg:col-span-4`)**: Identidade, bio, áreas de atuação, disponibilidade e canais diretos de contato.
 
 ## 6. Do's and Don'ts
 
@@ -151,4 +154,4 @@ O Guilda adota um sistema essencialmente bidimensional e plano, em conformidade 
 - **Don't** usar degradês coloridos em botões, textos (`background-clip: text`) ou fundos.
 - **Don't** utilizar glassmorphism (desfoque de fundo decorativo em cards) como padrão visual.
 - **Don't** usar bordas coloridas grossas ou laterais destacadas (side-stripe borders) como sinalizadores em cards ou alertas.
-- **Don't** quebrar o layout de 3 colunas estabelecido em desktop, garantindo que o feed ou portfólio principal ocupe exatamente a coluna central de 60%.
+- **Don't** fugir dos grids canônicos de 12 colunas em desktop (`3/6/3` para fluxos com navegação lateral ou `8/4` para dossiês de perfil).

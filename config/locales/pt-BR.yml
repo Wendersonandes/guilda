@@ -423,6 +423,21 @@ pt-BR:
     show:
       posts: "publicações"
       connections: "conexões"
+      projects_title: "Projetos"
+      tab_portfolio: "Portfólio"
+      tab_activity: "Publicações"
+      tabs_aria_label: "Seções do perfil"
+      cover_image_alt: "Capa do perfil de %{name}"
+      edit_profile: "Editar perfil"
+      new_project: "Novo projeto"
+      image_count:
+        one: "1 imagem no projeto"
+        other: "%{count} imagens no projeto"
+      no_projects_owner_title: "Seu portfólio está vazio"
+      no_projects_owner_subtitle: "Publique suas obras, expografias ou produções para que curadores e contratantes conheçam seu trabalho."
+      no_projects_owner_cta: "Adicionar primeiro projeto"
+      no_projects_visitor_title: "Nenhum projeto publicado"
+      no_projects_visitor_subtitle: "Este perfil ainda não adicionou projetos ao portfólio."
       no_posts_title: "Ainda sem publicações"
       no_posts_subtitle: "Este perfil ainda não compartilhou atualizações ou publicações."
     edit:
@@ -466,23 +481,6 @@ pt-BR:
       load_more: "Carregar mais"
       empty_title: "Ainda sem perfis"
       empty_subtitle: "Perfis e grupos aparecerão aqui assim que forem criados."
-    show:
-      posts: "publicações"
-      connections: "conexões"
-      projects_title: "Projetos"
-      tab_portfolio: "Portfólio"
-      tab_activity: "Publicações"
-      tabs_aria_label: "Seções do perfil"
-      cover_image_alt: "Capa do perfil de %{name}"
-      edit_profile: "Editar perfil"
-      new_project: "Novo projeto"
-      no_projects_owner_title: "Seu portfólio está vazio"
-      no_projects_owner_subtitle: "Publique suas obras, expografias ou produções para que curadores e contratantes conheçam seu trabalho."
-      no_projects_owner_cta: "Adicionar primeiro projeto"
-      no_projects_visitor_title: "Nenhum projeto publicado"
-      no_projects_visitor_subtitle: "Este perfil ainda não adicionou projetos ao portfólio."
-      no_posts_title: "Ainda sem publicações"
-      no_posts_subtitle: "Este perfil ainda não compartilhou atualizações ou publicações."
 
   # === Shared UI ==============================================================
   shared:
