@@ -24,6 +24,43 @@ export default class extends Controller {
     }
   }
 
+  keydown(event) {
+    const tabs = this.tabTargets
+    if (!tabs.length) return
+
+    const currentIndex = tabs.indexOf(event.currentTarget)
+    if (currentIndex === -1) return
+
+    let nextIndex = null
+
+    switch (event.key) {
+      case "ArrowRight":
+      case "ArrowDown":
+        nextIndex = (currentIndex + 1) % tabs.length
+        break
+      case "ArrowLeft":
+      case "ArrowUp":
+        nextIndex = (currentIndex - 1 + tabs.length) % tabs.length
+        break
+      case "Home":
+        nextIndex = 0
+        break
+      case "End":
+        nextIndex = tabs.length - 1
+        break
+      default:
+        return
+    }
+
+    event.preventDefault()
+    const targetTab = tabs[nextIndex]
+    const tabName = targetTab.dataset.tabName
+    if (tabName) {
+      this.selectTab(tabName)
+      targetTab.focus()
+    }
+  }
+
   selectTab(tabName) {
     this.tabTargets.forEach(tab => {
       const isSelected = tab.dataset.tabName === tabName
