@@ -4,6 +4,17 @@
 <% has_contact = actor.email.present? || profile.mobile.present? || profile.website.present? || profile.instagram.present? %>
 
 <div class="bg-white rounded-lg border border-stone-border p-5 space-y-4">
+  <!-- 0. Avatar (Anchored on the left, overlapping the bottom-left of the cover banner) -->
+  <div class="-mt-16 sm:-mt-20 mb-1 w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-white border-2 border-white ring-1 ring-stone-border flex-shrink-0 overflow-hidden relative z-10">
+    <% if actor.avatar.attached? %>
+      <%= image_tag actor.avatar.variant(:medium), alt: actor.name, fetchpriority: "high", decoding: "async", class: "w-full h-full rounded-full object-cover" %>
+    <% else %>
+      <div class="w-full h-full rounded-full bg-stone-100 text-charcoal flex items-center justify-center text-2xl sm:text-3xl font-serif font-bold" aria-hidden="true">
+        <%= actor.name.first.upcase %>
+      </div>
+    <% end %>
+  </div>
+
   <!-- 1. Identity: Profile Name -->
   <div>
     <h1 class="text-xl sm:text-2xl font-serif font-bold text-charcoal tracking-tight leading-tight break-words">

@@ -430,6 +430,8 @@ pt-BR:
       cover_image_alt: "Capa do perfil de %{name}"
       edit_profile: "Editar perfil"
       new_project: "Novo projeto"
+      new_project_card_title: "Adicionar ao portfólio"
+      new_project_card_subtitle: "Publique uma nova obra, expografia ou produção técnica no seu catálogo."
       image_count:
         one: "1 imagem no projeto"
         other: "%{count} imagens no projeto"
@@ -461,9 +463,12 @@ pt-BR:
       occupations_title: "Categorias Profissionais"
       occupations_limit_hint: "Selecione até 3 áreas de atuação"
       occupations_limit_warning: "Você já selecionou o limite máximo de 3 categorias."
+      occupations_counter: "%{count} de 3 selecionadas"
       availability_title: "Disponibilidade"
       availability_label: "Disponibilidade para contratação"
       availability_select: "Selecione a disponibilidade"
+      loading_cities: "Carregando cidades..."
+      error_cities: "Erro ao carregar cidades"
       contact_info: "Informações de contato"
       phone: "Telefone"
       mobile: "Celular"
@@ -473,6 +478,7 @@ pt-BR:
       organization: "Organização"
       cancel: "Cancelar"
       save_changes: "Salvar alterações"
+      remove_image: "Remover imagem"
       upload_failed: "Falha no envio da imagem. Por favor, tente novamente."
   actors:
     index:

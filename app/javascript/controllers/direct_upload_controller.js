@@ -3,7 +3,7 @@ import { Controller } from "@hotwired/stimulus"
 // Wraps an Active Storage direct-upload file input: shows a local preview of the
 // selected image and a progress bar driven by the `direct-upload:*` events.
 export default class extends Controller {
-  static targets = ["input", "preview", "placeholder", "progress", "bar", "error"]
+  static targets = ["input", "preview", "placeholder", "progress", "bar", "error", "removeInput", "removeButton"]
   static values = {
     errorMessage: { type: String, default: "Falha no envio da imagem. Por favor, tente novamente." }
   }
@@ -37,6 +37,9 @@ export default class extends Controller {
     this.clearError()
     if (!file) return
 
+    if (this.hasRemoveInputTarget) this.removeInputTarget.value = "0"
+    if (this.hasRemoveButtonTarget) this.removeButtonTarget.classList.remove("hidden")
+
     this.revokeObjectURL()
     this.objectUrl = URL.createObjectURL(file)
 
@@ -48,6 +51,21 @@ export default class extends Controller {
 
     this.showProgress()
     this.setBar(0)
+  }
+
+  remove() {
+    this.inputTarget.value = ""
+    this.revokeObjectURL()
+
+    if (this.hasPreviewTarget) {
+      this.previewTarget.src = ""
+      this.previewTarget.classList.add("hidden")
+    }
+    if (this.hasPlaceholderTarget) this.placeholderTarget.classList.remove("hidden")
+    if (this.hasRemoveInputTarget) this.removeInputTarget.value = "1"
+    if (this.hasRemoveButtonTarget) this.removeButtonTarget.classList.add("hidden")
+    this.hideProgress()
+    this.clearError()
   }
 
   onStart() {

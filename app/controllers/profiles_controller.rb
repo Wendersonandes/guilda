@@ -112,7 +112,8 @@ class ProfilesController < ApplicationController
       :birthday, :phone, :mobile,
       :address, :city, :state, :country, :zipcode,
       :website, :organization, :availability, :instagram,
-      actor_attributes: [ :id, :name, :description, :email, :avatar, :cover_image ],
+      :email,
+      actor_attributes: [ :id, :name, :description, :email, :avatar, :cover_image, :remove_avatar, :remove_cover_image ],
       occupation_list: []
     )
   end

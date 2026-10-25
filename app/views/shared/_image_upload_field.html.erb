@@ -2,14 +2,16 @@
   Image upload field with Active Storage direct upload, local preview and progress.
 
   locals:
-    form:            form builder (e.g. `af`)
-    attribute:       attachment name (:avatar / :cover_image)
-    attachment:      the Active Storage attachment (e.g. @profile.actor.avatar)
-    label:           field label
-    preview_classes: Tailwind classes for the preview/placeholder box
-    initials:        (optional) text shown in the placeholder when nothing is attached
+    form:             form builder (e.g. `af`)
+    attribute:        attachment name (:avatar / :cover_image)
+    remove_attribute: (optional) boolean flag for purging attachment (:remove_avatar / :remove_cover_image)
+    attachment:       the Active Storage attachment (e.g. @profile.actor.avatar)
+    label:            field label
+    preview_classes:  Tailwind classes for the preview/placeholder box
+    initials:         (optional) text shown in the placeholder when nothing is attached
 %>
 <% initials = local_assigns.fetch(:initials, nil) %>
+<% remove_attribute = local_assigns.fetch(:remove_attribute, nil) %>
 <div class="space-y-2" data-controller="direct-upload" data-direct-upload-error-message-value="<%= t("profiles.edit.upload_failed", default: "Falha no envio da imagem. Por favor, tente novamente.") %>">
   <%= form.label attribute, label, class: "block text-sm font-medium text-zinc-700" %>
   <div class="flex items-center gap-3">
@@ -34,6 +36,10 @@
     </div>
 
     <div class="flex-1 min-w-0">
+      <% if remove_attribute.present? %>
+        <%= form.hidden_field remove_attribute, value: "0", data: { direct_upload_target: "removeInput" } %>
+      <% end %>
+
       <%= form.file_field attribute,
             direct_upload: true,
             accept: "image/png,image/jpeg,image/webp",
@@ -44,6 +50,18 @@
         <div data-direct-upload-target="bar" class="h-full bg-brand transition-all" style="width: 0%"></div>
       </div>
       <p data-direct-upload-target="error" role="alert" class="hidden mt-1 text-xs text-red-500"></p>
+
+      <% if remove_attribute.present? %>
+        <div class="mt-1">
+          <button type="button"
+                  data-direct-upload-target="removeButton"
+                  data-action="click->direct-upload#remove"
+                  class="text-xs text-stone-500 hover:text-red-600 transition-colors inline-flex items-center gap-1 cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-charcoal rounded <%= "hidden" unless attachment.attached? %>">
+            <i data-lucide="trash-2" class="w-3 h-3 text-stone-400 group-hover:text-red-600" aria-hidden="true"></i>
+            <span><%= t("profiles.edit.remove_image", default: "Remover imagem") %></span>
+          </button>
+        </div>
+      <% end %>
     </div>
   </div>
 </div>

@@ -227,6 +227,76 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[type=file][data-direct-upload-url]", count: 2
   end
 
+  test "profile edit form has accessible occupations grouping, counter, and aria attributes" do
+    sign_in @user
+
+    get edit_my_profile_path
+    assert_response :success
+    assert_select "div[role='group'][aria-labelledby='occupations_section_heading'][aria-describedby='occupations_limit_hint']"
+    assert_select "span[data-occupations-target='counter']"
+    assert_select "lexxy-editor#profile_actor_attributes_description[aria-labelledby='profile_description_label']"
+  end
+
+  test "persists email from top-level profile param or actor attributes" do
+    sign_in @user
+
+    patch my_profile_path, params: { profile: { email: "contato@alice.com" } }
+    assert_redirected_to profile_path(@actor)
+    assert_equal "contato@alice.com", @actor.reload.email
+
+    patch my_profile_path, params: {
+      profile: { actor_attributes: { id: @actor.id, email: "novo@alice.com" } }
+    }
+    assert_redirected_to profile_path(@actor)
+    assert_equal "novo@alice.com", @actor.reload.email
+  end
+
+  test "removes avatar when remove_avatar flag is set" do
+    sign_in @user
+    @actor.avatar.attach(io: StringIO.new("fake png"), filename: "avatar.png", content_type: "image/png")
+    assert @actor.avatar.attached?
+
+    patch my_profile_path, params: {
+      profile: {
+        actor_attributes: { id: @actor.id, remove_avatar: "1" }
+      }
+    }
+
+    assert_redirected_to profile_path(@actor)
+    assert_not @actor.reload.avatar.attached?
+  end
+
+  test "removes cover_image when remove_cover_image flag is set" do
+    sign_in @user
+    @actor.cover_image.attach(io: StringIO.new("fake webp"), filename: "cover.webp", content_type: "image/webp")
+    assert @actor.cover_image.attached?
+
+    patch my_profile_path, params: {
+      profile: {
+        actor_attributes: { id: @actor.id, remove_cover_image: "1" }
+      }
+    }
+
+    assert_redirected_to profile_path(@actor)
+    assert_not @actor.reload.cover_image.attached?
+  end
+
+  test "displays field level error states and messages on validation failure" do
+    sign_in @user
+
+    patch my_profile_path, params: {
+      profile: {
+        mobile: "123", # invalid format
+        instagram: "invalid handle with spaces"
+      }
+    }
+
+    assert_response :unprocessable_entity
+    assert_select "div[role='alert']"
+    assert_select "input#profile_mobile[aria-invalid='true']"
+    assert_select "input#profile_instagram[aria-invalid='true']"
+  end
+
   test "persists a rich text bio" do
     sign_in @user
 
@@ -292,19 +362,25 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_match(/Sugestões/, response.body)
   end
 
-  test "shows public projects on the profile and hides drafts from visitors" do
-    @actor.actorable.projects.create!(title: "Projeto Público", about: "<p>S</p>", visibility: :public)
+  test "shows public projects on the profile and hides drafts and new project card from visitors" do
+    long_desc = "Texto detalhado sobre a obra de arte que explora a materialidade da madeira e do metal no contexto do modernismo brasileiro, com foco em estruturas expográficas e iluminação cenográfica contemporânea para bienais e museus de grande escala."
+    @actor.actorable.projects.create!(title: "Projeto Público", about: "<p>#{long_desc}</p>", visibility: :public)
     @actor.actorable.projects.create!(title: "Projeto Rascunho", about: "<p>S</p>", visibility: :draft)
 
     get profile_path(@actor)
     assert_response :success
     assert_match "Projeto Público", response.body
     assert_no_match(/Projeto Rascunho/, response.body)
+    assert_select "[data-testid='new-project-card']", count: 0
+    # Description truncated to 200 chars
+    assert_match long_desc[0..190], response.body
 
     sign_in @user
     get profile_path(@actor)
     assert_response :success
     assert_match "Projeto Rascunho", response.body
+    assert_select "#panel-portfolio .grid > a:last-child[data-testid='new-project-card'][href='#{new_my_project_path}']", count: 1
+    assert_match I18n.t("profiles.show.new_project_card_title"), response.body
   end
 
   test "my_profile redirects signed-in user to their public profile path" do
@@ -402,7 +478,7 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_match I18n.t("shared.connection_button.follow"), response.body
   end
 
-  test "shows pending followers on the owner's own profile" do
+  test "does not show pending followers on the owner's own profile" do
     bob_user = users(:bob)
     bob_actor = create_profile_for(bob_user, name: "Bob")
     bob_actor.connect_to(@actor, as: :follower)
@@ -412,7 +488,7 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     get profile_path(@actor)
 
     assert_response :success
-    assert_match I18n.t("shared.sidebar_pending_contacts.title"), response.body
-    assert_match "Bob", response.body
+    assert_no_match I18n.t("shared.sidebar_pending_contacts.title"), response.body
+    assert_no_match "sidebar_pending_contacts", response.body
   end
 end

@@ -76,6 +76,11 @@ class Actor < ApplicationRecord
     attachable.variant :banner, resize_to_fill: [ 1600, 600 ]
   end
 
+  attribute :remove_avatar, :boolean, default: false
+  attribute :remove_cover_image, :boolean, default: false
+
+  before_save :purge_marked_attachments
+
   validates :name, presence: true
   validates :actorable_type, presence: true
   validate :acceptable_image_attachments
@@ -524,5 +529,10 @@ class Actor < ApplicationRecord
         errors.add(attribute, "deve ter no máximo #{MAX_IMAGE_SIZE / 1.megabyte}MB")
       end
     end
+  end
+
+  def purge_marked_attachments
+    avatar.purge_later if remove_avatar? && avatar.attached? && !attachment_changes.key?("avatar")
+    cover_image.purge_later if remove_cover_image? && cover_image.attached? && !attachment_changes.key?("cover_image")
   end
 end

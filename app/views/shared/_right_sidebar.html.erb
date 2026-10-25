@@ -17,9 +17,14 @@
     </div>
   <% end %>
 
-  <% if current_actor && (!@actor || @actor == current_actor) && (feature_enabled?(:contacts) || feature_enabled?(:suggestions)) %>
+  <%
+    show_pending = feature_enabled?(:contacts) && !@actor
+    show_suggestions = feature_enabled?(:suggestions)
+  %>
+
+  <% if current_actor && (!@actor || @actor == current_actor) && (show_pending || show_suggestions) %>
     <div class="hidden lg:flex bg-white rounded-lg border border-stone-border p-5 flex-col gap-5">
-      <% if feature_enabled?(:contacts) %>
+      <% if show_pending %>
         <%= turbo_frame_tag "sidebar_pending_contacts",
                             class: "block [&:has(>_.hidden)]:hidden",
                             data: {

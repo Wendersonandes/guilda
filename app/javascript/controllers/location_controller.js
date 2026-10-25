@@ -3,7 +3,9 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = ["country", "state", "city"]
   static values = {
-    selectText: { type: String, default: "Selecione" }
+    selectText: { type: String, default: "Selecione" },
+    loadingText: { type: String, default: "Carregando cidades..." },
+    errorText: { type: String, default: "Erro ao carregar cidades" }
   }
 
   connect() {
@@ -54,29 +56,40 @@ export default class extends Controller {
       }
       this.abortController = new AbortController()
 
-      fetch(`/locations/cities?state=${encodeURIComponent(state)}&country=${encodeURIComponent(country)}`, {
-        signal: this.abortController.signal
-      })
-        .then((r) => {
-          if (!r.ok) throw new Error("Network response was not ok")
-          return r.text()
+      if (this.hasCityTarget) {
+        this.cityTarget.setAttribute("aria-busy", "true")
+        const currentCity = this.cityTarget.value
+        this.cityTarget.innerHTML = `<option value="">${this.loadingTextValue}</option>`
+
+        fetch(`/locations/cities?state=${encodeURIComponent(state)}&country=${encodeURIComponent(country)}`, {
+          signal: this.abortController.signal
         })
-        .then((html) => {
-          if (this.hasCityTarget) {
-            const currentCity = this.cityTarget.value
-            this.cityTarget.innerHTML = html
-            if (currentCity) {
-              this.cityTarget.value = currentCity
+          .then((r) => {
+            if (!r.ok) throw new Error("Network response was not ok")
+            return r.text()
+          })
+          .then((html) => {
+            if (this.hasCityTarget) {
+              this.cityTarget.removeAttribute("aria-busy")
+              this.cityTarget.innerHTML = html
+              if (currentCity) {
+                this.cityTarget.value = currentCity
+              }
             }
-          }
-        })
-        .catch((error) => {
-          if (error.name !== "AbortError") {
-            console.error("Error loading cities:", error)
-          }
-        })
+          })
+          .catch((error) => {
+            if (error.name !== "AbortError") {
+              console.error("Error loading cities:", error)
+              if (this.hasCityTarget) {
+                this.cityTarget.removeAttribute("aria-busy")
+                this.cityTarget.innerHTML = `<option value="">${this.errorTextValue}</option>`
+              }
+            }
+          })
+      }
     } else if (this.hasCityTarget) {
       const selectText = this.selectTextValue
+      this.cityTarget.removeAttribute("aria-busy")
       this.cityTarget.innerHTML = `<option value=''>${selectText}</option>`
     }
   }

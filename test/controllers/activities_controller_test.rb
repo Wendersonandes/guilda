@@ -305,4 +305,15 @@ class ActivitiesControllerTest < ActionDispatch::IntegrationTest
     end
     assert_response :success
   end
+
+  test "shows pending followers in the feed sidebar" do
+    bob = users(:bob)
+    bob_actor = create_profile_for(bob, name: "Bob")
+    bob_actor.connect_to(@actor, as: :follower)
+
+    get activities_path
+    assert_response :success
+    assert_match I18n.t("shared.sidebar_pending_contacts.title"), response.body
+    assert_match "Bob", response.body
+  end
 end
