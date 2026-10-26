@@ -1,5 +1,5 @@
 <% if @profile.errors.any? %>
-  <div class="rounded-lg bg-red-50 p-4 text-sm text-red-600 border border-red-100 mb-6">
+  <div role="alert" class="rounded-lg bg-red-50 p-4 text-sm text-red-600 border border-red-100 mb-6">
     <ul class="list-disc pl-5">
       <% @profile.errors.full_messages.each do |msg| %>
         <li><%= msg %></li>
@@ -8,26 +8,36 @@
   </div>
 <% end %>
 
-<div data-controller="location" class="grid grid-cols-2 gap-4">
+<div data-controller="location"
+     data-location-select-text-value="<%= t(".select") %>"
+     data-location-loading-text-value="<%= t(".loading_cities") %>"
+     data-location-error-text-value="<%= t(".error_cities") %>"
+     class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+  <%= f.hidden_field :country, value: @profile.country.presence || "BR", data: { location_target: "country" } %>
+
   <div class="space-y-1">
-    <%= f.label :country, t(".country"), class: "block text-xs font-medium text-zinc-500" %>
-    <%= f.country_select :country, { only: ["BR"] }, {
-      data: { location_target: "country", action: "change->location#countryChanged" },
-      class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal"
-    } %>
-  </div>
-  <div class="space-y-1">
-    <%= f.label :state, t(".state"), class: "block text-xs font-medium text-zinc-500" %>
+    <%= f.label :state, t(".state"), class: "block text-sm font-medium text-zinc-700" %>
     <%= f.select :state, @states || [], { include_blank: t(".select"), selected: state_code_for(@profile.state) }, {
+      autocomplete: "address-level1",
+      aria: { invalid: @profile.errors[:state].any? },
       data: { location_target: "state", action: "change->location#stateChanged" },
-      class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal"
+      class: "w-full min-h-11 rounded-lg border #{ @profile.errors[:state].any? ? 'border-red-400 focus:ring-red-400' : 'border-stone-300 focus:ring-charcoal focus:border-charcoal' } px-3 py-2.5 text-sm bg-white text-charcoal focus:outline-none focus:ring-1"
     } %>
+    <% if @profile.errors[:state].any? %>
+      <p class="text-xs text-red-500 mt-1"><%= @profile.errors[:state].first %></p>
+    <% end %>
   </div>
+
   <div class="space-y-1">
-    <%= f.label :city, t(".city"), class: "block text-xs font-medium text-zinc-500" %>
+    <%= f.label :city, t(".city"), class: "block text-sm font-medium text-zinc-700" %>
     <%= f.select :city, @cities || [], { include_blank: t(".select") }, {
+      autocomplete: "address-level2",
+      aria: { invalid: @profile.errors[:city].any? },
       data: { location_target: "city" },
-      class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal"
+      class: "w-full min-h-11 rounded-lg border #{ @profile.errors[:city].any? ? 'border-red-400 focus:ring-red-400' : 'border-stone-300 focus:ring-charcoal focus:border-charcoal' } px-3 py-2.5 text-sm bg-white text-charcoal focus:outline-none focus:ring-1"
     } %>
+    <% if @profile.errors[:city].any? %>
+      <p class="text-xs text-red-500 mt-1"><%= @profile.errors[:city].first %></p>
+    <% end %>
   </div>
 </div>

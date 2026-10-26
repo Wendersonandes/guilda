@@ -1,5 +1,5 @@
 <% if @profile.errors.any? %>
-  <div class="rounded-lg bg-red-50 p-4 text-sm text-red-600 border border-red-100 mb-6">
+  <div role="alert" class="rounded-lg bg-red-50 p-4 text-sm text-red-600 border border-red-100 mb-6">
     <ul class="list-disc pl-5">
       <% @profile.errors.full_messages.each do |msg| %>
         <li><%= msg %></li>
@@ -8,32 +8,51 @@
   </div>
 <% end %>
 
-<div data-controller="occupations">
-  <div class="flex items-center justify-between pb-4">
-    <h3 class="text-sm font-semibold text-charcoal flex items-center gap-1.5">
-      <i data-lucide="briefcase" class="w-4 h-4 text-zinc-400"></i>
-      <span>Categorias Profissionais</span>
-    </h3>
-    <span class="text-xs text-zinc-500">Selecione entre 1 e 3 áreas de atuação</span>
-  </div>
-  
-  <div data-occupations-target="warning" class="hidden rounded-lg bg-red-50 p-3 text-sm text-red-600 border border-red-100 transition-all mb-4">
-    Você já selecionou o limite máximo de 3 categorias.
+<div data-controller="occupations"
+     data-occupations-counter-template-value="<%= t("profile_steps.occupation.counter", default: "%{count} de 3 selecionadas") %>">
+  <%= hidden_field_tag "profile[occupation_list][]", "" %>
+
+  <div class="flex flex-wrap items-center justify-between gap-2 pb-4">
+    <h2 id="occupations_section_heading" class="text-sm font-semibold text-charcoal flex items-center gap-1.5">
+      <i data-lucide="briefcase" aria-hidden="true" class="w-4 h-4 text-zinc-400"></i>
+      <span><%= t("profile_steps.occupation.title", default: "Categorias Profissionais") %></span>
+    </h2>
+    <div class="flex items-center gap-2">
+      <span id="occupations_counter" data-occupations-target="counter" class="text-xs font-semibold text-charcoal bg-stone-100 px-2.5 py-0.5 rounded-full">
+        <%= t("profile_steps.occupation.counter", count: @profile.occupation_list.size, default: "#{@profile.occupation_list.size} de 3 selecionadas") %>
+      </span>
+      <span id="occupations_limit_hint" class="text-xs text-zinc-500 font-medium">
+        <%= t("profile_steps.occupation.limit_hint", default: "Selecione entre 1 e 3 áreas de atuação") %>
+      </span>
+    </div>
   </div>
 
-  <div class="flex flex-wrap gap-2">
+  <div data-occupations-target="warning" role="alert" aria-live="assertive" class="hidden rounded-lg bg-red-50 p-3 text-sm text-red-600 border border-red-100 transition-all mb-4">
+    <%= t("profile_steps.occupation.limit_warning", default: "Você já selecionou o limite máximo de 3 categorias.") %>
+  </div>
+
+  <% if @profile.errors[:occupation_list].any? %>
+    <div role="alert" class="rounded-lg bg-red-50 p-3 text-sm text-red-600 border border-red-100 mb-4">
+      <%= @profile.errors[:occupation_list].first %>
+    </div>
+  <% end %>
+
+  <div role="group"
+       aria-labelledby="occupations_section_heading"
+       aria-describedby="occupations_limit_hint"
+       class="flex flex-wrap gap-2">
     <% Profile::OCCUPATIONS.each do |occupation| %>
       <% name = occupation["name"] %>
       <% description = occupation["description"] %>
-      <label class="relative inline-flex items-center cursor-pointer group" title="<%= description %>">
-        <%= f.check_box :occupation_list, 
-              { multiple: true, 
+      <label class="relative inline-flex items-center cursor-pointer group transition-opacity" title="<%= description %>">
+        <%= f.check_box :occupation_list,
+              { multiple: true,
                 class: "peer sr-only",
                 data: { occupations_target: "checkbox", action: "change->occupations#toggle" }
-              }, 
+              },
               name, nil %>
-        
-        <div class="px-3 py-1.5 text-sm font-medium rounded-full border border-stone-200 bg-white text-zinc-600 hover:bg-stone-50 peer-checked:bg-charcoal peer-checked:text-white peer-checked:border-charcoal peer-checked:hover:bg-zinc-800 transition-all whitespace-nowrap">
+
+        <div class="min-h-11 sm:min-h-0 flex items-center px-3.5 py-2 sm:py-1.5 text-sm font-medium rounded-full border border-stone-200 bg-white text-zinc-600 hover:bg-stone-50 peer-checked:bg-charcoal peer-checked:text-white peer-checked:border-charcoal peer-checked:hover:bg-zinc-800 peer-focus-visible:ring-2 peer-focus-visible:ring-charcoal peer-focus-visible:ring-offset-1 transition-all whitespace-nowrap">
           <%= name %>
         </div>
       </label>

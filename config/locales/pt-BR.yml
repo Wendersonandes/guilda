@@ -297,6 +297,14 @@ pt-BR:
       state: "Estado"
       city: "Cidade"
       select: "Selecione"
+      loading_cities: "Carregando cidades..."
+      error_cities: "Erro ao carregar cidades"
+    occupation:
+      title: "Categorias Profissionais"
+      limit_hint: "Selecione entre 1 e 3 áreas de atuação"
+      counter: "%{count} de 3 selecionadas"
+      limit_warning: "Você já selecionou o limite máximo de 3 categorias."
+      presence_error: "Selecione pelo menos 1 categoria profissional."
 
   # === Comments ===============================================================
   comments:

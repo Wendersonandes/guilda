@@ -17,6 +17,31 @@ class ProfileStepsController < ApplicationController
   end
 
   def update
+    if params[:wizard_action] == "back" || params[:target_step].present?
+      target = params[:target_step].presence&.to_sym
+      step_keys = Profile::FORM_STEPS.keys
+      target = target if step_keys.include?(target)
+      target ||= previous_step_for(step)
+
+      if step == :occupation
+        raw_list = params.fetch(:profile, {}).fetch(:occupation_list, [])
+        cleaned_list = Array(raw_list).reject(&:blank?)
+        if cleaned_list.size <= 3
+          @profile.occupation_list = cleaned_list
+          @profile.save(validate: false)
+        end
+        redirect_to wizard_path(target) and return
+      elsif step == :location
+        @profile.form_step = :location
+        if @profile.update(profile_params)
+          redirect_to wizard_path(target) and return
+        else
+          setup_location_variables
+          render :show, status: :unprocessable_entity and return
+        end
+      end
+    end
+
     @profile.form_step = step
     if @profile.update(profile_params)
       if step == steps.last
@@ -36,7 +61,7 @@ class ProfileStepsController < ApplicationController
 
   def setup_location_variables
     states_hash = CS.states(:BR) || {}
-    @states = states_hash.map { |code, name| [name, code.to_s] }
+    @states = states_hash.map { |code, name| [ name, code.to_s ] }
 
     state_code = state_code_for(@profile.state)
     if state_code.present?
@@ -56,10 +81,18 @@ class ProfileStepsController < ApplicationController
 
   def profile_params
     if step == :occupation
-      params.require(:profile).permit(occupation_list: [])
+      raw_list = params.fetch(:profile, {}).fetch(:occupation_list, [])
+      cleaned_list = Array(raw_list).reject(&:blank?)
+      ActionController::Parameters.new(profile: { occupation_list: cleaned_list }).require(:profile).permit(occupation_list: [])
     else
       params.require(:profile).permit(Profile::FORM_STEPS[step.to_sym])
     end
+  end
+
+  def previous_step_for(current_step)
+    keys = Profile::FORM_STEPS.keys
+    idx = keys.index(current_step.to_sym)
+    (idx && idx > 0) ? keys[idx - 1] : keys.first
   end
 
   def finish_wizard_path
