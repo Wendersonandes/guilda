@@ -143,7 +143,7 @@
               <% if profile.actor.cover_image.attached? %>
                 <%= image_tag profile.actor.cover_image.variant(:thumb), class: "w-full h-20 object-cover border-b border-stone-border" %>
               <% else %>
-                <div class="w-full h-14 bg-stone-100 border-b border-stone-border/80" aria-hidden="true"></div>
+                <div class="w-full h-20 bg-stone-100 border-b border-stone-border" aria-hidden="true"></div>
               <% end %>
 
               <div class="p-5 pt-0 relative flex flex-col">

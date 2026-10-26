@@ -74,6 +74,17 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_no_match I18n.t("shared.connection_button.remove"), response.body
   end
 
+  test "renders consistent card header height for profiles with and without cover image" do
+    sign_in @user
+    other_user = users(:bob)
+    create_profile_for(other_user, name: "Bob Designer")
+
+    get profiles_path
+    assert_response :success
+    assert_select ".h-20.bg-stone-100"
+    assert_select ".h-14.bg-stone-100", count: 0
+  end
+
   test "should not include incomplete profiles in index" do
     sign_in @user
     other_user = users(:bob)
