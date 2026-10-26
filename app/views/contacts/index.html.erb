@@ -188,7 +188,7 @@
             <!-- Actions -->
             <div class="flex items-center gap-2 flex-shrink-0">
               <%= link_to public_path_for(receiver),
-                          class: "hidden sm:inline-flex items-center gap-1 text-xs font-medium text-zinc-700 hover:text-charcoal hover:bg-stone-100 px-3 py-1.5 rounded-md border border-stone-300/80 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-charcoal focus-visible:ring-offset-1",
+                          class: "hidden sm:inline-flex items-center gap-1 text-xs font-medium text-zinc-700 hover:text-charcoal hover:bg-stone-100 px-3 py-1.5 rounded-md border border-stone-300/80 transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-charcoal focus-visible:ring-offset-1",
                           data: { turbo_frame: "_top" } do %>
                 <span><%= t(".view_profile") %></span>
                 <i data-lucide="arrow-right" aria-hidden="true" class="w-3.5 h-3.5 text-zinc-400"></i>
@@ -196,11 +196,11 @@
 
               <%= button_to contact_path(contact),
                             method: :delete,
-                            class: "w-11 h-11 rounded-md flex items-center justify-center text-zinc-500 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer border-0 bg-transparent p-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-charcoal focus-visible:ring-offset-1",
+                            class: "min-h-11 sm:min-h-0 inline-flex items-center justify-center gap-1.5 text-xs font-medium text-zinc-600 hover:text-red-700 hover:bg-red-50 hover:border-red-200 border border-stone-300 bg-white px-3 py-2 sm:py-1.5 rounded-md transition-colors cursor-pointer group focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-charcoal focus-visible:ring-offset-1",
                             title: t(".remove"),
                             data: { turbo_confirm: t(".remove_confirm", name: receiver.name) } do %>
-                <i data-lucide="user-minus" aria-hidden="true" class="w-4 h-4"></i>
-                <span class="sr-only"><%= t(".remove") %></span>
+                <i data-lucide="user-minus" aria-hidden="true" class="w-3.5 h-3.5 text-zinc-400 group-hover:text-red-600 transition-colors"></i>
+                <span><%= t(".remove") %></span>
               <% end %>
             </div>
           </div>

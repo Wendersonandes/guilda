@@ -164,4 +164,12 @@ class ContactsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "span[title='#{I18n.t('contacts.index.mutual_badge_title')}']", text: /Mútuo/
   end
+
+  test "displays explicit unfollow button with text and confirmation prompt" do
+    @alice.connect_to(@bob, as: :follower)
+    get contacts_path
+    assert_response :success
+    assert_select "button[title='#{I18n.t('contacts.index.remove')}']", text: /#{I18n.t('contacts.index.remove')}/
+    assert_select "[data-turbo-confirm*='#{@bob.name}']"
+  end
 end
