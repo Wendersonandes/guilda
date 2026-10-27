@@ -18,7 +18,12 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
   test "guest user should get landing page at about path" do
     get about_url
     assert_response :success
-    assert_select "h1", text: /Conectando o trabalho invisível das artes visuais/
+    assert_select "title", text: /Guilda — Rede e Diretório de Profissionais da Cultura/
+    assert_select "h1", text: /Para quem constrói a cultura nacional com as próprias mãos/
+    assert_select "a[href=?]", new_user_registration_path(plan: :trial)
+    assert_select "a[href=?]", new_user_registration_path(plan: :annual)
+    assert_select "a[href=?]", new_user_registration_path(plan: :monthly)
+    assert_select "a[href=?]", profiles_path(occupation: "Produção Cultural")
   end
 
   test "authenticated user should get the profiles directory at root" do

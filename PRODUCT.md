@@ -8,45 +8,44 @@ web
 
 ## Users
 
-A plataforma atende a dois grupos principais de usuários do setor de Artes Visuais:
-1. **Profissionais e Fornecedores**: Produtores, expógrafos, cenógrafos, transportadores especializados, designers, contadores e escritores de projetos. Acessam a plataforma para publicar seu portfólio, expandir clientela, receber feedbacks e recomendações.
-2. **Artistas Visuais e Contratantes**: Pintores, fotógrafos, escultores, galerias, museus e instituições culturais. Buscam conectar-se a fornecedores de confiança, montar equipes para editais aprovados, e contratar serviços específicos.
+A plataforma é voltada para o setor da **Cultura em Geral** — abrangendo **Artes Cênicas, Artes Visuais, Literatura, Audiovisual, Patrimônio Cultural, Artesanato**, entre outras linguagens. O foco principal é divulgar o trabalho e os serviços de quem atua nos bastidores (**Backstage**), estruturando-se em torno de dois perfis de uso:
+
+1. **Trabalhadores e Prestadores de Serviço da Cultura (Público Principal — Backstage)**: Produtores, cenógrafos, iluminadores, sonorizadores, figurinistas, expógrafos, montadores, editores audiovisuais, revisores, diagramadores, conservadores/restauradores, transportadores especializados, designers, assessores de imprensa, contadores e elaboradores de projetos. Acessam a plataforma para divulgar seus serviços e portfólio, expandir sua clientela e fortalecer sua reputação. **As ferramentas de publicação e divulgação são pensadas especificamente para quem é prestador de serviço.**
+2. **Contratantes (Artistas, Produtores e Outros Profissionais)**: Artistas de qualquer linguagem, autores, diretores, curadores, coletivos, companhias, produtoras, editoras, museus e instituições culturais. Os consumidores dos produtos e serviços podem ser artistas ou outros profissionais do setor. Qualquer possível contratante pode se cadastrar e utilizar a plataforma para buscar fornecedores de confiança, montar equipes técnicas e contratar serviços especializados.
 
 ### Casos de Uso Principais
 
-#### Artistas
-- **Montagem de equipe regional**: Artista aprovado em edital em outro estado precisa montar equipe local do zero, sem conhecer profissionais locais.
-- **Escrita de projetos**: Artista quer escrever um projeto para um edital, mas não tem o tempo ou a expertise necessária para tirar o projeto do rascunho.
-- **Design de exposição**: Artista que precisa encontrar um designer para criar o folder/identidade visual de sua nova exposição.
-- **Atualização de portfólio**: Artista que precisa encontrar um fotógrafo para atualizar a foto do seu currículo.
-- **Modelagem 3D**: Artista que quer encontrar um profissional para criar uma renderização em 3D de seu projeto expositivo.
-- **Documentação burocrática**: Artista que precisa de Carta de Anuência de outros profissionais para cumprir os requisitos de inscrição em Edital Público.
+#### Prestadores de Serviço (Backstage)
+- **Divulgação de portfólio técnico e serviços**: Profissional de bastidores (cenotécnico, iluminador, expógrafo, revisor, produtor, etc.) publica projetos realizados, detalhando sua função técnica em cada entrega.
+- **Expansão de clientela entre linguagens**: Prestador que já atende artistas ou produtoras locais passa a ser encontrado por contratantes de outras regiões e segmentos culturais (cênicas, audiovisual, literatura, artes visuais, patrimônio, artesanato).
+- **Subcontratação e parcerias no backstage**: Um produtor executivo ou diretor técnico utiliza a plataforma para encontrar outros especialistas para compor uma entrega pontual.
+- **Reputação na comunidade**: Profissional consolida seu histórico de entregas e recebe recomendações de artistas e outros profissionais que contrataram seus serviços.
 
-#### Profissionais
-- **Produção pontual**: Um produtor(a) quer encontrar um profissional para uma produção pontual.
-- **Expansão de clientela**: Profissional já presta serviço para Artistas, mas deseja expandir sua clientela.
-- **Reputação na comunidade**: Profissional recebe feedback e pode ser recomendado pela comunidade.
-- **Registro de montagem**: Profissional precisa encontrar um fotógrafo para registrar a montagem de uma exposição.
+#### Contratantes (Artistas e Outros Profissionais)
+- **Montagem de equipe regional**: Artista, companhia teatral, produtora audiovisual ou curador com projeto aprovado para circular ou realizar ação em outro estado precisa montar equipe técnica local do zero.
+- **Escrita de projetos e gestão burocrática**: Artista, artesão ou coletivo quer inscrever uma proposta em edital público ou lei de incentivo, mas precisa contratar um elaborador de projetos, produtor ou contador especializado em prestação de contas.
+- **Serviços editoriais, visuais e de comunicação**: Autor, artista ou produtor que precisa contratar designer gráfico, diagramador, revisor textual, fotógrafo de registro ou assessoria de imprensa para um lançamento, espetáculo ou exposição.
+- **Infraestrutura técnica, acervo e logística**: Contratação de cenografia, expografia, modelagem 3D, restauração de patrimônio, transporte especializado ou emissão de Carta de Anuência de profissionais técnicos para inscrição em editais públicos.
 
 ## Product Purpose
 
-Simplificar, centralizar e profissionalizar a busca e a contratação de profissionais e fornecedores no setor das Artes Visuais no Brasil. O sucesso significa estabelecer a Guilda como a ferramenta padrão de trabalho para contratação artística, permitindo aos profissionais exporem seus portfólios e aos contratantes montarem equipes em poucos cliques.
+Dar visibilidade, centralizar e profissionalizar a divulgação e a contratação de trabalhadores e prestadores de serviço que atuam no **Backstage da Cultura** no Brasil — contemplando Artes Cênicas, Artes Visuais, Literatura, Audiovisual, Patrimônio Cultural, Artesanato, entre outros setores. O sucesso significa estabelecer a Guilda como a ferramenta padrão de trabalho para quem faz a cultura acontecer nos bastidores: oferecendo ferramentas de publicação e divulgação desenhadas para prestadores de serviço e permitindo que artistas e demais profissionais contratantes montem equipes com facilidade.
 
 ### Finanças & Sustentabilidade
-- **Plano de Assinatura**: O mecanismo de financiamento da plataforma será via assinatura anual cobrada apenas dos usuários cadastrados como "fornecedores/profissionais".
-- **Acesso Gratuito**: Os demais usuários poderão usar a plataforma gratuitamente e interagir com os usuários cadastrados como profissionais.
+- **Plano de Assinatura**: O mecanismo de financiamento da plataforma será via assinatura anual cobrada apenas dos usuários que utilizam as ferramentas de publicação e divulgação como prestadores de serviço/profissionais.
+- **Acesso Gratuito para Contratantes**: Qualquer possível contratante (artistas, produtores, instituições ou outros profissionais) pode se cadastrar gratuitamente para buscar, seguir e contatar os prestadores de serviço na plataforma.
 
 ## Brand Personality
 
 - **Minimalista**: Uma interface limpa, moderna e minimalista, com uma economia de cores principalmente nos botões.
 - **Profissional**: O objetivo da plataforma é ser usada estritamente como uma ferramenta de trabalho, sem a necessidade de torná-la um playground colorido de onde as pessoas não querem sair.
 - **Elegante**: Aparência elegante, com atenção rigorosa a detalhes como tipografia e espaçamento entre os elementos.
-- **Trabalho Invisível**: A interface deve transmitir rigor técnico e estético, onde o usuário final compreenda que existe um trabalho invisível por trás de cada escolha estética e elemento apresentado em tela.
+- **Trabalho Invisível**: A interface deve transmitir rigor técnico e estético, onde o usuário final compreenda que existe um trabalho invisível por trás de cada escolha estética e elemento apresentado em tela — refletindo o próprio trabalho de bastidores dos profissionais da plataforma.
 
 ## Anti-references
 
 - **Playgrounds coloridos**: Interfaces super saturadas, cheias de elementos decorativos desnecessários ou gamificação agressiva para reter atenção.
-- **Estética de Rede Social Mainstream**: Excesso de notificações chamativas, feeds poluídos e elementos que competem com o portfólio de arte.
+- **Estética de Rede Social Mainstream**: Excesso de notificações chamativas, feeds poluídos e elementos que competem com o portfólio de projetos e serviços.
 - **SaaS-cream genérico**: Cards com gradientes vibrantes em roxo/azul, ilustrações corporativas intercambiáveis e falta de sobriedade.
 - **Descuido tipográfico e de espaçamento**: Falta de alinhamento cirúrgico, uso de fontes padrão de navegador sem refinamento ou botões excessivamente coloridos sem propósito.
 
@@ -54,8 +53,8 @@ Simplificar, centralizar e profissionalizar a busca e a contratação de profiss
 
 1. **O Trabalho Invisível (Invisible Craft)** — A interface transparece rigor técnico, precisão de espaçamento, alinhamento cirúrgico e tipografia sofisticada. O usuário percebe a qualidade no silêncio e na organização visual.
 2. **Economia de Cor (Chromatic Restraint)** — A cor é uma ferramenta funcional de foco e ação (principalmente nos botões), e não uma distração decorativa. A plataforma é uma ferramenta de produtividade.
-3. **Foco no Portfólio (Focus on the Work)** — A interface recua para que as imagens e projetos dos profissionais sejam os verdadeiros protagonistas visuais da tela.
-4. **Fricção Mínima na Descoberta (Zero-friction Search)** — Organização da informação estruturada de forma que o usuário encontre profissionais e serviços com o menor número possível de cliques.
+3. **Foco no Portfólio (Focus on the Work)** — A interface recua para que os registros, projetos e entregas técnicas dos prestadores de serviço sejam os verdadeiros protagonistas visuais da tela.
+4. **Fricção Mínima na Descoberta (Zero-friction Search)** — Organização da informação estruturada de forma que o contratante encontre profissionais e serviços com o menor número possível de cliques.
 
 ## Accessibility & Inclusion
 
@@ -72,8 +71,8 @@ Simplificar, centralizar e profissionalizar a busca e a contratação de profiss
 - Atualização de informações de conta: Alteração de senha e e-mail (com validação se o e-mail inserido existe/é válido).
 
 #### Profile
-- Perfil público: Perfil público do usuário com avatar, bio, links e portfólio.
-- Campo principal de atuação: Escolha de área principal de atuação (como Artes Visuais, Música, Artes Cênicas) e categorias secundárias (como expografia, cenografia, transporte, design, escrita de projetos, contador).
+- Perfil público: Perfil público do usuário com avatar, bio, links e portfólio de serviços/projetos.
+- Campo principal de atuação: Escolha de áreas e categorias de atuação profissional na cadeia produtiva da cultura (Artes Cênicas, Artes Visuais, Literatura, Audiovisual, Patrimônio Cultural, Artesanato, produção cultural, cenografia, expografia, transporte, design, escrita de projetos, prestação de contas, entre outras).
 - Interações sociais: Seguir outros perfis.
 - Projetos: Publicar projetos, curtir e comentar em projetos de outros perfis.
 - Feed: Feed de projetos de perfis seguidos, com paginação ou rolagem infinita (infinite scroll).

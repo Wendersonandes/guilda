@@ -399,7 +399,7 @@ pt-BR:
       empty_title: "Nenhum contato encontrado"
       empty_subtitle: "Tente refinar os filtros aplicados para localizar quem procura."
       no_contacts_title: "Você ainda não segue nenhum profissional"
-      no_contacts_subtitle: "Siga profissionais e fornecedores para acompanhar seus trabalhos e atualizações no feed."
+      no_contacts_subtitle: "Siga profissionais e prestadores de serviço da cultura para acompanhar seus trabalhos e atualizações no feed."
       explore_profiles: "Explorar profissionais"
       pending_section_title: "Seguidores"
       mutual_badge: "Mútuo"
@@ -409,7 +409,7 @@ pt-BR:
   profiles:
     index:
       title: "Profissionais e Fornecedores"
-      subtitle: "Conecte-se a profissionais de expografia, transporte de obras, montagem, produção cultural e design para compor sua equipe."
+      subtitle: "Consulte portfólios técnicos e encontre prestadores de serviço da cultura por especialidade, cidade e disponibilidade."
       search_label: "Busca"
       search_placeholder: "Buscar por nome..."
       category_label: "Categoria Profissional"
@@ -439,12 +439,12 @@ pt-BR:
       edit_profile: "Editar perfil"
       new_project: "Novo projeto"
       new_project_card_title: "Adicionar ao portfólio"
-      new_project_card_subtitle: "Publique uma nova obra, expografia ou produção técnica no seu catálogo."
+      new_project_card_subtitle: "Publique um projeto, serviço técnico ou produção de bastidores no seu portfólio."
       image_count:
         one: "1 imagem no projeto"
         other: "%{count} imagens no projeto"
       no_projects_owner_title: "Seu portfólio está vazio"
-      no_projects_owner_subtitle: "Publique suas obras, expografias ou produções para que curadores e contratantes conheçam seu trabalho."
+      no_projects_owner_subtitle: "Divulgue seus serviços, projetos técnicos e entregas de bastidores para que artistas, produtores e contratantes conheçam seu trabalho."
       no_projects_owner_cta: "Adicionar primeiro projeto"
       no_projects_visitor_title: "Nenhum projeto publicado"
       no_projects_visitor_subtitle: "Este perfil ainda não adicionou projetos ao portfólio."
@@ -527,12 +527,12 @@ pt-BR:
       contacts: "Contatos"
       groups: "Grupos"
       about: "Sobre"
-      guest_blurb: "A plataforma de trabalho das artes visuais no Brasil."
+      guest_blurb: "A plataforma dos trabalhadores e prestadores de serviço da cultura no Brasil."
     right_sidebar:
       suggestions_title: "Sugestões"
       suggestions_subtitle: "Pessoas com quem você pode se conectar"
       guest_title: "Faça parte da Guilda"
-      guest_subtitle: "Crie sua conta para publicar seu portfólio, conectar-se a profissionais e montar equipes."
+      guest_subtitle: "Crie sua conta para divulgar seus serviços de backstage ou encontrar profissionais para seu projeto cultural."
       guest_sign_up: "Criar conta"
       guest_sign_in: "Já tenho conta — entrar"
     contact_card:

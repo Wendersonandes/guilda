@@ -7,7 +7,7 @@ class PagesController < ApplicationController
 
   # Renders the public landing page.
   def landing
-    @profiles_count = Profile.where(wizard_complete: true).count
+    @profiles_count = Profile.listed_in_directory.count
     @occupations = Profile::OCCUPATIONS
   end
 end

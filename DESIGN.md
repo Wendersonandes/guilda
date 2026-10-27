@@ -1,6 +1,6 @@
 ---
 name: Guilda
-description: Plataforma de conexão e contratação para o ecossistema de Artes Visuais.
+description: Plataforma de conexão e divulgação para trabalhadores e prestadores de serviço dos bastidores da Cultura.
 colors:
   primary: "#c84a32"        # Terracotta (Accent)
   primary-hover: "#ad3c26"  # Terracotta Hover
@@ -79,7 +79,7 @@ A paleta de cores do Guilda segue a doutrina da restrição cromática, focando 
 
 ## 3. Typography
 
-A tipografia do Guilda estabelece um diálogo entre o clássico e o contemporâneo, facilitando a leitura de biografias de artistas e descrições técnicas de fornecedores.
+A tipografia do Guilda estabelece um diálogo entre o clássico e o contemporâneo, facilitando a leitura de biografias de profissionais da cultura e descrições técnicas de prestadores de serviço.
 
 **Display Font:** `Playfair Display`, `Georgia`, `serif`
 **Body Font:** `ui-sans-serif`, `system-ui`, `sans-serif` (Tailwind default sans stack)
@@ -150,7 +150,7 @@ O Guilda adota um sistema essencialmente bidimensional e plano, em conformidade 
 - **Do** garantir que todas as imagens de portfólio de projetos estejam em contêineres limpos, sem filtros ou bordas coloridas artificiais.
 
 ### Don't:
-- **Don't** criar layouts barulhentos ou saturados de cores que compitam com o portfólio visual dos artistas e fornecedores.
+- **Don't** criar layouts barulhentos ou saturados de cores que compitam com o portfólio de projetos e serviços dos profissionais.
 - **Don't** usar degradês coloridos em botões, textos (`background-clip: text`) ou fundos.
 - **Don't** utilizar glassmorphism (desfoque de fundo decorativo em cards) como padrão visual.
 - **Don't** usar bordas coloridas grossas ou laterais destacadas (side-stripe borders) como sinalizadores em cards ou alertas.
