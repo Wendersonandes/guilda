@@ -46,7 +46,22 @@ class User < ApplicationRecord
   belongs_to :current_profile, class_name: "Actor", optional: true
   has_many :notifications, as: :recipient, dependent: :destroy, class_name: "Noticed::Notification"
 
+  pay_customer default_payment_processor: :stripe
+
+  delegate :subscribed?, :subscription, to: :payment_processor, allow_nil: true
+
   attr_accessor :profile_name
+
+  # Name used by Pay to sync customer name with payment processors (e.g., Stripe)
+  def pay_customer_name
+    current_profile&.name.presence || email
+  end
+
+  # Synchronizes the "Professional" role and permissions on the current profile
+  # based on whether the user has an active or trialing subscription.
+  def sync_professional_role!
+    UserSubscriptionRoleSyncService.new(self).call
+  end
 
   # Role and permission delegators to the current profile actor
   def add_role(role, other)

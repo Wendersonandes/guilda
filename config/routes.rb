@@ -87,6 +87,16 @@ Rails.application.routes.draw do
     mount Flipper::UI.app(Flipper) => "/admin/flipper"
   end
 
+  # Payments and Webhooks (Pay gem)
+  mount Pay::Engine, at: "/pay"
+
+  # Subscriptions Checkout & Customer Portal
+  resource :checkout, only: [ :create ] do
+    get :success
+    get :cancel
+  end
+  resource :billing_portal, only: [ :create ]
+
   # Locations — dynamic state/city loading
   get "locations/states", to: "locations#states"
   get "locations/cities", to: "locations#cities"

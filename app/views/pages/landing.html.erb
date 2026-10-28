@@ -179,7 +179,7 @@
   </section>
 
   <!-- Pricing Section (CRO / Transparency) -->
-  <section class="space-y-8">
+  <section id="pricing" class="space-y-8">
     <div class="text-center space-y-3">
       <h2 class="font-serif text-3xl sm:text-4xl font-bold text-charcoal">Investimento transparente para valorizar seu ofício</h2>
       <p class="text-sm sm:text-base text-zinc-600 max-w-xl mx-auto leading-relaxed">
@@ -216,8 +216,14 @@
           </ul>
         </div>
         <div>
-          <%= link_to new_user_registration_path(plan: :trial), class: "w-full min-h-11 inline-flex items-center justify-center text-center bg-white hover:bg-stone-50 text-charcoal border border-stone-border py-2.5 px-4 rounded-lg font-medium text-sm transition-colors cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2" do %>
-            Começar 30 dias grátis
+          <% if user_signed_in? %>
+            <%= link_to account_path, class: "w-full min-h-11 inline-flex items-center justify-center text-center bg-white hover:bg-stone-50 text-charcoal border border-stone-border py-2.5 px-4 rounded-lg font-medium text-sm transition-colors cursor-pointer" do %>
+              Minha conta
+            <% end %>
+          <% else %>
+            <%= link_to new_user_registration_path(plan: :trial), class: "w-full min-h-11 inline-flex items-center justify-center text-center bg-white hover:bg-stone-50 text-charcoal border border-stone-border py-2.5 px-4 rounded-lg font-medium text-sm transition-colors cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2" do %>
+              Começar 30 dias grátis
+            <% end %>
           <% end %>
         </div>
       </div>
@@ -260,8 +266,14 @@
           </ul>
         </div>
         <div>
-          <%= link_to new_user_registration_path(plan: :annual), class: "w-full min-h-11 inline-flex items-center justify-center text-center bg-brand hover:bg-brand-hover text-white py-2.5 px-4 rounded-lg font-medium text-sm transition-colors shadow-xs cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2" do %>
-            Cadastrar com 30 dias grátis
+          <% if user_signed_in? %>
+            <%= button_to checkout_path(plan: :annual), method: :post, data: { turbo: false }, class: "w-full min-h-11 inline-flex items-center justify-center text-center bg-brand hover:bg-brand-hover text-white py-2.5 px-4 rounded-lg font-medium text-sm transition-colors shadow-xs cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2" do %>
+              Assinar Plano Anual (30 dias grátis)
+            <% end %>
+          <% else %>
+            <%= link_to new_user_registration_path(plan: :annual), class: "w-full min-h-11 inline-flex items-center justify-center text-center bg-brand hover:bg-brand-hover text-white py-2.5 px-4 rounded-lg font-medium text-sm transition-colors shadow-xs cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2" do %>
+              Cadastrar com 30 dias grátis
+            <% end %>
           <% end %>
         </div>
       </div>
@@ -297,8 +309,14 @@
           </ul>
         </div>
         <div>
-          <%= link_to new_user_registration_path(plan: :monthly), class: "w-full min-h-11 inline-flex items-center justify-center text-center bg-white hover:bg-stone-50 text-charcoal border border-stone-border py-2.5 px-4 rounded-lg font-medium text-sm transition-colors cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2" do %>
-            Escolher plano mensal
+          <% if user_signed_in? %>
+            <%= button_to checkout_path(plan: :monthly), method: :post, data: { turbo: false }, class: "w-full min-h-11 inline-flex items-center justify-center text-center bg-white hover:bg-stone-50 text-charcoal border border-stone-border py-2.5 px-4 rounded-lg font-medium text-sm transition-colors cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2" do %>
+              Assinar Plano Mensal
+            <% end %>
+          <% else %>
+            <%= link_to new_user_registration_path(plan: :monthly), class: "w-full min-h-11 inline-flex items-center justify-center text-center bg-white hover:bg-stone-50 text-charcoal border border-stone-border py-2.5 px-4 rounded-lg font-medium text-sm transition-colors cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2" do %>
+              Escolher plano mensal
+            <% end %>
           <% end %>
         </div>
       </div>

@@ -1,0 +1,24 @@
+<% content_for :title, "Checkout Cancelado — Guilda" %>
+
+<div class="max-w-lg mx-auto my-12 p-8 bg-white border border-stone-border rounded-xl shadow-xs text-center space-y-6">
+  <div class="w-16 h-16 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center mx-auto border border-amber-100">
+    <i data-lucide="alert-circle" class="w-8 h-8"></i>
+  </div>
+
+  <div class="space-y-2">
+    <h1 class="font-serif text-3xl font-bold text-charcoal">Processo cancelado</h1>
+    <p class="text-sm text-zinc-600 leading-relaxed">
+      A finalização da assinatura não foi concluída e nenhuma cobrança foi realizada. Você pode tentar novamente a qualquer momento.
+    </p>
+  </div>
+
+  <div class="pt-4 flex flex-col sm:flex-row justify-center gap-3">
+    <%= link_to root_path(anchor: "pricing"), class: "min-h-11 inline-flex items-center justify-center gap-2 bg-brand hover:bg-brand-hover text-white px-5 py-2.5 rounded-lg font-medium text-sm transition-colors shadow-xs" do %>
+      <i data-lucide="repeat" class="w-4 h-4"></i>
+      <span>Ver planos disponíveis</span>
+    <% end %>
+    <%= link_to root_path, class: "min-h-11 inline-flex items-center justify-center gap-2 bg-white hover:bg-stone-50 text-charcoal border border-stone-border px-5 py-2.5 rounded-lg font-medium text-sm transition-colors" do %>
+      <span>Voltar ao início</span>
+    <% end %>
+  </div>
+</div>

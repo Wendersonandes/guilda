@@ -59,6 +59,11 @@ gem "pundit", "~> 2.4"
 # Notifications
 gem "noticed"
 gem "mailgun-ruby"
+
+# Payments & Subscriptions
+gem "pay"
+gem "stripe"
+
 gem "ransack"
 
 # Location — country/city selects

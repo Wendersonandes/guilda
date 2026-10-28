@@ -75,4 +75,28 @@ class UserTest < ActiveSupport::TestCase
     assert_not @bob.active_for_authentication?
     assert_equal :banned, @bob.inactive_message
   end
+
+  test "user is configured as a Pay customer with Stripe as default processor" do
+    assert_respond_to @bob, :payment_processor
+    assert_respond_to @bob, :pay_subscriptions
+    assert_respond_to @bob, :pay_charges
+    assert_respond_to @bob, :subscribed?
+    assert_respond_to @bob, :subscription
+
+    customer = @bob.set_payment_processor(:stripe)
+    assert_equal "stripe", customer.processor
+    assert_equal @bob, customer.owner
+    assert_respond_to customer, :subscriptions
+    assert_respond_to customer, :charges
+    assert_respond_to customer, :subscribe
+    assert_respond_to customer, :checkout
+    assert_respond_to customer, :billing_portal
+  end
+
+  test "pay_customer_name delegates to current_profile name or falls back to email" do
+    assert_equal "Bob", @bob.pay_customer_name
+
+    @bob.current_profile = nil
+    assert_equal @bob.email, @bob.pay_customer_name
+  end
 end

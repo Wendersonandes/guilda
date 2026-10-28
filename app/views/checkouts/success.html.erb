@@ -1,0 +1,27 @@
+<% content_for :title, "Assinatura Confirmada — Guilda" %>
+
+<div class="max-w-lg mx-auto my-12 p-8 bg-white border border-stone-border rounded-xl shadow-xs text-center space-y-6">
+  <div class="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto border border-emerald-100">
+    <i data-lucide="check-circle" class="w-8 h-8"></i>
+  </div>
+
+  <div class="space-y-2">
+    <h1 class="font-serif text-3xl font-bold text-charcoal">Assinatura iniciada com sucesso!</h1>
+    <p class="text-sm text-zinc-600 leading-relaxed">
+      Sua assinatura foi processada. O seu período de avaliação está ativo e você já tem acesso total a todos os recursos da plataforma.
+    </p>
+  </div>
+
+  <div class="pt-4 flex flex-col sm:flex-row justify-center gap-3">
+    <% if current_actor %>
+      <%= link_to my_profile_path, class: "min-h-11 inline-flex items-center justify-center gap-2 bg-brand hover:bg-brand-hover text-white px-5 py-2.5 rounded-lg font-medium text-sm transition-colors shadow-xs" do %>
+        <i data-lucide="user" class="w-4 h-4"></i>
+        <span>Acessar meu perfil</span>
+      <% end %>
+    <% end %>
+    <%= link_to account_path, class: "min-h-11 inline-flex items-center justify-center gap-2 bg-white hover:bg-stone-50 text-charcoal border border-stone-border px-5 py-2.5 rounded-lg font-medium text-sm transition-colors" do %>
+      <i data-lucide="settings" class="w-4 h-4"></i>
+      <span>Configurações da conta</span>
+    <% end %>
+  </div>
+</div>
