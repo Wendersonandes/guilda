@@ -25,4 +25,11 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "button", text: /Gerenciar assinatura/
   end
+
+  test "show renders view plans link pointing to pricing_path when user has no active subscription" do
+    sign_in @user
+    get account_path
+    assert_response :success
+    assert_select "a[href=?]", pricing_path, text: /Ver planos/
+  end
 end

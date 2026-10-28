@@ -34,4 +34,24 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[href=?]", account_path
     assert_select "a[href=?]", edit_my_profile_path
   end
+
+  test "guest user should get pricing page at pricing path" do
+    get pricing_url
+    assert_response :success
+    assert_select "title", text: /Planos e Preços — Guilda/
+    assert_select "h2", text: /Investimento transparente para valorizar seu ofício/
+    assert_select "a[href=?]", new_user_registration_path(plan: :trial)
+    assert_select "a[href=?]", new_user_registration_path(plan: :annual)
+    assert_select "a[href=?]", new_user_registration_path(plan: :monthly)
+  end
+
+  test "authenticated user should get pricing page at pricing path with checkout buttons" do
+    sign_in @user
+    get pricing_url
+    assert_response :success
+    assert_select "title", text: /Planos e Preços — Guilda/
+    assert_select "a[href=?]", account_path
+    assert_select "button", text: /Assinar Plano Anual/
+    assert_select "button", text: /Assinar Plano Mensal/
+  end
 end

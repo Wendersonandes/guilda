@@ -107,4 +107,5 @@ Rails.application.routes.draw do
   # The profiles directory is the application root for every visitor (public).
   root to: "profiles#index"
   get "/about", to: "pages#landing", as: :about
+  get "/pricing", to: "pages#pricing", as: :pricing
 end

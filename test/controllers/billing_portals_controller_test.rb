@@ -17,7 +17,7 @@ class BillingPortalsControllerTest < ActionDispatch::IntegrationTest
   test "authenticated user without active customer is redirected to pricing" do
     sign_in @user
     post billing_portal_path
-    assert_redirected_to root_path(anchor: "pricing")
+    assert_redirected_to pricing_path
     assert_equal "Você ainda não possui uma assinatura ativa para gerenciar.", flash[:alert]
   end
 

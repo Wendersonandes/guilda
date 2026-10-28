@@ -8,7 +8,7 @@ class BillingPortalsController < ApplicationController
     authorize :checkout, :create?
 
     unless current_user.payment_processor&.processor_id.present?
-      redirect_to root_path(anchor: "pricing"), alert: "Você ainda não possui uma assinatura ativa para gerenciar."
+      redirect_to pricing_path, alert: "Você ainda não possui uma assinatura ativa para gerenciar."
       return
     end
 

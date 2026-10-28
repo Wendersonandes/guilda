@@ -1,0 +1,170 @@
+<!-- Pricing Section (CRO / Transparency) -->
+<section id="pricing" class="space-y-8">
+  <div class="text-center space-y-3">
+    <h2 class="font-serif text-3xl sm:text-4xl font-bold text-charcoal">Investimento transparente para valorizar seu ofício</h2>
+    <p class="text-sm sm:text-base text-zinc-600 max-w-xl mx-auto leading-relaxed">
+      Um único trabalho fechado ou equipe montada pela plataforma já compensa com folga o valor da assinatura.
+    </p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto items-stretch">
+    <!-- Card 1: Teste Gratuito -->
+    <div class="p-8 bg-white border border-stone-border rounded-xl flex flex-col justify-between space-y-6">
+      <div class="space-y-4">
+        <div class="text-xs uppercase tracking-wider text-zinc-500 font-semibold">Avaliação Sem Risco</div>
+        <h3 class="font-serif text-2xl font-bold text-charcoal">Teste de 30 Dias</h3>
+        <div class="space-y-1">
+          <span class="font-serif text-4xl font-bold text-charcoal">R$ 0</span>
+          <span class="text-xs text-zinc-500 block">por 30 dias completos</span>
+        </div>
+        <p class="text-xs sm:text-sm text-zinc-600 leading-relaxed">
+          Monte seu perfil e publique seus projetos para testar na prática a presença no diretório e o compartilhamento do seu dossiê.
+        </p>
+        <ul class="space-y-2 pt-2 text-xs sm:text-sm text-zinc-700">
+          <li class="flex items-center gap-2">
+            <i data-lucide="check" class="w-4 h-4 text-zinc-500 shrink-0" aria-hidden="true"></i>
+            <span>Publicação de projetos no portfólio</span>
+          </li>
+          <li class="flex items-center gap-2">
+            <i data-lucide="check" class="w-4 h-4 text-zinc-500 shrink-0" aria-hidden="true"></i>
+            <span>Listagem ativa no diretório de busca</span>
+          </li>
+          <li class="flex items-center gap-2">
+            <i data-lucide="check" class="w-4 h-4 text-zinc-500 shrink-0" aria-hidden="true"></i>
+            <span>Canais de contato direto disponíveis</span>
+          </li>
+        </ul>
+      </div>
+      <div>
+        <% if user_signed_in? %>
+          <%= link_to account_path, class: "w-full min-h-11 inline-flex items-center justify-center text-center bg-white hover:bg-stone-50 text-charcoal border border-stone-border py-2.5 px-4 rounded-lg font-medium text-sm transition-colors cursor-pointer" do %>
+            Minha conta
+          <% end %>
+        <% else %>
+          <%= link_to new_user_registration_path(plan: :trial), class: "w-full min-h-11 inline-flex items-center justify-center text-center bg-white hover:bg-stone-50 text-charcoal border border-stone-border py-2.5 px-4 rounded-lg font-medium text-sm transition-colors cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2" do %>
+            Começar 30 dias grátis
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Card 2: Plano Anual (Destaque) -->
+    <div class="p-8 bg-white border-2 border-brand rounded-xl flex flex-col justify-between space-y-6 relative shadow-xs">
+      <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-brand text-white text-[11px] uppercase tracking-wider px-3 py-0.5 rounded-full font-semibold whitespace-nowrap">
+        Melhor Custo-Benefício
+      </div>
+      <div class="space-y-4">
+        <div class="text-xs uppercase tracking-wider text-brand font-semibold">Assinatura Anual</div>
+        <h3 class="font-serif text-2xl font-bold text-charcoal">Profissional Anual</h3>
+        <div class="space-y-1">
+          <div class="flex items-baseline gap-1">
+            <span class="font-serif text-4xl font-bold text-charcoal">R$ 300</span>
+            <span class="text-xs text-zinc-500">/ano</span>
+          </div>
+          <span class="text-xs text-brand font-medium block">Equivalente a R$ 25/mês (economize 2 meses)</span>
+        </div>
+        <p class="text-xs sm:text-sm text-zinc-600 leading-relaxed">
+          Para o profissional que quer manter sua presença ativa o ano inteiro, ser encontrado a cada novo edital e posicionar seu ofício com estabilidade.
+        </p>
+        <ul class="space-y-2 pt-2 text-xs sm:text-sm text-zinc-700">
+          <li class="flex items-center gap-2">
+            <i data-lucide="check" class="w-4 h-4 text-brand shrink-0" aria-hidden="true"></i>
+            <span>Portfólio público permanente</span>
+          </li>
+          <li class="flex items-center gap-2">
+            <i data-lucide="check" class="w-4 h-4 text-brand shrink-0" aria-hidden="true"></i>
+            <span>Destaque contínuo nas buscas regionais</span>
+          </li>
+          <li class="flex items-center gap-2">
+            <i data-lucide="check" class="w-4 h-4 text-brand shrink-0" aria-hidden="true"></i>
+            <span>Link profissional limpo para propostas</span>
+          </li>
+          <li class="flex items-center gap-2">
+            <i data-lucide="check" class="w-4 h-4 text-brand shrink-0" aria-hidden="true"></i>
+            <span>Inicia somente após os 30 dias grátis</span>
+          </li>
+        </ul>
+      </div>
+      <div>
+        <% if user_signed_in? %>
+          <% if current_user.subscribed? %>
+            <%= link_to account_path, class: "w-full min-h-11 inline-flex items-center justify-center text-center bg-stone-100 hover:bg-stone-200 text-charcoal border border-stone-border py-2.5 px-4 rounded-lg font-medium text-sm transition-colors cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2" do %>
+              Gerenciar assinatura
+            <% end %>
+          <% else %>
+            <%= button_to checkout_path(plan: :annual), method: :post, data: { turbo: false }, class: "w-full min-h-11 inline-flex items-center justify-center text-center bg-brand hover:bg-brand-hover text-white py-2.5 px-4 rounded-lg font-medium text-sm transition-colors shadow-xs cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2" do %>
+              Assinar Plano Anual (30 dias grátis)
+            <% end %>
+          <% end %>
+        <% else %>
+          <%= link_to new_user_registration_path(plan: :annual), class: "w-full min-h-11 inline-flex items-center justify-center text-center bg-brand hover:bg-brand-hover text-white py-2.5 px-4 rounded-lg font-medium text-sm transition-colors shadow-xs cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2" do %>
+            Cadastrar com 30 dias grátis
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Card 3: Plano Mensal -->
+    <div class="p-8 bg-white border border-stone-border rounded-xl flex flex-col justify-between space-y-6">
+      <div class="space-y-4">
+        <div class="text-xs uppercase tracking-wider text-zinc-500 font-semibold">Assinatura Mensal</div>
+        <h3 class="font-serif text-2xl font-bold text-charcoal">Profissional Mensal</h3>
+        <div class="space-y-1">
+          <div class="flex items-baseline gap-1">
+            <span class="font-serif text-4xl font-bold text-charcoal">R$ 30</span>
+            <span class="text-xs text-zinc-500">/mês</span>
+          </div>
+          <span class="text-xs text-zinc-500 block">Cobrança mês a mês sem fidelidade</span>
+        </div>
+        <p class="text-xs sm:text-sm text-zinc-600 leading-relaxed">
+          Flexibilidade para quem prefere acompanhar o investimento mensalmente e manter as ferramentas ativas conforme a demanda de projetos.
+        </p>
+        <ul class="space-y-2 pt-2 text-xs sm:text-sm text-zinc-700">
+          <li class="flex items-center gap-2">
+            <i data-lucide="check" class="w-4 h-4 text-zinc-500 shrink-0" aria-hidden="true"></i>
+            <span>Todas as ferramentas de portfólio</span>
+          </li>
+          <li class="flex items-center gap-2">
+            <i data-lucide="check" class="w-4 h-4 text-zinc-500 shrink-0" aria-hidden="true"></i>
+            <span>Presença no diretório de busca</span>
+          </li>
+          <li class="flex items-center gap-2">
+            <i data-lucide="check" class="w-4 h-4 text-zinc-500 shrink-0" aria-hidden="true"></i>
+            <span>Inicia somente após os 30 dias grátis</span>
+          </li>
+        </ul>
+      </div>
+      <div>
+        <% if user_signed_in? %>
+          <% if current_user.subscribed? %>
+            <%= link_to account_path, class: "w-full min-h-11 inline-flex items-center justify-center text-center bg-stone-100 hover:bg-stone-200 text-charcoal border border-stone-border py-2.5 px-4 rounded-lg font-medium text-sm transition-colors cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2" do %>
+              Gerenciar assinatura
+            <% end %>
+          <% else %>
+            <%= button_to checkout_path(plan: :monthly), method: :post, data: { turbo: false }, class: "w-full min-h-11 inline-flex items-center justify-center text-center bg-white hover:bg-stone-50 text-charcoal border border-stone-border py-2.5 px-4 rounded-lg font-medium text-sm transition-colors cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2" do %>
+              Assinar Plano Mensal
+            <% end %>
+          <% end %>
+        <% else %>
+          <%= link_to new_user_registration_path(plan: :monthly), class: "w-full min-h-11 inline-flex items-center justify-center text-center bg-white hover:bg-stone-50 text-charcoal border border-stone-border py-2.5 px-4 rounded-lg font-medium text-sm transition-colors cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2" do %>
+            Escolher plano mensal
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Free for Clients Banner -->
+  <div class="max-w-5xl mx-auto p-4 sm:p-6 bg-white/70 border border-stone-border rounded-xl flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+    <div class="space-y-1">
+      <h3 class="font-serif font-bold text-base text-charcoal">Você é artista, produtor ou contratante em busca de profissionais?</h3>
+      <p class="text-xs sm:text-sm text-zinc-600">
+        A busca, visualização de portfólios e o contato direto com prestadores de serviço são 100% gratuitos para sempre.
+      </p>
+    </div>
+    <%= link_to profiles_path, class: "shrink-0 min-h-11 inline-flex items-center gap-2 text-sm font-semibold text-brand hover:text-brand-hover transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 rounded" do %>
+      <span>Explorar diretório de profissionais</span>
+      <i data-lucide="arrow-right" class="w-4 h-4" aria-hidden="true"></i>
+    <% end %>
+  </div>
+</section>
