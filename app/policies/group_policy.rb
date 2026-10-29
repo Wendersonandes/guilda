@@ -16,7 +16,7 @@ class GroupPolicy < ApplicationPolicy
   end
 
   def create?
-    user.present?
+    site_admin?
   end
 
   def update?

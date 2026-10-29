@@ -25,8 +25,12 @@ class GroupPolicyTest < ActiveSupport::TestCase
     assert GroupPolicy.new(@alice, @group_actor).show?
   end
 
-  test "create? requires authenticated user" do
+  test "create? requires site admin" do
+    site_actor = Site.instance.actor
+    GroupMembershipService.new(site_actor, @alice_actor).add(role: "admin")
+
     assert GroupPolicy.new(@alice, Actor.new(actorable_type: "Group")).create?
+    assert_not GroupPolicy.new(@bob, Actor.new(actorable_type: "Group")).create?
     assert_not GroupPolicy.new(nil, Actor.new(actorable_type: "Group")).create?
   end
 

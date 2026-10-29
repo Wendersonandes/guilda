@@ -8,6 +8,7 @@ class GroupsControllerTest < ActionDispatch::IntegrationTest
     @user = users(:alice)
     @actor = create_profile_for(@user)
     @user.update!(current_profile: @actor)
+    GroupMembershipService.new(Site.instance.actor, @actor).add(role: "admin")
     sign_in @user
     @group = create_group_with_admin(@actor)
   end
@@ -77,6 +78,63 @@ class GroupsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "input[type=file][data-direct-upload-url]", count: 2
+  end
+
+  test "new group form requires site admin" do
+    get new_group_path
+    assert_response :success
+
+    bob = users(:bob)
+    bob_actor = create_profile_for(bob)
+    bob.update!(current_profile: bob_actor)
+    sign_in bob
+
+    get new_group_path
+    assert_redirected_to root_path
+    assert_equal I18n.t("flash.not_authorized"), flash[:alert]
+  end
+
+  test "create group requires site admin" do
+    assert_difference -> { Group.count }, 1 do
+      post groups_path, params: {
+        group: {
+          privacy: "public_group",
+          actor_attributes: { name: "Admin Group", description: "Created by admin" }
+        }
+      }
+    end
+    assert_redirected_to group_path(Group.last)
+
+    bob = users(:bob)
+    bob_actor = create_profile_for(bob)
+    bob.update!(current_profile: bob_actor)
+    sign_in bob
+
+    assert_no_difference -> { Group.count } do
+      post groups_path, params: {
+        group: {
+          privacy: "public_group",
+          actor_attributes: { name: "Bob Group", description: "Denied" }
+        }
+      }
+    end
+    assert_redirected_to root_path
+    assert_equal I18n.t("flash.not_authorized"), flash[:alert]
+  end
+
+  test "index shows new group button only for site admin" do
+    get groups_path
+    assert_response :success
+    assert_select "a[href='#{new_group_path}']"
+
+    bob = users(:bob)
+    bob_actor = create_profile_for(bob)
+    bob.update!(current_profile: bob_actor)
+    sign_in bob
+
+    get groups_path
+    assert_response :success
+    assert_select "a[href='#{new_group_path}']", count: 0
   end
 
   private
