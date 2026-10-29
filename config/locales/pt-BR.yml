@@ -347,7 +347,8 @@ pt-BR:
       new: "Novo grupo"
       loading: "Carregando mais grupos..."
       empty_title: "Ainda sem grupos"
-      empty_subtitle: "Seja o primeiro a criar um grupo!"
+      empty_subtitle: "Em breve você poderá participar das discussões na plataforma."
+      empty_subtitle_admin: "Seja o primeiro a criar um grupo!"
     navigation:
       posts: "Publicações"
       members: "Membros"

@@ -44,7 +44,17 @@
         <i data-lucide="layers" class="w-6 h-6 text-zinc-400"></i>
       </div>
       <h3 class="text-base font-semibold text-charcoal"><%= t(".empty_title") %></h3>
-      <p class="text-sm text-zinc-500 mt-1 max-w-sm mx-auto"><%= t(".empty_subtitle") %></p>
+      <p class="text-sm text-zinc-500 mt-1 max-w-sm mx-auto">
+        <%= policy(Group).new? ? t(".empty_subtitle_admin") : t(".empty_subtitle") %>
+      </p>
+      <% if policy(Group).new? %>
+        <div class="mt-4">
+          <%= link_to new_group_path, class: "inline-flex items-center gap-1.5 text-xs bg-charcoal hover:bg-zinc-800 text-white font-medium px-3.5 py-2 rounded-lg transition-colors border-0 cursor-pointer shadow-sm" do %>
+            <i data-lucide="plus" class="w-4 h-4"></i>
+            <span><%= t(".new") %></span>
+          <% end %>
+        </div>
+      <% end %>
     </div>
   <% end %>
 <% end %>

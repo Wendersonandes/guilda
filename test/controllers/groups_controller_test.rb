@@ -137,6 +137,25 @@ class GroupsControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[href='#{new_group_path}']", count: 0
   end
 
+  test "empty state shows different subtitles for site admin and regular user" do
+    Group.destroy_all
+
+    get groups_path
+    assert_response :success
+    assert_select "p", text: I18n.t("groups.index.empty_subtitle_admin")
+    assert_select "a[href='#{new_group_path}']"
+
+    bob = users(:bob)
+    bob_actor = create_profile_for(bob)
+    bob.update!(current_profile: bob_actor)
+    sign_in bob
+
+    get groups_path
+    assert_response :success
+    assert_select "p", text: I18n.t("groups.index.empty_subtitle")
+    assert_select "a[href='#{new_group_path}']", count: 0
+  end
+
   private
 
   def create_group_with_admin(admin_actor)
