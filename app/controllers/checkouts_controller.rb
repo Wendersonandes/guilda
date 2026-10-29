@@ -7,39 +7,7 @@ class CheckoutsController < ApplicationController
 
   def create
     authorize :checkout, :create?
-
-    unless @plan
-      redirect_to root_path, alert: "Plano inválido selecionado."
-      return
-    end
-
-    price_id = @plan.stripe_price_id
-    if price_id.blank?
-      redirect_to root_path, alert: "Não foi possível carregar o preço do plano no momento. Tente novamente mais tarde."
-      return
-    end
-
-    checkout_params = {
-      mode: "subscription",
-      line_items: price_id,
-      success_url: success_checkout_url(session_id: "{CHECKOUT_SESSION_ID}"),
-      cancel_url: cancel_checkout_url,
-      allow_promotion_codes: true
-    }
-
-    # Grant 30 days trial for users without an active subscription
-    if @plan.trial_period_days.to_i.positive? && !current_user.subscribed?
-      checkout_params[:subscription_data] = {
-        trial_period_days: @plan.trial_period_days
-      }
-    end
-
-    checkout_session = current_user.payment_processor.checkout(**checkout_params)
-
-    redirect_to checkout_session.url, allow_other_host: true, status: :see_other
-  rescue Pay::Error, Stripe::StripeError => e
-    Rails.logger.error("[CheckoutsController#create] Error: #{e.message}")
-    redirect_to root_path, alert: "Erro ao iniciar o checkout: #{e.message}"
+    redirect_to_plan_checkout(@plan, fallback_path: root_path)
   end
 
   def success
@@ -64,6 +32,6 @@ class CheckoutsController < ApplicationController
   private
 
   def set_plan
-    @plan = Plan.find(params[:plan])
+    @plan = Plan.resolve(params[:plan])
   end
 end

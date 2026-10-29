@@ -186,4 +186,69 @@ class ProfileStepsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "input[type='checkbox'][value='Expografia'][checked='checked']"
   end
+
+  test "guest signing up with a chosen plan is redirected to Stripe checkout after completing the wizard" do
+    get new_user_registration_path(plan: :annual)
+    assert_response :success
+    assert_select "input[type='radio'][name='plan'][value='annual'][checked='checked']"
+
+    post user_registration_path, params: {
+      plan: "annual",
+      user: {
+        profile_name: "Clara Nunes",
+        email: "clara@guilda.example.com",
+        password: "password123",
+        password_confirmation: "password123"
+      }
+    }
+
+    new_user = User.find_by!(email: "clara@guilda.example.com")
+    new_profile = new_user.current_profile.actorable
+    assert_not new_profile.wizard_complete?
+
+    put profile_step_path(:location), params: {
+      profile: { country: "BR", state: "RJ", city: "Rio de Janeiro" }
+    }
+    assert_redirected_to profile_step_path(:occupation)
+
+    get profile_step_path(:occupation)
+    assert_response :success
+    assert_select "input[type='submit'][value='Finalizar e ir para o checkout'][data-turbo='false']"
+
+    captured_kwargs = {}
+    with_mock_checkout("https://checkout.stripe.com/c/pay_annual_session", captured_kwargs) do
+      with_stubbed_price("price_annual_mock") do
+        put profile_step_path(:occupation), params: {
+          profile: { occupation_list: [ "Produção Cultural" ] }
+        }
+        assert_redirected_to "https://checkout.stripe.com/c/pay_annual_session"
+      end
+    end
+
+    assert_equal "price_annual_mock", captured_kwargs[:line_items]
+    assert_equal({ trial_period_days: 30 }, captured_kwargs[:subscription_data])
+    assert new_profile.reload.wizard_complete?
+  end
+
+  private
+
+  def with_mock_checkout(url, captured_kwargs = {})
+    original_method = Pay::Stripe::Customer.instance_method(:checkout)
+    mock_session = Struct.new(:url).new(url)
+    Pay::Stripe::Customer.define_method(:checkout) do |**kwargs|
+      captured_kwargs.merge!(kwargs)
+      mock_session
+    end
+    yield
+  ensure
+    Pay::Stripe::Customer.define_method(:checkout, original_method)
+  end
+
+  def with_stubbed_price(price_id)
+    original_method = Plan.instance_method(:stripe_price_id)
+    Plan.define_method(:stripe_price_id) { price_id }
+    yield
+  ensure
+    Plan.define_method(:stripe_price_id, original_method)
+  end
 end

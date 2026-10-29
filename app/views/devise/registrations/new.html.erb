@@ -1,45 +1,106 @@
-<div class="max-w-sm mx-auto my-10 space-y-6">
+<% active_plan = selected_plan %>
+
+<div class="max-w-md mx-auto my-10 space-y-6">
+  <% if active_plan %>
+    <!-- Multi-Step Journey Indicator (Signup Skill: Remove Uncertainty & Reduce Perceived Effort) -->
+    <nav aria-label="Etapas do cadastro" class="flex items-center justify-center gap-2 text-xs font-medium text-zinc-500">
+      <span class="inline-flex items-center gap-1.5 text-brand font-semibold">
+        <span class="w-5 h-5 rounded-full bg-brand text-white inline-flex items-center justify-center text-[11px] font-bold">1</span>
+        <span>Conta</span>
+      </span>
+      <span class="w-6 h-px bg-stone-300" aria-hidden="true"></span>
+      <span class="inline-flex items-center gap-1.5">
+        <span class="w-5 h-5 rounded-full bg-stone-100 text-zinc-500 border border-stone-200 inline-flex items-center justify-center text-[11px] font-bold">2</span>
+        <span>Perfil</span>
+      </span>
+      <span class="w-6 h-px bg-stone-300" aria-hidden="true"></span>
+      <span class="inline-flex items-center gap-1.5">
+        <span class="w-5 h-5 rounded-full bg-stone-100 text-zinc-500 border border-stone-200 inline-flex items-center justify-center text-[11px] font-bold">3</span>
+        <span>Ativação (30 dias grátis)</span>
+      </span>
+    </nav>
+  <% end %>
+
   <div class="text-center">
     <div class="w-12 h-12 bg-stone-100 text-brand rounded-full flex items-center justify-center mx-auto mb-3 border border-stone-border shadow-sm">
       <i data-lucide="user-plus" class="w-6 h-6"></i>
     </div>
     <h1 class="text-2xl font-serif font-bold text-charcoal tracking-tight"><%= t("auth.registrations.new.title") %></h1>
-    <p class="text-sm text-zinc-500 mt-1"><%= t("auth.registrations.new.subtitle") %></p>
+    <p class="text-sm text-zinc-500 mt-1">
+      <% if active_plan %>
+        Crie sua conta e configure seu perfil para iniciar seus 30 dias gratuitos.
+      <% else %>
+        <%= t("auth.registrations.new.subtitle") %>
+      <% end %>
+    </p>
   </div>
 
   <div class="bg-white rounded-lg border border-stone-border p-6">
     <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
       <%= render "devise/shared/error_messages", resource: resource %>
 
+      <% if active_plan %>
+        <!-- Selected Plan Context & Switcher -->
+        <div class="mb-5 p-3.5 rounded-lg bg-stone-50 border border-stone-200 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-semibold uppercase tracking-wider text-zinc-500">Plano escolhido</span>
+            <span class="text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+              30 dias grátis • R$ 0 hoje
+            </span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Escolha o plano de assinatura">
+            <label class="relative flex flex-col p-2.5 rounded-lg border cursor-pointer transition-colors bg-white has-[:checked]:border-brand has-[:checked]:ring-1 has-[:checked]:ring-brand border-stone-200 hover:border-stone-300">
+              <%= radio_button_tag :plan, "annual", active_plan.id == "annual", class: "sr-only" %>
+              <span class="text-xs font-bold text-charcoal">Profissional Anual</span>
+              <span class="text-[11px] text-zinc-600">R$ 300/ano <span class="text-brand font-medium">(R$ 25/mês)</span></span>
+            </label>
+
+            <label class="relative flex flex-col p-2.5 rounded-lg border cursor-pointer transition-colors bg-white has-[:checked]:border-brand has-[:checked]:ring-1 has-[:checked]:ring-brand border-stone-200 hover:border-stone-300">
+              <%= radio_button_tag :plan, "monthly", active_plan.id == "monthly", class: "sr-only" %>
+              <span class="text-xs font-bold text-charcoal">Profissional Mensal</span>
+              <span class="text-[11px] text-zinc-600">R$ 30/mês sem fidelidade</span>
+            </label>
+          </div>
+        </div>
+      <% end %>
+
       <div class="space-y-4">
         <div class="space-y-1">
           <%= f.label :profile_name, t("auth.registrations.new.display_name"), class: "block text-sm font-medium text-zinc-700" %>
-          <%= f.text_field :profile_name, autofocus: true, placeholder: t("auth.registrations.new.display_name_placeholder"),
-                class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal transition-shadow" %>
+          <%= f.text_field :profile_name, autofocus: true, autocomplete: "name", placeholder: t("auth.registrations.new.display_name_placeholder"),
+                class: "w-full min-h-11 rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal transition-shadow" %>
         </div>
 
         <div class="space-y-1">
           <%= f.label :email, class: "block text-sm font-medium text-zinc-700" %>
-          <%= f.email_field :email, autocomplete: "email", placeholder: "you@example.com",
-                class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal transition-shadow" %>
+          <%= f.email_field :email, autocomplete: "email", placeholder: t("auth.registrations.new.email_placeholder"),
+                class: "w-full min-h-11 rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal transition-shadow" %>
         </div>
 
         <div class="space-y-1">
           <%= f.label :password, class: "block text-sm font-medium text-zinc-700" %>
           <%= f.password_field :password, autocomplete: "new-password", placeholder: "••••••••",
-                class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal transition-shadow" %>
+                class: "w-full min-h-11 rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal transition-shadow" %>
           <% if @minimum_password_length %>
-            <p class="text-[10px] text-zinc-400 font-medium"><%= t("auth.registrations.new.password_minimum", count: @minimum_password_length) %></p>
+            <p class="text-[11px] text-zinc-500 font-medium"><%= t("auth.registrations.new.password_minimum", count: @minimum_password_length) %></p>
           <% end %>
         </div>
 
         <div class="space-y-1">
           <%= f.label :password_confirmation, t("auth.registrations.new.confirm_password"), class: "block text-sm font-medium text-zinc-700" %>
           <%= f.password_field :password_confirmation, autocomplete: "new-password", placeholder: "••••••••",
-                class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal transition-shadow" %>
+                class: "w-full min-h-11 rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal transition-shadow" %>
         </div>
 
-        <%= f.submit t("auth.registrations.new.submit"), class: "w-full bg-charcoal hover:bg-zinc-800 text-white rounded-lg px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer mt-2" %>
+        <%= f.submit active_plan ? t("auth.registrations.new.submit_with_plan") : t("auth.registrations.new.submit"),
+              class: "w-full min-h-11 bg-charcoal hover:bg-zinc-800 text-white rounded-lg px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer mt-2" %>
+
+        <% if active_plan %>
+          <p class="text-[11px] text-center text-zinc-500">
+            Após configurar seu perfil, você ativará seus 30 dias gratuitos no ambiente seguro do Stripe.
+          </p>
+        <% end %>
       </div>
     <% end %>
 

@@ -45,7 +45,7 @@ class ProfileStepsController < ApplicationController
     @profile.form_step = step
     if @profile.update(profile_params)
       if step == steps.last
-        redirect_to finish_wizard_path
+        complete_wizard_and_redirect
       else
         redirect_to next_wizard_path
       end
@@ -95,8 +95,19 @@ class ProfileStepsController < ApplicationController
     (idx && idx > 0) ? keys[idx - 1] : keys.first
   end
 
-  def finish_wizard_path
+  def complete_wizard_and_redirect
     @profile.update!(wizard_complete: true)
+    plan_id = session.delete(:selected_plan)
+    plan = Plan.resolve(plan_id) if plan_id.present?
+
+    if plan && !current_user.subscribed?
+      redirect_to_plan_checkout(plan, fallback_path: pricing_path)
+    else
+      redirect_to finish_wizard_path
+    end
+  end
+
+  def finish_wizard_path
     root_path
   end
 end

@@ -598,9 +598,11 @@ pt-BR:
         subtitle: "Comece a usar a Guilda hoje"
         display_name: "Nome de exibição"
         display_name_placeholder: "Seu nome ou usuário"
+        email_placeholder: "voce@exemplo.com.br"
         password_minimum: "%{count} caracteres no mínimo"
         confirm_password: "Confirme a senha"
         submit: "Criar conta"
+        submit_with_plan: "Criar conta e continuar"
       edit:
         title: "Editar conta"
         subtitle: "Atualize as credenciais do seu perfil"

@@ -35,6 +35,15 @@ class Plan
     new(config)
   end
 
+  # Resolves a plan parameter from signup/pricing links, mapping "trial" to the monthly plan
+  # (which includes the 30-day free trial without long-term commitment).
+  def self.resolve(plan_id)
+    return nil if plan_id.blank?
+
+    normalized = plan_id.to_s == "trial" ? "monthly" : plan_id.to_s
+    find(normalized)
+  end
+
   def initialize(attributes)
     @id = attributes[:id].to_s
     @name = attributes[:name]

@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 puts "Seeding Guilda core..."
 # Async adapter runs jobs in-process (no Solid Queue tables needed) and supports scheduled
 # jobs (`wait:`), which the inline adapter does not.
 ActiveJob::Base.queue_adapter = :async
 
-# Clear database and reset cached singletons
+# ── Clean Database & Reset Singletons ─────────────────────────────
 puts "  Cleaning database..."
 [ Relation::Public, Relation::Follow, Relation::Reject, Relation::Owner, Relation::LocalAdmin ].each do |klass|
   klass.instance_variable_set(:@instance, nil)
@@ -14,46 +16,33 @@ tables = %w[
   action_text_rich_texts
   activities activity_actions activity_object_activities activity_object_audiences
   activity_objects actors audiences comments contacts flags friendly_id_slugs
-  groups mentions noticed_events noticed_notifications permissions posts profiles
-  projects project_images relation_permissions relations sites taggings tags ties users
+  groups mentions noticed_events noticed_notifications
+  pay_charges pay_customers pay_merchants pay_payment_methods pay_subscriptions pay_webhooks
+  permissions posts profiles projects project_images relation_permissions relations sites taggings tags ties users
 ]
 ActiveRecord::Base.connection.execute("TRUNCATE TABLE #{tables.join(', ')} RESTART IDENTITY CASCADE")
 
-# ── Permissions & System Relations ──────────────────────────────
-permissions = Permission.instances([
-  [ :create, :activity ],
-  [ :read,   :activity ],
-  [ :update, :activity ],
-  [ :destroy, :activity ],
-  [ :follow, nil ],
-  [ :represent, nil ],
-  [ :create, :post ],
-  [ :read,   :post ],
-  [ :update, :post ],
-  [ :destroy, :post ],
-  [ :create, :comment ],
-  [ :read,   :comment ],
-  [ :update, :comment ],
-  [ :destroy, :comment ],
-  [ :read,   :admin ],
-  [ :update, :role ],
-  [ :read,   :profile ],
-  [ :publish, :profile ],
-  [ :create, :project ],
-  [ :publish, :project ]
-])
-puts "  Permissions: #{permissions.size} created"
+# ── Feature Flags ────────────────────────────────────────────────
+puts "  Enabling feature flags..."
+FeatureFlags.names.each { |name| Flipper.enable(name) }
 
-public_rel = Relation::Public.instance
-follow_rel = Relation::Follow.instance
-reject_rel = Relation::Reject.instance
-puts "  Relations: Public(#{public_rel.id}) Follow(#{follow_rel.id}) Reject(#{reject_rel.id})"
+# ── Permissions & System Relations ──────────────────────────────
+puts "  Syncing permissions catalog and system relations..."
+Relation::Public.instance
+Relation::Follow.instance
+Relation::Reject.instance
+Relation::Owner.instance
+Relation::LocalAdmin.instance
+
+sync_result = PermissionSync.new.call
+puts "  Catalog: #{Permission.count} permissions seeded, #{sync_result[:single_grants]} system relation grants wired."
 
 # ── Users & Profiles ────────────────────────────────────────────
 puts "\nCreating users & profiles..."
 
 users_data = [
   {
+    key: :ana,
     email: "ana@example.com",
     name: "Ana Silva",
     city: "São Paulo",
@@ -63,9 +52,19 @@ users_data = [
     instagram: "anasilva",
     availability: "freelance",
     description: "Artista visual contemporânea focada em pintura a óleo de grande formato e instalações urbanas. Graduada em Belas Artes pela USP.",
-    occupations: [ "Design de Portfólio" ]
+    occupations: [ "Design de Portfólio", "Pintura" ],
+    subscription: {
+      plan: "annual",
+      status: "active",
+      card: { brand: "visa", last4: "4242", exp_month: 12, exp_year: 2028 },
+      amount_cents: 30000,
+      period_start: 1.month.ago,
+      period_end: 11.months.from_now
+    },
+    admin: true
   },
   {
+    key: :bruno,
     email: "bruno@example.com",
     name: "Bruno Costa",
     city: "Rio de Janeiro",
@@ -75,9 +74,18 @@ users_data = [
     instagram: "brunocosta.expografia",
     availability: "full_time",
     description: "Arquiteto e expógrafo com 10 anos de experiência desenhando fluxos e espaços expositivos para museus e galerias.",
-    occupations: [ "Expografia", "Montagem de Exposições" ]
+    occupations: [ "Expografia", "Montagem de Exposições" ],
+    subscription: {
+      plan: "monthly",
+      status: "active",
+      card: { brand: "mastercard", last4: "5555", exp_month: 8, exp_year: 2027 },
+      amount_cents: 3000,
+      period_start: 10.days.ago,
+      period_end: 20.days.from_now
+    }
   },
   {
+    key: :carla,
     email: "carla@example.com",
     name: "Carla Mendes",
     city: "Belo Horizonte",
@@ -87,9 +95,18 @@ users_data = [
     instagram: "carlamendescultura",
     availability: "freelance",
     description: "Especialista em redação de projetos culturais para leis de incentivo (Rouanet/ProAC) e editais públicos.",
-    occupations: [ "Escrita de Projetos", "Prestação de Contas", "Produção Cultural" ]
+    occupations: [ "Escrita de Projetos", "Prestação de Contas", "Produção Cultural" ],
+    subscription: {
+      plan: "monthly",
+      status: "trialing",
+      card: { brand: "visa", last4: "1234", exp_month: 10, exp_year: 2029 },
+      trial_ends_at: 20.days.from_now,
+      period_start: 10.days.ago,
+      period_end: 20.days.from_now
+    }
   },
   {
+    key: :diego,
     email: "diego@example.com",
     name: "Diego Rocha",
     city: "São Paulo",
@@ -99,9 +116,18 @@ users_data = [
     instagram: "diegorochafoto",
     availability: "full_time",
     description: "Fotógrafo especializado em registrar exposições, montagens e catálogo de obras de arte com fidelidade de cor.",
-    occupations: [ "Assessoria de Comunicação" ]
+    occupations: [ "Assessoria de Comunicação", "Fotografia de Obras" ],
+    subscription: {
+      plan: "monthly",
+      status: "active",
+      card: { brand: "elo", last4: "9876", exp_month: 5, exp_year: 2026 },
+      amount_cents: 3000,
+      period_start: 5.days.ago,
+      period_end: 25.days.from_now
+    }
   },
   {
+    key: :elisa,
     email: "elisa@example.com",
     name: "Elisa Torres",
     city: "Curitiba",
@@ -111,7 +137,29 @@ users_data = [
     instagram: "elisatorreslog",
     availability: "unavailable",
     description: "Logística especializada em artes visuais. Transporte seguro de acervo, embalagem climatizada e laudo de estado para obras.",
-    occupations: [ "Transporte de Obras", "Produção de Exposições" ]
+    occupations: [ "Transporte de Obras", "Produção de Exposições" ],
+    subscription: {
+      plan: "monthly",
+      status: "canceled",
+      card: { brand: "visa", last4: "0000", exp_month: 1, exp_year: 2026 },
+      ends_at: 5.days.ago,
+      period_start: 35.days.ago,
+      period_end: 5.days.ago
+    }
+  },
+  {
+    key: :felipe,
+    email: "felipe@example.com",
+    name: "Felipe Ramos",
+    city: "Salvador",
+    state: "BA",
+    website: "",
+    mobile: "71987654321",
+    instagram: "feliperamos.art",
+    availability: "freelance",
+    description: "Estudante e assistente de produção artística, pesquisando processos curatoriais e novas mídias.",
+    occupations: [ "Produção Cultural" ],
+    subscription: nil
   }
 ]
 
@@ -142,20 +190,165 @@ users_data.each do |data|
     email: data[:email]
   )
 
-  users[data[:name].split.first.downcase.to_sym] = user
+  users[data[:key]] = user
   puts "  #{data[:name]} (#{data[:email]}) — profile: #{user.current_profile&.name} (#{profile.city}/#{profile.state})"
 end
 
-actors = users.transform_values { |u| u.current_profile }
+actors = users.transform_values(&:current_profile)
 
-# ── Site & Global Roles ────────────────────────────────────────
-puts "\nSetting up global roles..."
-site_actor = Site.instance.actor
-actors.each_value do |actor|
-  GroupMembershipService.new(site_actor, actor).add(role: "professional")
+# ── Pay Integration & Subscriptions ──────────────────────────────
+puts "\nSetting up Pay customers & subscriptions..."
+
+users_data.each do |data|
+  next unless data[:subscription]
+
+  user = users[data[:key]]
+  sub_info = data[:subscription]
+  plan_key = sub_info[:plan]
+
+  # 1. Customer (resolves real Stripe customer when API key is available so Billing Portal works)
+  customer = user.set_payment_processor(:stripe)
+  processor_id = if Pay::Stripe.private_key.present?
+    begin
+      ::Stripe.api_key = Pay::Stripe.private_key
+      stripe_cus = ::Stripe::Customer.list(email: user.email, limit: 1).data.first ||
+                   ::Stripe::Customer.create(
+                     email: user.email,
+                     name: user.pay_customer_name,
+                     metadata: { environment: Rails.env, seeded: "true" }
+                   )
+      stripe_cus.id
+    rescue ::Stripe::StripeError => e
+      puts "    Stripe customer lookup/create failed for #{user.email}: #{e.message}. Using fallback ID."
+      "cus_seed_#{data[:key]}"
+    end
+  else
+    "cus_seed_#{data[:key]}"
+  end
+  customer.update!(processor_id: processor_id)
+
+  # 2. Payment Method
+  if sub_info[:card]
+    customer.payment_methods.create!(
+      processor_id: "pm_seed_#{data[:key]}",
+      payment_method_type: "card",
+      data: sub_info[:card],
+      default: true
+    )
+  end
+
+  # 3. Subscription
+  # Automatically triggers `after_commit :sync_owner_professional_role` on Pay::Subscription,
+  # keeping the "Professional" role properly managed via UserSubscriptionRoleSyncService!
+  subscription = customer.subscriptions.create!(
+    name: "default",
+    processor_id: "sub_seed_#{data[:key]}",
+    processor_plan: plan_key,
+    status: sub_info[:status],
+    quantity: 1,
+    trial_ends_at: sub_info[:trial_ends_at],
+    ends_at: sub_info[:ends_at],
+    current_period_start: sub_info[:period_start],
+    current_period_end: sub_info[:period_end]
+  )
+
+  # 4. Charge / Invoice for paid subscriptions
+  if sub_info[:amount_cents] && sub_info[:status] == "active"
+    customer.charges.create!(
+      processor_id: "ch_seed_#{data[:key]}",
+      amount: sub_info[:amount_cents],
+      currency: "brl",
+      subscription: subscription
+    )
+  end
+
+  status_desc = sub_info[:status] == "trialing" ? "trialing (ends #{sub_info[:trial_ends_at].to_date})" : sub_info[:status]
+  puts "  #{data[:name]}: Pay #{plan_key} subscription [#{status_desc}], subscribed: #{user.reload.subscribed?}"
 end
-GroupMembershipService.new(site_actor, actors[:ana]).add(role: "admin")
-puts "  Site: #{Site.instance.name}, Admin: Ana, Professionals: #{actors.keys.join(', ')}"
+
+# ── Site & Global Roles ─────────────────────────────────────────
+puts "\nConfiguring platform roles..."
+site_actor = Site.instance.actor
+
+# Ana Silva is explicitly granted the site admin role (additively, alongside any subscription role)
+GroupMembershipService.new(site_actor, actors[:ana]).add_role("admin")
+
+# Re-run PermissionSync to ensure all custom relations of newly created actors are fully wired
+PermissionSync.new.call
+
+puts "  Site: #{Site.instance.name}"
+puts "  - Admin: #{actors[:ana].name}"
+puts "  - Professionals: #{Actor.where(id: site_actor.contacts_for('professional').select(:id)).pluck(:name).join(', ')}"
+puts "  - Members: #{Actor.where(id: site_actor.contacts_for('member').select(:id)).pluck(:name).join(', ')}"
+
+# ── Projects (Portfolio) ────────────────────────────────────────
+puts "\nCreating portfolio projects..."
+
+projects_data = [
+  {
+    profile: actors[:ana].actorable,
+    title: "Série Cores da Cidade - Grandes Formatos",
+    visibility: :public,
+    about: "Trabalho desenvolvido ao longo de 2025 explorando pigmentos minerais e texturas urbanas em telas de 2x3 metros. A série investiga as camadas de asfalto, cal e fuligem características das metrópoles brasileiras, culminando em uma reflexão sobre a matéria do espaço público."
+  },
+  {
+    profile: actors[:ana].actorable,
+    title: "Instalação Urbana: Pigmentos e Concreto",
+    visibility: :public,
+    about: "Intervenção arquitetônica site-specific montada no vão livre cultural. Foram empregadas estruturas de andaime e tecidos tintos com terras coletadas em diferentes bacias hidrográficas de São Paulo."
+  },
+  {
+    profile: actors[:bruno].actorable,
+    title: "Expografia da Mostra Arte em Diálogo",
+    visibility: :public,
+    about: "Projeto expográfico concebido para a galeria central do Museu de Arte Contemporânea. Focado em acessibilidade universal, circulação fluida e integração de iluminação focal para preservar as tonalidades originais das obras expostas."
+  },
+  {
+    profile: actors[:bruno].actorable,
+    title: "Render e Cenografia: Galeria Suspensa",
+    visibility: :public,
+    about: "Estudo tridimensional e projeto executivo para adequação de galeria em espaço tombado pelo patrimônio histórico. Criação de painéis autoportantes sem perfuração nas paredes históricas."
+  },
+  {
+    profile: actors[:carla].actorable,
+    title: "Gestão Cultural e Prestação de Contas - ProAC",
+    visibility: :public,
+    about: "Coordenação executiva completa de projeto selecionado em edital ProAC ICMS, englobando elaboração orçamentária, contratação de fornecedores especializados, monitoramento de metas e relatório final de prestação de contas aprovado sem ressalvas."
+  },
+  {
+    profile: actors[:carla].actorable,
+    title: "Captação de Recursos e Inscrição Rouanet 2025",
+    visibility: :public,
+    about: "Assessoria técnica na estruturação de proposta cultural para o Pronac, enquadramento nas faixas de incentivo fiscal e alinhamento com os Objetivos de Desenvolvimento Sustentável (ODS)."
+  },
+  {
+    profile: actors[:diego].actorable,
+    title: "Documentação Fotográfica: Acervo Galeria Jardins",
+    visibility: :public,
+    about: "Registro sistemático de 120 obras em alta resolução e fidelidade cromática com calibração colorimétrica X-Rite. Produção de imagens para catálogo impresso e arquivo digital para colecionadores."
+  },
+  {
+    profile: actors[:diego].actorable,
+    title: "Cobertura de Montagem e Abertura MASP",
+    visibility: :public,
+    about: "Ensaio fotográfico documental evidenciando o trabalho de bastidores de expógrafos, conservadores e montadores de arte durante os 7 dias preparatórios para a mostra temporária."
+  },
+  {
+    profile: actors[:elisa].actorable,
+    title: "Plano Logístico de Circulação Interestadual",
+    visibility: :draft,
+    about: "Rascunho de manual operacional para transporte e manuseio de obras de grande porte em circuitos itinerantes pelas capitais da região Sul e Sudeste."
+  }
+]
+
+projects_data.each do |p_data|
+  project = p_data[:profile].projects.create!(
+    title: p_data[:title],
+    visibility: p_data[:visibility],
+    about: p_data[:about]
+  )
+  puts "  Project: '#{project.title}' (#{project.profile.actor.name}) — #{project.visibility_label}"
+end
 
 # ── Groups ──────────────────────────────────────────────────────
 puts "\nCreating groups..."
@@ -174,7 +367,7 @@ groups[:sp] = create_group(
   description: "Hub para cooperação, compartilhamento de editais e montagem de projetos na capital paulista.",
   creator: actors[:ana]
 )
-puts "  Artistas de São Paulo (admin: Ana)"
+puts "  Artistas de São Paulo (owner: Ana)"
 
 groups[:montagem] = create_group(
   name: "Montagem e Expografia",
@@ -182,14 +375,14 @@ groups[:montagem] = create_group(
   creator: actors[:bruno],
   privacy: :private_group
 )
-puts "  Montagem e Expografia (admin: Bruno, private)"
+puts "  Montagem e Expografia (owner: Bruno, private)"
 
 groups[:editais] = create_group(
   name: "Editais e Projetos",
   description: "Espaço para compartilhar editais abertos, tirar dúvidas sobre escrita de projetos e articular parcerias.",
   creator: actors[:carla]
 )
-puts "  Editais e Projetos (admin: Carla)"
+puts "  Editais e Projetos (owner: Carla)"
 
 # ── Memberships ─────────────────────────────────────────────────
 puts "\nEstablishing memberships..."
@@ -199,23 +392,25 @@ def add_member(group, user, role: "member")
   user.connect_to(group.actor, as: "follow")
 end
 
-# Artistas de São Paulo: Ana (admin), Diego (mod), Bruno (member), Carla (member)
+# Artistas de São Paulo: Ana (owner), Diego (mod), Bruno (member), Carla (member), Felipe (member)
 add_member(groups[:sp], actors[:diego], role: "moderator")
 add_member(groups[:sp], actors[:bruno])
 add_member(groups[:sp], actors[:carla])
-puts "  Artistas de São Paulo: +Diego(mod) +Bruno(member) +Carla(member)"
+add_member(groups[:sp], actors[:felipe])
+puts "  Artistas de São Paulo: +Diego(mod) +Bruno(member) +Carla(member) +Felipe(member)"
 
-# Montagem e Expografia: Bruno (admin), Ana (member), Diego (member), Elisa (member)
+# Montagem e Expografia: Bruno (owner), Ana (member), Diego (member), Elisa (member)
 add_member(groups[:montagem], actors[:ana])
 add_member(groups[:montagem], actors[:diego])
 add_member(groups[:montagem], actors[:elisa])
 puts "  Montagem e Expografia: +Ana(member) +Diego(member) +Elisa(member)"
 
-# Editais e Projetos: Carla (admin), Ana (member), Bruno (member), Elisa (member)
+# Editais e Projetos: Carla (owner), Ana (member), Bruno (member), Elisa (member), Felipe (member)
 add_member(groups[:editais], actors[:ana])
 add_member(groups[:editais], actors[:bruno])
 add_member(groups[:editais], actors[:elisa])
-puts "  Editais e Projetos: +Ana(member) +Bruno(member) +Elisa(member)"
+add_member(groups[:editais], actors[:felipe])
+puts "  Editais e Projetos: +Ana(member) +Bruno(member) +Elisa(member) +Felipe(member)"
 
 # ── Contacts (follows) ──────────────────────────────────────────
 puts "\nCreating contacts..."
@@ -226,7 +421,9 @@ actors[:carla].connect_to(actors[:elisa], as: "follower")
 actors[:diego].connect_to(actors[:ana],   as: "acquaintance")
 actors[:elisa].connect_to(actors[:bruno], as: "acquaintance")
 actors[:elisa].connect_to(actors[:carla], as: "colleague")
-puts "  7 contacts created"
+actors[:felipe].connect_to(actors[:ana],  as: "follower")
+actors[:felipe].connect_to(actors[:carla], as: "follower")
+puts "  9 contacts created"
 
 # ── Activities / Posts ──────────────────────────────────────────
 puts "\nCreating posts..."
@@ -331,8 +528,6 @@ animada_post      = posts.find { |p| p.direct_object&.title&.include?("Nova sér
 
 initial_activity_count = Activity.count
 
-# ── Comment threads ──
-
 # Post 1: Procura-se Expógrafo em SP! (welcome_post)
 c1 = create_comment(
   author: actors[:bruno],
@@ -431,16 +626,23 @@ comment_count = Activity.count - initial_activity_count
 puts "  #{comment_count} comment activities created"
 
 # ── Summary ─────────────────────────────────────────────────────
-puts "\n#{'='*60}"
+puts "\n#{'=' * 60}"
 puts "Seed complete!"
-puts "#{'='*60}"
-puts "  Users:     #{User.count} (#{Profile.count} profiles)"
-puts "  Groups:    #{Group.count}"
-puts "  Actors:    #{Actor.count}"
-  puts "  Contacts:  #{Contact.count}"
-  puts "  Ties:      #{Tie.count}"
-  puts "  Activities: #{Activity.count}"
-  puts "  Relations: #{Relation::Custom.count} custom"
-  puts "#{'='*60}"
-  puts "\nLogin with any email above, password: password123"
-  puts "Try: http://localhost:3000/groups/#{groups[:sp].actor.slug}"
+puts "#{'=' * 60}"
+puts "  Users:               #{User.count} (#{Profile.count} profiles)"
+puts "  Subscribed:          #{User.all.count(&:subscribed?)} active"
+puts "  In Trial:            #{Pay::Subscription.where(status: 'trialing').count} trialing"
+puts "  Projects:            #{Project.count} (#{Project.publicly_visible.count} public)"
+puts "  Groups:              #{Group.count}"
+puts "  Actors:              #{Actor.count}"
+puts "  Contacts:            #{Contact.count}"
+puts "  Ties:                #{Tie.count}"
+puts "  Activities:          #{Activity.count}"
+puts "  Permissions Catalog: #{Permission.count} permissions"
+puts "#{'=' * 60}"
+puts "\nLogin with any user above, password: password123"
+puts "Admin Dashboard:    http://localhost:3000/admin/roles (as ana@example.com)"
+puts "User Account:       http://localhost:3000/account (test subscription badge & portal)"
+puts "Directory:          http://localhost:3000/profiles (only published professionals appear)"
+puts "Pricing Page:       http://localhost:3000/pricing"
+puts "Group Sample:       http://localhost:3000/groups/#{groups[:sp].actor.slug}"

@@ -23,6 +23,7 @@ class ApplicationController < ActionController::Base
 
   before_action :authenticate_user!
   before_action :ensure_wizard_complete!
+  before_action :store_selected_plan, if: :devise_controller?
   before_action :configure_permitted_parameters, if: :devise_controller?
   after_action :verify_authorized, unless: :devise_controller?
   after_action :verify_policy_scoped, if: -> { action_name == "index" }, unless: :devise_controller?
@@ -40,6 +41,72 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  # Persists the selected subscription plan in the user's session during registration
+  # so that after completing the onboarding wizard, the user is sent to the Stripe Checkout.
+  def store_selected_plan
+    return unless controller_name == "registrations"
+
+    if action_name == "new"
+      if params[:plan].present? && (plan = Plan.resolve(params[:plan]))
+        session[:selected_plan] = plan.id
+      else
+        session.delete(:selected_plan)
+      end
+    elsif action_name == "create" && params[:plan].present?
+      plan = Plan.resolve(params[:plan])
+      session[:selected_plan] = plan.id if plan
+    end
+  end
+
+  # Returns the currently selected {Plan} from params or session, if any.
+  #
+  # @return [Plan, nil]
+  def selected_plan
+    plan_key = params[:plan].presence || session[:selected_plan]
+    Plan.resolve(plan_key) if plan_key.present?
+  end
+  helper_method :selected_plan
+
+  # Initiates a Stripe Checkout session for the given {Plan} and redirects the user.
+  def redirect_to_plan_checkout(plan, fallback_path: root_path)
+    unless plan
+      redirect_to fallback_path, alert: "Plano inválido selecionado."
+      return
+    end
+
+    if current_user.subscribed?
+      redirect_to account_path, notice: "Você já possui uma assinatura ativa."
+      return
+    end
+
+    price_id = plan.stripe_price_id
+    if price_id.blank?
+      redirect_to fallback_path, alert: "Não foi possível carregar o preço do plano no momento. Tente novamente mais tarde."
+      return
+    end
+
+    checkout_params = {
+      mode: "subscription",
+      line_items: price_id,
+      success_url: success_checkout_url(session_id: "{CHECKOUT_SESSION_ID}"),
+      cancel_url: cancel_checkout_url,
+      allow_promotion_codes: true
+    }
+
+    if plan.trial_period_days.to_i.positive? && !current_user.subscribed?
+      checkout_params[:subscription_data] = {
+        trial_period_days: plan.trial_period_days
+      }
+    end
+
+    checkout_session = current_user.payment_processor.checkout(**checkout_params)
+
+    redirect_to checkout_session.url, allow_other_host: true, status: :see_other
+  rescue Pay::Error, Stripe::StripeError => e
+    Rails.logger.error("[Checkouts] Error: #{e.message}")
+    redirect_to fallback_path, alert: "Erro ao iniciar o checkout: #{e.message}"
+  end
+
   # The {Actor} the signed-in {User} is currently acting as. This is the entity handed to
   # Pundit policies and used throughout the domain layer.
   #
@@ -48,7 +115,7 @@ class ApplicationController < ActionController::Base
     @current_actor ||= begin
       actor = current_user&.current_profile
       if actor
-        ActiveRecord::Associations::Preloader.new(records: [actor], associations: :actorable).call
+        ActiveRecord::Associations::Preloader.new(records: [ actor ], associations: :actorable).call
         if actor.actorable.is_a?(Profile)
           actor.actorable.user = current_user
         end

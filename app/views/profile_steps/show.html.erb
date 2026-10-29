@@ -1,9 +1,20 @@
 <% content_for :no_sidebar, true %>
 <%= content_for :title, "Completar Perfil" %>
+<% active_plan = selected_plan %>
 
 <div class="max-w-2xl mx-auto py-8">
   <%= turbo_frame_tag "wizard_frame", data: { turbo_action: "advance" } do %>
     <div class="space-y-6">
+      <% if active_plan %>
+        <div class="flex flex-wrap items-center justify-between gap-2 px-4 py-3 rounded-lg bg-stone-50 border border-stone-200 text-xs text-zinc-700">
+          <div class="flex items-center gap-2">
+            <i data-lucide="sparkles" class="w-4 h-4 text-brand shrink-0"></i>
+            <span>Plano selecionado: <strong class="text-charcoal"><%= active_plan.name %></strong> (30 dias grátis)</span>
+          </div>
+          <span class="text-zinc-500 font-medium">Próximo passo: ativação segura no Stripe</span>
+        </div>
+      <% end %>
+
       <div>
         <h1 class="text-2xl font-serif font-bold text-charcoal tracking-tight mb-1">Completar Perfil</h1>
         <p class="text-sm text-zinc-500">
@@ -92,8 +103,9 @@
               <% end %>
             <% end %>
             
-            <%= f.submit step == Profile::FORM_STEPS.keys.last ? "Finalizar" : "Continuar",
-                         data: step == Profile::FORM_STEPS.keys.last ? { turbo_frame: "_top" } : {},
+            <% final_label = active_plan ? "Finalizar e ir para o checkout" : "Finalizar" %>
+            <%= f.submit step == Profile::FORM_STEPS.keys.last ? final_label : "Continuar",
+                         data: step == Profile::FORM_STEPS.keys.last ? { turbo: false } : {},
                          class: "min-h-11 sm:min-h-0 inline-flex items-center justify-center bg-charcoal hover:bg-zinc-800 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors cursor-pointer ml-auto focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-charcoal focus-visible:ring-offset-1" %>
           </div>
         <% end %>
