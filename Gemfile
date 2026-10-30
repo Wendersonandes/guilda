@@ -46,8 +46,10 @@ gem "aws-sdk-s3", require: false
 gem "lexxy", "~> 0.9"
 
 # Authentication
-# Authentication
 gem "devise", "~> 4.9"
+gem "omniauth", "~> 2.1"
+gem "omniauth-rails_csrf_protection", "~> 1.0"
+gem "omniauth-google-oauth2", "~> 1.1"
 
 # Localization — pt-BR
 gem "rails-i18n", "~> 8.0"

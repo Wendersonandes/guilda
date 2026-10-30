@@ -9,10 +9,12 @@
 #  encrypted_password     :string           default(""), not null
 #  last_sign_in_at        :datetime
 #  last_sign_in_ip        :string
+#  provider               :string
 #  remember_created_at    :datetime
 #  reset_password_sent_at :datetime
 #  reset_password_token   :string
 #  sign_in_count          :integer          default(0), not null
+#  uid                    :string
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
 #  current_profile_id     :bigint
@@ -21,6 +23,7 @@
 #
 #  index_users_on_current_profile_id    (current_profile_id)
 #  index_users_on_email                 (email) UNIQUE
+#  index_users_on_provider_and_uid      (provider,uid) UNIQUE
 #  index_users_on_reset_password_token  (reset_password_token) UNIQUE
 #
 # Foreign Keys
@@ -40,7 +43,41 @@
 # @see Actor   The social-graph node behind a profile.
 class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable, :trackable
+         :recoverable, :rememberable, :validatable, :trackable,
+         :omniauthable, omniauth_providers: [ :google_oauth2 ]
+
+  def self.from_omniauth(auth)
+    return nil if auth.blank? || auth.info.blank?
+
+    user = find_by(provider: auth.provider, uid: auth.uid.to_s)
+    if user.nil? && auth.info.email.present?
+      user = find_by("LOWER(email) = ?", auth.info.email.downcase)
+      user&.update(provider: auth.provider, uid: auth.uid.to_s)
+    end
+
+    if user.nil?
+      candidate_name = auth.info.name.presence || auth.info.email.to_s.split("@").first.presence || "Membro"
+      user = create do |u|
+        u.email = auth.info.email
+        u.password = Devise.friendly_token[0, 20]
+        u.provider = auth.provider
+        u.uid = auth.uid.to_s
+        u.profile_name = candidate_name
+      end
+    end
+
+    if user&.persisted? && auth.info.image.present? && user.current_profile && !user.current_profile.avatar.attached?
+      begin
+        require "open-uri"
+        downloaded_image = URI.parse(auth.info.image).open(read_timeout: 3, open_timeout: 2)
+        user.current_profile.avatar.attach(io: downloaded_image, filename: "avatar.jpg", content_type: "image/jpeg")
+      rescue StandardError => e
+        Rails.logger.warn("Could not attach Google avatar: #{e.message}")
+      end
+    end
+
+    user
+  end
 
   has_many :profiles, dependent: :destroy
   belongs_to :current_profile, class_name: "Actor", optional: true

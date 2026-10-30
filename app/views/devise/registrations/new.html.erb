@@ -36,6 +36,8 @@
   </div>
 
   <div class="bg-white rounded-lg border border-stone-border p-6">
+    <%= render "devise/shared/omniauth_buttons", text: "Cadastrar com o Google" %>
+
     <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
       <%= render "devise/shared/error_messages", resource: resource %>
 

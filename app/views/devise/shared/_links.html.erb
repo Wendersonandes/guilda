@@ -27,7 +27,7 @@
     <% end %>
 
     <%- if devise_mapping.omniauthable? %>
-      <%- resource_class.omniauth_providers.each do |provider| %>
+      <%- resource_class.omniauth_providers.reject { |p| p == :google_oauth2 }.each do |provider| %>
         <%= button_to t("auth.shared.links.omniauth", provider: OmniAuth::Utils.camelize(provider)), omniauth_authorize_path(resource_name, provider), data: { turbo: false }, class: "text-brand hover:text-brand-hover font-medium bg-transparent border-0 cursor-pointer transition-colors" %>
       <% end %>
     <% end %>

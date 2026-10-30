@@ -11,10 +11,12 @@ require "test_helper"
 #  encrypted_password     :string           default(""), not null
 #  last_sign_in_at        :datetime
 #  last_sign_in_ip        :string
+#  provider               :string
 #  remember_created_at    :datetime
 #  reset_password_sent_at :datetime
 #  reset_password_token   :string
 #  sign_in_count          :integer          default(0), not null
+#  uid                    :string
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
 #  current_profile_id     :bigint
@@ -23,6 +25,7 @@ require "test_helper"
 #
 #  index_users_on_current_profile_id    (current_profile_id)
 #  index_users_on_email                 (email) UNIQUE
+#  index_users_on_provider_and_uid      (provider,uid) UNIQUE
 #  index_users_on_reset_password_token  (reset_password_token) UNIQUE
 #
 # Foreign Keys
@@ -98,5 +101,65 @@ class UserTest < ActiveSupport::TestCase
 
     @bob.current_profile = nil
     assert_equal @bob.email, @bob.pay_customer_name
+  end
+
+  test "from_omniauth creates a new user, profile and actor when user does not exist" do
+    auth = OmniAuth::AuthHash.new(
+      provider: "google_oauth2",
+      uid: "10987654321",
+      info: {
+        email: "carlos@example.com",
+        name: "Carlos Silva"
+      }
+    )
+
+    assert_difference -> { User.count } => 1, -> { Profile.count } => 1, -> { Actor.count } => 1 do
+      user = User.from_omniauth(auth)
+      assert user.persisted?
+      assert_equal "carlos@example.com", user.email
+      assert_equal "google_oauth2", user.provider
+      assert_equal "10987654321", user.uid
+      assert_equal "Carlos Silva", user.current_profile.name
+    end
+  end
+
+  test "from_omniauth links existing user with matching email" do
+    auth = OmniAuth::AuthHash.new(
+      provider: "google_oauth2",
+      uid: "999888777",
+      info: {
+        email: @bob.email,
+        name: "Bob Updated"
+      }
+    )
+
+    assert_no_difference "User.count" do
+      user = User.from_omniauth(auth)
+      assert_equal @bob.id, user.id
+      assert_equal "google_oauth2", user.reload.provider
+      assert_equal "999888777", user.uid
+    end
+  end
+
+  test "from_omniauth returns existing user with matching provider and uid" do
+    @bob.update!(provider: "google_oauth2", uid: "555444333")
+
+    auth = OmniAuth::AuthHash.new(
+      provider: "google_oauth2",
+      uid: "555444333",
+      info: {
+        email: "different_email@example.com"
+      }
+    )
+
+    assert_no_difference "User.count" do
+      user = User.from_omniauth(auth)
+      assert_equal @bob.id, user.id
+    end
+  end
+
+  test "from_omniauth returns nil for blank auth payload" do
+    assert_nil User.from_omniauth(nil)
+    assert_nil User.from_omniauth(OmniAuth::AuthHash.new)
   end
 end

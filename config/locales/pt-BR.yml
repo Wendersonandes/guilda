@@ -2,6 +2,9 @@ pt-BR:
   hello: "Olá, mundo"
 
   devise:
+    omniauth_callbacks:
+      success: "Autenticado com sucesso com sua conta do %{kind}."
+      failure: "Não foi possível autenticar via %{kind}: %{reason}"
     failure:
       banned: "Sua conta foi suspensa por violar as políticas da plataforma."
 
