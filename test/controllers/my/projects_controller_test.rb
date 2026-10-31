@@ -285,6 +285,67 @@ module My
       assert_equal 2, project.project_images.count
     end
 
+    test "updating project with image_order reorders existing and new images correctly" do
+      project = @alice.actorable.projects.create!(title: "Meu Projeto", about: "<p>Sobre</p>")
+      img1 = project.project_images.create!(image: image_blob("img-1.png"))
+      img2 = project.project_images.create!(image: image_blob("img-2.png"))
+      new_blob = image_blob("img-new.png")
+
+      order = [ "new:0", "existing:#{img2.id}", "existing:#{img1.id}" ]
+
+      patch my_project_path(project), params: {
+        project: {
+          gallery_signed_ids: [ new_blob.signed_id ],
+          image_order: JSON.generate(order)
+        }
+      }
+
+      assert_redirected_to my_projects_path
+      ordered_blobs = project.reload.project_images.ordered.map { |pi| pi.image.blob.id }
+      assert_equal [ new_blob.id, img2.image.blob.id, img1.image.blob.id ], ordered_blobs
+    end
+
+    test "edit form renders a single unified gallery thumbnails container" do
+      project = @alice.actorable.projects.create!(title: "Meu Projeto", about: "<p>Sobre</p>")
+      img1 = project.project_images.create!(image: image_blob("img-1.png"))
+      img2 = project.project_images.create!(image: image_blob("img-2.png"))
+
+      get edit_my_project_path(project)
+      assert_response :success
+
+      # Confirma que há apenas um container de thumbnails
+      assert_select "div[data-project-preview-target='thumbnails']", count: 1
+
+      # Confirma que as imagens salvas estão renderizadas dentro do grid único
+      assert_select "div[data-project-preview-target='thumbnails'] > div[data-existing-id]", count: 2
+      assert_select "div[data-project-preview-target='thumbnails'] > div[data-existing-id='#{img1.id}']", count: 1
+      assert_select "div[data-project-preview-target='thumbnails'] > div[data-existing-id='#{img2.id}']", count: 1
+
+      # Confirma a presença do campo de image_order e cover_image_id
+      assert_select "input[name='project[image_order]'][data-project-preview-target='imageOrderInput']", count: 1
+      assert_select "input[name='project[cover_image_id]'][data-project-preview-target='coverImageIdInput']", count: 1
+
+      # Confirma que cada card existente possui badge e botão de capa
+      assert_select "div[data-existing-id] [data-cover-badge]", count: 2
+      assert_select "div[data-existing-id] button[data-cover-button]", count: 2
+    end
+
+    test "updating project with cover_image_id switches the cover to another existing image" do
+      project = @alice.actorable.projects.create!(title: "Meu Projeto", about: "<p>Sobre</p>")
+      img1 = project.project_images.create!(image: image_blob("img-1.png"))
+      img2 = project.project_images.create!(image: image_blob("img-2.png"))
+      project.cover.attach(img1.image.blob)
+
+      assert_equal img1.image.blob.id, project.cover.blob.id
+
+      patch my_project_path(project), params: {
+        project: { cover_image_id: img2.id.to_s }
+      }
+
+      assert_redirected_to my_projects_path
+      assert_equal img2.image.blob.id, project.reload.cover.blob.id
+    end
+
     test "does not create a project without a title" do
       assert_no_difference("Project.count") do
         post my_projects_path, params: { project: { title: "", about: "<p>Sobre</p>" } }

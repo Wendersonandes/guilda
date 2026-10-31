@@ -65,6 +65,7 @@ export default class extends Controller {
     this.element.dispatchEvent(new CustomEvent("sortable:end", { bubbles: true, detail: { ids } }))
 
     if (!this.hasUrlValue) return
+    if (!ids.every((id) => /^\d+$/.test(id))) return
 
     fetch(this.urlValue, {
       method: "PATCH",

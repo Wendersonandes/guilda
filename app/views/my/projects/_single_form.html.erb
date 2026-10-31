@@ -84,51 +84,6 @@
         </div>
 
         <div class="space-y-3">
-          <% if project.persisted? && project.project_images.any? %>
-            <div class="space-y-2">
-              <div class="flex items-center justify-between text-xs text-zinc-500">
-                <span class="font-medium text-charcoal"><%= t("my.projects.edit.saved_images", default: "Imagens salvas") %></span>
-                <span class="text-[11px] text-zinc-400"><%= t("my.projects.edit.reorder_hint", default: "Arraste para reordenar") %></span>
-              </div>
-              <div data-controller="sortable" data-sortable-url-value="<%= reorder_my_project_images_path(project) %>" data-sortable-filter-value="a, button" class="grid grid-cols-3 sm:grid-cols-4 gap-2.5">
-                <% project.project_images.each do |image| %>
-                  <% is_cover = project.cover.attached? && project.cover.blob_id == image.image.blob_id %>
-                  <div data-id="<%= image.id %>" class="relative group rounded-lg overflow-hidden border <%= is_cover ? 'border-charcoal ring-2 ring-charcoal shadow-sm' : 'border-stone-border hover:border-stone-400' %> cursor-move transition-all">
-                    <%= image_tag image.image.variant(:thumb), class: "w-full h-24 object-cover select-none pointer-events-none" %>
-
-                    <% if is_cover %>
-                      <span class="absolute top-1.5 left-1.5 inline-flex items-center gap-1 bg-charcoal text-white text-[10px] font-semibold px-2 py-0.5 rounded shadow-sm select-none">
-                        <i data-lucide="star" class="w-3 h-3 fill-amber-400 text-amber-400"></i>
-                        <span>Capa</span>
-                      </span>
-                    <% else %>
-                      <%= link_to cover_my_project_image_path(project, image), data: { turbo_method: :post },
-                            title: t("my.projects.wizard.set_cover", default: "Definir como capa"),
-                            aria: { label: "Definir imagem como capa do projeto" },
-                            class: "absolute top-1.5 left-1.5 inline-flex items-center justify-center w-7 h-7 rounded-full bg-black/60 text-white/90 hover:text-white hover:bg-charcoal transition-colors cursor-pointer shadow-sm focus:outline-none focus:ring-2 focus:ring-white" do %>
-                        <i data-lucide="star" class="w-3.5 h-3.5"></i>
-                      <% end %>
-                    <% end %>
-
-                    <% if project.project_images.size > 1 %>
-                      <%= link_to my_project_image_path(project, image), data: { turbo_method: :delete, turbo_confirm: t("my.projects.form.remove_confirm", default: "Tem certeza que deseja remover esta imagem?") },
-                            title: t("my.projects.form.remove_image", default: "Remover imagem"),
-                            aria: { label: "Remover imagem da galeria" },
-                            class: "absolute top-1.5 right-1.5 inline-flex items-center justify-center w-7 h-7 rounded-full bg-black/60 text-white/90 hover:text-white hover:bg-red-600 transition-colors cursor-pointer shadow-sm focus:outline-none focus:ring-2 focus:ring-white" do %>
-                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                      <% end %>
-                    <% else %>
-                      <span class="absolute top-1.5 right-1.5 inline-flex items-center justify-center w-7 h-7 rounded-full bg-black/30 text-white/40 cursor-not-allowed shadow-sm"
-                            title="O projeto precisa ter pelo menos uma imagem">
-                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                      </span>
-                    <% end %>
-                  </div>
-                <% end %>
-              </div>
-            </div>
-          <% end %>
-
           <% if gallery_slots.positive? %>
             <label for="project_gallery"
                    data-project-preview-target="dropzone"
@@ -161,9 +116,14 @@
 
           <%= hidden_field_tag "project[cover_index]", "",
                 data: { project_preview_target: "coverIndexInput", cover_label: t("#{scope}.set_cover") } %>
+          <%= hidden_field_tag "project[cover_image_id]", "",
+                data: { project_preview_target: "coverImageIdInput" } %>
+          <%= hidden_field_tag "project[image_order]", "",
+                data: { project_preview_target: "imageOrderInput" } %>
 
           <div class="space-y-2">
-            <div data-project-preview-target="galleryInstructions" class="hidden flex items-center justify-between text-xs text-zinc-500 pt-1">
+            <div data-project-preview-target="galleryInstructions"
+                 class="<%= (project.persisted? && project.project_images.any?) ? 'flex' : 'hidden flex' %> items-center justify-between text-xs text-zinc-500 pt-1">
               <span class="text-xs text-zinc-500 flex items-center gap-1.5">
                 <i data-lucide="star" class="w-3.5 h-3.5 text-zinc-500 flex-shrink-0"></i>
                 <span><%= t("#{scope}.cover_hint") %></span>
@@ -176,9 +136,56 @@
 
             <div data-project-preview-target="thumbnails"
                  data-controller="sortable"
-                 data-sortable-filter-value="button"
+                 <% if project.persisted? %>
+                   data-sortable-url-value="<%= reorder_my_project_images_path(project) %>"
+                 <% end %>
+                 data-sortable-filter-value="button, a"
                  data-action="sortable:end->project-preview#galleryReordered"
-                 class="grid grid-cols-3 sm:grid-cols-4 gap-2.5"></div>
+                 class="grid grid-cols-3 sm:grid-cols-4 gap-2.5">
+              <% if project.persisted? && project.project_images.any? %>
+                <% project.project_images.each do |image| %>
+                  <% is_cover = project.cover.attached? && project.cover.blob_id == image.image.blob_id %>
+                  <div data-id="<%= image.id %>"
+                       data-existing-id="<%= image.id %>"
+                       data-is-cover="<%= is_cover ? 'true' : 'false' %>"
+                       class="relative group rounded-lg overflow-hidden border <%= is_cover ? 'border-charcoal ring-2 ring-charcoal shadow-sm' : 'border-stone-border hover:border-stone-400' %> cursor-move transition-all select-none">
+                    <%= image_tag image.image.variant(:thumb), class: "w-full h-24 object-cover select-none pointer-events-none" %>
+
+                    <span data-cover-badge
+                          class="absolute top-1.5 left-1.5 inline-flex items-center gap-1 bg-charcoal text-white text-[10px] font-semibold px-2 py-0.5 rounded shadow-sm select-none <%= 'hidden' unless is_cover %>"
+                          style="<%= 'display: none;' unless is_cover %>">
+                      <i data-lucide="star" class="w-3 h-3 fill-amber-400 text-amber-400"></i>
+                      <span>Capa</span>
+                    </span>
+
+                    <button type="button"
+                            data-action="project-preview#selectCover"
+                            data-existing-id="<%= image.id %>"
+                            data-cover-button
+                            title="<%= t('my.projects.wizard.set_cover', default: 'Definir como capa') %>"
+                            aria-label="Definir imagem como capa do projeto"
+                            class="absolute top-1.5 left-1.5 inline-flex items-center justify-center w-7 h-7 rounded-full bg-black/60 text-white/90 hover:text-white hover:bg-charcoal transition-colors cursor-pointer shadow-sm focus:outline-none focus:ring-2 focus:ring-white <%= 'hidden' if is_cover %>"
+                            style="<%= 'display: none;' if is_cover %>">
+                      <i data-lucide="star" class="w-3.5 h-3.5"></i>
+                    </button>
+
+                    <% if project.project_images.size > 1 %>
+                      <%= link_to my_project_image_path(project, image), data: { turbo_method: :delete, turbo_confirm: t("my.projects.form.remove_confirm", default: "Tem certeza que deseja remover esta imagem?") },
+                            title: t("my.projects.form.remove_image", default: "Remover imagem"),
+                            aria: { label: "Remover imagem da galeria" },
+                            class: "absolute top-1.5 right-1.5 inline-flex items-center justify-center w-7 h-7 rounded-full bg-black/60 text-white/90 hover:text-white hover:bg-red-600 transition-colors cursor-pointer shadow-sm focus:outline-none focus:ring-2 focus:ring-white" do %>
+                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                      <% end %>
+                    <% else %>
+                      <span class="absolute top-1.5 right-1.5 inline-flex items-center justify-center w-7 h-7 rounded-full bg-black/30 text-white/40 cursor-not-allowed shadow-sm"
+                            title="O projeto precisa ter pelo menos uma imagem">
+                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                      </span>
+                    <% end %>
+                  </div>
+                <% end %>
+              <% end %>
+            </div>
           </div>
         </div>
       </section>

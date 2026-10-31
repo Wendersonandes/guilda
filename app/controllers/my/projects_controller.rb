@@ -106,12 +106,12 @@ module My
 
     def project_params
       @project_params ||= params.require(:project).permit(
-        :title, :visibility, :about, :cover, :cover_index, gallery_signed_ids: []
+        :title, :visibility, :about, :cover, :cover_index, :cover_image_id, :image_order, gallery_signed_ids: []
       )
     end
 
     def project_attributes
-      project_params.except(:gallery_signed_ids, :cover_index)
+      project_params.except(:gallery_signed_ids, :cover_index, :cover_image_id, :image_order)
     end
 
     def gallery_signed_ids
@@ -123,7 +123,13 @@ module My
     end
 
     def ingest_gallery
-      result = ProjectImageIngestor.new(@project, gallery_signed_ids, cover_index: cover_index).call
+      result = ProjectImageIngestor.new(
+        @project,
+        gallery_signed_ids,
+        cover_index: cover_index,
+        cover_image_id: project_params[:cover_image_id],
+        image_order: project_params[:image_order]
+      ).call
 
       if result[:skipped].positive?
         flash[:alert] = t("flash.project_gallery_skipped", count: result[:skipped])

@@ -99,6 +99,7 @@
           <% images.each_with_index do |image, index| %>
             <% if preview %>
               <%= image_tag image.image.variant(:thumb), alt: gallery_image_alt.call(index), loading: "lazy", decoding: "async",
+                    data: { existing_id: image.id },
                     class: "w-full aspect-[4/3] object-cover rounded-lg border border-stone-border" %>
             <% else %>
               <button type="button"
