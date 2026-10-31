@@ -227,7 +227,7 @@
               <span><%= t(".clear_filters") %></span>
             <% end %>
           <% else %>
-            <%= link_to profiles_path, class: "inline-flex items-center gap-1.5 text-xs bg-charcoal text-white hover:bg-zinc-800 font-medium px-4 py-2 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-charcoal focus-visible:ring-offset-1" do %>
+            <%= link_to profiles_path, class: "inline-flex items-center gap-1.5 text-xs bg-charcoal text-white hover:bg-zinc-800 font-medium px-4 py-2 rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-charcoal focus-visible:ring-offset-1", data: { turbo_action: "advance", turbo_frame: "_top" } do %>
               <i data-lucide="search" aria-hidden="true" class="w-3.5 h-3.5"></i>
               <span><%= t(".explore_profiles") %></span>
             <% end %>

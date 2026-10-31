@@ -36,6 +36,8 @@ class CheckoutsControllerTest < ActionDispatch::IntegrationTest
     sign_in @user
     get success_checkout_path(session_id: "cs_test_123")
     assert_response :success
+    assert_select "a[href=?]", new_my_project_path
+    assert_select "a[href=?]", edit_my_profile_path
   end
 
   test "cancel action renders successfully for authenticated user" do

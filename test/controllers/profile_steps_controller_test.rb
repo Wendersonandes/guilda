@@ -132,6 +132,7 @@ class ProfileStepsControllerTest < ActionDispatch::IntegrationTest
     assert_select "span[data-occupations-target='counter']"
     assert_select "input[type='hidden'][name='profile[occupation_list][]']"
     assert_select "div[role='group'][aria-labelledby='occupations_section_heading']"
+    assert_select "form[data-turbo-frame='_top'] button[data-turbo-frame='_top']", text: /Não presto serviços — quero apenas buscar e contratar profissionais/
   end
 
   test "persists occupation selection when clicking back button" do
@@ -187,10 +188,24 @@ class ProfileStepsControllerTest < ActionDispatch::IntegrationTest
     assert_select "input[type='checkbox'][value='Expografia'][checked='checked']"
   end
 
+  test "contractor can skip occupations step and finish wizard directly" do
+    sign_in @user
+    @profile.update!(country: "BR", state: "SP", city: "São Paulo")
+
+    put profile_step_path(:occupation), params: { wizard_action: "skip_occupations" }
+    assert_response :see_other
+    assert_redirected_to root_path
+    assert_equal "Perfil configurado com sucesso! Você já pode buscar e contatar profissionais.", flash[:notice]
+
+    @profile.reload
+    assert @profile.wizard_complete?
+    assert_empty @profile.occupation_list
+  end
+
   test "guest signing up with a chosen plan is redirected to Stripe checkout after completing the wizard" do
     get new_user_registration_path(plan: :annual)
     assert_response :success
-    assert_select "input[type='radio'][name='plan'][value='annual'][checked='checked']"
+    assert_select "input[type='hidden'][name='plan'][value='annual']"
 
     post user_registration_path, params: {
       plan: "annual",

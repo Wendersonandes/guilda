@@ -23,7 +23,7 @@
 
   <div class="text-center">
     <div class="w-12 h-12 bg-stone-100 text-brand rounded-full flex items-center justify-center mx-auto mb-3 border border-stone-border shadow-sm">
-      <i data-lucide="user-plus" class="w-6 h-6"></i>
+      <i data-lucide="user-plus" class="w-6 h-6" aria-hidden="true"></i>
     </div>
     <h1 class="text-2xl font-serif font-bold text-charcoal tracking-tight"><%= t("auth.registrations.new.title") %></h1>
     <p class="text-sm text-zinc-500 mt-1">
@@ -35,37 +35,48 @@
     </p>
   </div>
 
-  <div class="bg-white rounded-lg border border-stone-border p-6">
+  <div class="bg-white rounded-lg border border-stone-border p-6 space-y-5">
+    <% if active_plan %>
+      <!-- Selected Plan Context & Switcher (Placed above all auth options) -->
+      <div class="p-3.5 rounded-lg bg-stone-50 border border-stone-200 space-y-2.5">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold uppercase tracking-wider text-zinc-500">Plano escolhido</span>
+          <span class="text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+            30 dias grátis • R$ 0 hoje
+          </span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Escolha o plano de assinatura">
+          <%= link_to url_for(plan: :annual),
+                      class: "relative flex flex-col p-2.5 rounded-lg border transition-colors bg-white #{active_plan.id == 'annual' ? 'border-brand ring-1 ring-brand' : 'border-stone-200 hover:border-stone-300'}" do %>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-charcoal">Profissional Anual</span>
+              <% if active_plan.id == "annual" %>
+                <i data-lucide="check" class="w-3.5 h-3.5 text-brand" aria-hidden="true"></i>
+              <% end %>
+            </div>
+            <span class="text-[11px] text-zinc-600 mt-0.5">R$ 300/ano <span class="text-brand font-medium">(R$ 25/mês)</span></span>
+          <% end %>
+
+          <%= link_to url_for(plan: :monthly),
+                      class: "relative flex flex-col p-2.5 rounded-lg border transition-colors bg-white #{active_plan.id == 'monthly' ? 'border-brand ring-1 ring-brand' : 'border-stone-200 hover:border-stone-300'}" do %>
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-charcoal">Profissional Mensal</span>
+              <% if active_plan.id == "monthly" %>
+                <i data-lucide="check" class="w-3.5 h-3.5 text-brand" aria-hidden="true"></i>
+              <% end %>
+            </div>
+            <span class="text-[11px] text-zinc-600 mt-0.5">R$ 30/mês sem fidelidade</span>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
     <%= render "devise/shared/omniauth_buttons", text: "Cadastrar com o Google" %>
 
     <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
       <%= render "devise/shared/error_messages", resource: resource %>
-
-      <% if active_plan %>
-        <!-- Selected Plan Context & Switcher -->
-        <div class="mb-5 p-3.5 rounded-lg bg-stone-50 border border-stone-200 space-y-2.5">
-          <div class="flex items-center justify-between">
-            <span class="text-xs font-semibold uppercase tracking-wider text-zinc-500">Plano escolhido</span>
-            <span class="text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
-              30 dias grátis • R$ 0 hoje
-            </span>
-          </div>
-
-          <div class="grid grid-cols-2 gap-2" role="radiogroup" aria-label="Escolha o plano de assinatura">
-            <label class="relative flex flex-col p-2.5 rounded-lg border cursor-pointer transition-colors bg-white has-[:checked]:border-brand has-[:checked]:ring-1 has-[:checked]:ring-brand border-stone-200 hover:border-stone-300">
-              <%= radio_button_tag :plan, "annual", active_plan.id == "annual", class: "sr-only" %>
-              <span class="text-xs font-bold text-charcoal">Profissional Anual</span>
-              <span class="text-[11px] text-zinc-600">R$ 300/ano <span class="text-brand font-medium">(R$ 25/mês)</span></span>
-            </label>
-
-            <label class="relative flex flex-col p-2.5 rounded-lg border cursor-pointer transition-colors bg-white has-[:checked]:border-brand has-[:checked]:ring-1 has-[:checked]:ring-brand border-stone-200 hover:border-stone-300">
-              <%= radio_button_tag :plan, "monthly", active_plan.id == "monthly", class: "sr-only" %>
-              <span class="text-xs font-bold text-charcoal">Profissional Mensal</span>
-              <span class="text-[11px] text-zinc-600">R$ 30/mês sem fidelidade</span>
-            </label>
-          </div>
-        </div>
-      <% end %>
+      <%= hidden_field_tag :plan, active_plan.id if active_plan %>
 
       <div class="space-y-4">
         <div class="space-y-1">
@@ -80,19 +91,25 @@
                 class: "w-full min-h-11 rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal transition-shadow" %>
         </div>
 
-        <div class="space-y-1">
-          <%= f.label :password, class: "block text-sm font-medium text-zinc-700" %>
-          <%= f.password_field :password, autocomplete: "new-password", placeholder: "••••••••",
-                class: "w-full min-h-11 rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal transition-shadow" %>
-          <% if @minimum_password_length %>
-            <p class="text-[11px] text-zinc-500 font-medium"><%= t("auth.registrations.new.password_minimum", count: @minimum_password_length) %></p>
-          <% end %>
-        </div>
-
-        <div class="space-y-1">
-          <%= f.label :password_confirmation, t("auth.registrations.new.confirm_password"), class: "block text-sm font-medium text-zinc-700" %>
-          <%= f.password_field :password_confirmation, autocomplete: "new-password", placeholder: "••••••••",
-                class: "w-full min-h-11 rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal transition-shadow" %>
+        <div class="space-y-1" data-controller="password-visibility">
+          <div class="flex items-center justify-between">
+            <%= f.label :password, class: "block text-sm font-medium text-zinc-700" %>
+            <% if @minimum_password_length %>
+              <span class="text-[11px] text-zinc-400"><%= t("auth.registrations.new.password_minimum", count: @minimum_password_length) %></span>
+            <% end %>
+          </div>
+          <div class="relative">
+            <%= f.password_field :password, autocomplete: "new-password", placeholder: "••••••••",
+                  data: { password_visibility_target: "input" },
+                  class: "w-full min-h-11 rounded-lg border border-stone-300 pl-3 pr-10 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal transition-shadow" %>
+            <button type="button"
+                    data-action="click->password-visibility#toggle"
+                    aria-label="Ver senha"
+                    title="Ver senha"
+                    class="absolute inset-y-0 right-0 pr-3 flex items-center text-zinc-400 hover:text-zinc-600 cursor-pointer transition-colors bg-transparent border-0">
+              <i data-lucide="eye" data-password-visibility-target="icon" class="w-4 h-4" aria-hidden="true"></i>
+            </button>
+          </div>
         </div>
 
         <%= f.submit active_plan ? t("auth.registrations.new.submit_with_plan") : t("auth.registrations.new.submit"),

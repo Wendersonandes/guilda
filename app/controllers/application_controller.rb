@@ -46,15 +46,12 @@ class ApplicationController < ActionController::Base
   def store_selected_plan
     return unless controller_name == "registrations"
 
-    if action_name == "new"
-      if params[:plan].present? && (plan = Plan.resolve(params[:plan]))
-        session[:selected_plan] = plan.id
-      else
+    if params[:plan].present?
+      if params[:plan] == "none"
         session.delete(:selected_plan)
+      elsif (plan = Plan.resolve(params[:plan]))
+        session[:selected_plan] = plan.id
       end
-    elsif action_name == "create" && params[:plan].present?
-      plan = Plan.resolve(params[:plan])
-      session[:selected_plan] = plan.id if plan
     end
   end
 

@@ -153,6 +153,12 @@ class ContactsControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[href='#{contacts_path}'][data-turbo-action='advance'][data-turbo-frame='_top']", text: /Limpar todos os filtros/
   end
 
+  test "explore profiles link in empty state includes turbo advance and top attributes" do
+    get contacts_path
+    assert_response :success
+    assert_select "a[href='#{profiles_path}'][data-turbo-action='advance'][data-turbo-frame='_top']", text: /Explorar profissionais/
+  end
+
   test "renders mutual connection badge when connection is reciprocal" do
     @alice.connect_to(@bob, as: :follower)
     get contacts_path

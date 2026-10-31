@@ -295,6 +295,7 @@ pt-BR:
 
   # === Profile wizard =========================================================
   profile_steps:
+    contractor_skip_notice: "Perfil configurado com sucesso! Você já pode buscar e contatar profissionais."
     location:
       country: "País"
       state: "Estado"
@@ -600,8 +601,8 @@ pt-BR:
       new:
         title: "Crie sua conta"
         subtitle: "Comece a usar a Guilda hoje"
-        display_name: "Nome de exibição"
-        display_name_placeholder: "Seu nome ou usuário"
+        display_name: "Nome profissional ou artístico"
+        display_name_placeholder: "Ex.: Ana Silva ou Estúdio Eixo"
         email_placeholder: "voce@exemplo.com.br"
         password_minimum: "%{count} caracteres no mínimo"
         confirm_password: "Confirme a senha"

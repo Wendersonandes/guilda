@@ -1,12 +1,3 @@
-<% if @profile.errors.any? %>
-  <div role="alert" class="rounded-lg bg-red-50 p-4 text-sm text-red-600 border border-red-100 mb-6">
-    <ul class="list-disc pl-5">
-      <% @profile.errors.full_messages.each do |msg| %>
-        <li><%= msg %></li>
-      <% end %>
-    </ul>
-  </div>
-<% end %>
 
 <div data-controller="occupations"
      data-occupations-counter-template-value="<%= t("profile_steps.occupation.counter", default: "%{count} de 3 selecionadas") %>">

@@ -17,6 +17,12 @@ class ProfileStepsController < ApplicationController
   end
 
   def update
+    if params[:wizard_action] == "skip_occupations"
+      @profile.update_columns(wizard_complete: true)
+      session.delete(:selected_plan)
+      redirect_to root_path, status: :see_other, notice: t("profile_steps.contractor_skip_notice", default: "Perfil configurado com sucesso! Você já pode buscar e contatar profissionais.") and return
+    end
+
     if params[:wizard_action] == "back" || params[:target_step].present?
       target = params[:target_step].presence&.to_sym
       step_keys = Profile::FORM_STEPS.keys
@@ -103,7 +109,7 @@ class ProfileStepsController < ApplicationController
     if plan && !current_user.subscribed?
       redirect_to_plan_checkout(plan, fallback_path: pricing_path)
     else
-      redirect_to finish_wizard_path
+      redirect_to finish_wizard_path, status: :see_other
     end
   end
 
