@@ -70,17 +70,16 @@ export default class extends Controller {
     this.updateSubmitState()
   }
 
-  // Keeps the submit button disabled until title, description and at least one gallery image
-  // are filled in (the same fields the server requires).
+  // Keeps the submit button disabled until title and at least one gallery image
+  // are filled in (the fields the server requires). Description is optional.
   updateSubmitState() {
     if (!this.hasSubmitButtonTarget) return
 
     const titleFilled = (this.titleInputTarget.value || "").trim() !== ""
-    const aboutFilled = this.editor ? !this.blankHtml(this.editor.value) : false
     const totalImages = (this.existingImagesCountValue || 0) + this.files.length
     const galleryFilled = totalImages > 0
 
-    this.submitButtonTarget.disabled = !(titleFilled && aboutFilled && galleryFilled)
+    this.submitButtonTarget.disabled = !(titleFilled && galleryFilled)
   }
 
   visibilityChanged() {

@@ -31,12 +31,15 @@ class ProjectTest < ActiveSupport::TestCase
     @profile = @actor.actorable
   end
 
-  test "requires title and about" do
+  test "requires title but about is optional" do
     project = @profile.projects.build
 
     assert_not project.valid?
     assert_includes project.errors[:title], "não pode ficar em branco"
-    assert_includes project.errors[:about], "não pode ficar em branco"
+    assert_empty project.errors[:about]
+
+    project.title = "Meu Projeto Sem Descrição"
+    assert project.valid?
   end
 
   test "assigns position and slug on create" do

@@ -56,7 +56,6 @@ class Project < ApplicationRecord
   enum :visibility, { draft: 0, public: 1, private: 2 }, prefix: :visibility
 
   validates :title, presence: true
-  validate :about_must_be_present
   validate :cover_must_be_acceptable, if: -> { cover.attached? }
 
   before_validation :assign_position, on: :create
@@ -97,9 +96,6 @@ class Project < ApplicationRecord
 
   private
 
-  def about_must_be_present
-    errors.add(:about, "não pode ficar em branco") if about.to_plain_text.blank?
-  end
 
   def cover_must_be_acceptable
     blob = cover.blob

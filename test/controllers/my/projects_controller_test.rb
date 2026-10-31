@@ -162,6 +162,21 @@ module My
       assert_redirected_to my_projects_path
     end
 
+    test "creates a project without description (about is optional)" do
+      signed_id = image_blob("foto.png").signed_id
+
+      assert_difference("Project.count", 1) do
+        post my_projects_path, params: {
+          project: { title: "Projeto Sem Descrição", visibility: "draft", about: "", gallery_signed_ids: [ signed_id ] }
+        }
+      end
+
+      assert_redirected_to my_projects_path
+      project = Project.find_by(title: "Projeto Sem Descrição")
+      assert_not_nil project
+      assert_predicate project.about.to_plain_text, :blank?
+    end
+
     test "does not create a project without gallery images" do
       assert_no_difference("Project.count") do
         post my_projects_path, params: {

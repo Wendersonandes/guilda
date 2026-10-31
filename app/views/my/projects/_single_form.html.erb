@@ -62,10 +62,10 @@
         </div>
 
         <div class="space-y-1">
-          <%= f.label :about, class: "block text-xs font-medium text-charcoal" do %>
-            <span><%= t("#{scope}.about") %></span>
-            <span class="text-red-500 font-semibold" aria-hidden="true">*</span>
-          <% end %>
+          <div class="flex items-center justify-between">
+            <%= f.label :about, t("#{scope}.about"), class: "block text-xs font-medium text-charcoal" %>
+            <span class="text-[11px] text-zinc-400 font-normal">Opcional</span>
+          </div>
           <%= f.rich_text_area :about, preset: "project", class: "lexxy-content block w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-charcoal min-h-[110px]" %>
           <p class="text-[11px] text-zinc-400 leading-normal max-w-prose"><%= t("#{scope}.about_hint") %></p>
         </div>
