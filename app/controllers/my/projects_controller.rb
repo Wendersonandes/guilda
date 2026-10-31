@@ -26,7 +26,7 @@ module My
 
     # POST /my/projects
     def create
-      @project = current_profile.projects.build(project_params)
+      @project = current_profile.projects.build(project_attributes)
       authorize @project
 
       @project.valid?
@@ -52,14 +52,14 @@ module My
     def update
       authorize @project
 
-      if project_params[:visibility].to_s == "public" && !current_actor.can?(:publish, :project)
-        @project.assign_attributes(project_params)
+      if project_attributes[:visibility].to_s == "public" && !current_actor.can?(:publish, :project)
+        @project.assign_attributes(project_attributes)
         @project.errors.add(:visibility, t("activerecord.errors.models.project.attributes.visibility.unauthorized", default: "A publicação de projetos requer uma conta profissional."))
         render :edit, status: :unprocessable_entity
         return
       end
 
-      if @project.update(project_params)
+      if @project.update(project_attributes)
         ingest_gallery
         redirect_to my_projects_path, notice: t("flash.project_updated")
       else
@@ -105,15 +105,21 @@ module My
     end
 
     def project_params
-      params.require(:project).permit(:title, :visibility, :about, :cover)
+      @project_params ||= params.require(:project).permit(
+        :title, :visibility, :about, :cover, :cover_index, gallery_signed_ids: []
+      )
+    end
+
+    def project_attributes
+      project_params.except(:gallery_signed_ids, :cover_index)
     end
 
     def gallery_signed_ids
-      Array(params.dig(:project, :gallery_signed_ids)).reject(&:blank?)
+      Array(project_params[:gallery_signed_ids]).reject(&:blank?)
     end
 
     def cover_index
-      params.dig(:project, :cover_index).presence&.to_i
+      project_params[:cover_index].presence&.to_i
     end
 
     def ingest_gallery

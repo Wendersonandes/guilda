@@ -32,12 +32,16 @@
     <%= f.text_field :title, class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal" %>
   </div>
 
-  <div class="space-y-1">
-    <%= f.label :visibility, t(".visibility"), class: "block text-sm font-medium text-charcoal" %>
-    <%= f.select :visibility,
-          Project.visibilities.keys.map { |key| [ t("projects.visibilities.#{key}"), key ] },
-          {}, class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal" %>
-  </div>
+  <% if current_actor&.can?(:publish, :project) %>
+    <div class="space-y-1">
+      <%= f.label :visibility, t(".visibility"), class: "block text-sm font-medium text-charcoal" %>
+      <%= f.select :visibility,
+            Project.visibilities.keys.map { |key| [ t("projects.visibilities.#{key}"), key ] },
+            {}, class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal" %>
+    </div>
+  <% else %>
+    <%= f.hidden_field :visibility, value: "draft" %>
+  <% end %>
 
   <div class="space-y-1">
     <%= f.label :about, t(".about"), class: "block text-sm font-medium text-charcoal" %>
@@ -88,7 +92,7 @@
 
   <div class="flex items-center justify-between border-t border-stone-100 pt-5">
     <%= link_to t(".cancel"), my_projects_path, class: "text-sm font-medium text-zinc-500 hover:text-charcoal transition-colors" %>
-    <%= f.submit t(".save"), class: "bg-charcoal hover:bg-zinc-800 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer" %>
+    <%= f.submit (current_actor&.can?(:publish, :project) ? t(".save") : t("my.projects.wizard.save_draft")), class: "bg-charcoal hover:bg-zinc-800 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer" %>
   </div>
 <% end %>
 

@@ -51,7 +51,7 @@ export default class extends Controller {
   titleChanged() {
     const value = (this.titleInputTarget.value || "").trim()
     this.titleTextTarget.textContent = value || this.titlePlaceholder
-    this.titleTextTarget.classList.toggle("text-zinc-300", !value)
+    this.titleTextTarget.classList.toggle("text-zinc-400", !value)
     this.updateSubmitState()
   }
 
@@ -79,8 +79,9 @@ export default class extends Controller {
   visibilityChanged() {
     if (!this.hasSubmitButtonTarget) return
 
-    const selectedRadio = this.element.querySelector("input[name='project[visibility]']:checked")
-    const isDraft = selectedRadio && selectedRadio.value === "draft"
+    const input = this.element.querySelector("input[name='project[visibility]']:checked") ||
+                  this.element.querySelector("input[name='project[visibility]']")
+    const isDraft = input ? input.value === "draft" : false
     const publishText = this.submitButtonTarget.dataset.publishText || "Publicar projeto"
     const draftText = this.submitButtonTarget.dataset.draftText || "Salvar como rascunho"
 
@@ -136,7 +137,7 @@ export default class extends Controller {
     }
 
     if (this.coverFile === removed) {
-      this.coverFile = this.files[0] || null
+      this.coverFile = (this.existingImagesCountValue || 0) === 0 ? (this.files[0] || null) : null
     }
 
     this.syncInputFiles()
@@ -256,7 +257,7 @@ export default class extends Controller {
     const file = this.coverFile || (this.existingImagesCountValue === 0 ? this.files[0] : null)
 
     if (file) {
-      this.coverContainerTarget.innerHTML = `<img src="${this.urlFor(file)}" alt="Capa do projeto" class="w-full max-h-[500px] object-cover">`
+      this.coverContainerTarget.innerHTML = `<img src="${this.urlFor(file)}" alt="Capa do projeto" class="w-full h-full object-cover">`
       this.coverContainerTarget.classList.remove("hidden")
       this.coverPlaceholderTarget.classList.add("hidden")
     } else if (this.initialCoverHtml && this.initialCoverHtml.trim() !== "") {
@@ -272,9 +273,11 @@ export default class extends Controller {
 
   coverIndex() {
     if (!this.files.length) return null
-    if (!this.coverFile) return 0
+    if (!this.coverFile) {
+      return (this.existingImagesCountValue || 0) === 0 ? 0 : null
+    }
     const index = this.files.indexOf(this.coverFile)
-    return index === -1 ? 0 : index
+    return index === -1 ? ((this.existingImagesCountValue || 0) === 0 ? 0 : null) : index
   }
 
   syncInputFiles() {

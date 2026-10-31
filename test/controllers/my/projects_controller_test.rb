@@ -88,6 +88,38 @@ module My
       assert_select "input[type=submit][value='#{I18n.t("my.projects.wizard.save_draft")}']", count: 1
     end
 
+    test "renders new form without visibility options and with save draft button when actor cannot publish" do
+      bob_user = users(:bob)
+      bob_actor = create_profile_for(bob_user, name: "Bob", role: "member")
+      bob_user.update!(current_profile: bob_actor)
+      sign_in bob_user
+
+      get new_my_project_path
+
+      assert_response :success
+      assert_select "input[type=radio][name='project[visibility]']", count: 0
+      assert_select "input[type=hidden][name='project[visibility]'][value='draft']", count: 1
+      assert_select "input[type=submit][value='#{I18n.t("my.projects.wizard.save_draft")}']", count: 1
+      assert_select "input[type=submit][value='#{I18n.t("my.projects.wizard.publish")}']", count: 0
+    end
+
+    test "renders edit form without visibility options and with save draft button when actor cannot publish" do
+      bob_user = users(:bob)
+      bob_actor = create_profile_for(bob_user, name: "Bob", role: "member")
+      bob_user.update!(current_profile: bob_actor)
+      project = bob_actor.actorable.projects.create!(title: "Rascunho do Bob", about: "<p>Sobre</p>", visibility: :draft)
+      project.project_images.create!(image: image_blob("img-1.png"))
+      sign_in bob_user
+
+      get edit_my_project_path(project)
+
+      assert_response :success
+      assert_select "input[type=radio][name='project[visibility]']", count: 0
+      assert_select "input[type=hidden][name='project[visibility]'][value='draft']", count: 1
+      assert_select "input[type=submit][value='#{I18n.t("my.projects.wizard.save_draft")}']", count: 1
+      assert_select "input[type=submit][value='#{I18n.t("my.projects.edit.save_changes")}']", count: 0
+    end
+
     test "renders the edit form with the gallery, live preview and split-screen layout" do
       project = @alice.actorable.projects.create!(title: "Meu Projeto", about: "<p>Sobre</p>", visibility: :public)
       project.project_images.create!(image: image_blob("img-1.png"))
@@ -233,6 +265,24 @@ module My
 
       assert_redirected_to my_projects_path
       assert_match(/não foram adicionadas/, flash[:alert].to_s)
+    end
+
+    test "adding images to existing project preserves the original cover" do
+      project = @alice.actorable.projects.create!(title: "Meu Projeto", about: "<p>Sobre</p>")
+      original_cover_blob = image_blob("original-cover.png")
+      project.project_images.create!(image: original_cover_blob)
+      project.cover.attach(original_cover_blob)
+
+      new_blob = image_blob("nova-imagem.png")
+
+      patch my_project_path(project), params: {
+        project: { gallery_signed_ids: [ new_blob.signed_id ], cover_index: "" }
+      }
+
+      assert_redirected_to my_projects_path
+      project.reload
+      assert_equal original_cover_blob.id, project.cover.blob.id
+      assert_equal 2, project.project_images.count
     end
 
     test "does not create a project without a title" do
