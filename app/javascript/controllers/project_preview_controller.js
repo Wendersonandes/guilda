@@ -516,9 +516,7 @@ export default class extends Controller {
   }
 
   closeUpgradeModalOnBackdrop(event) {
-    if (event.target === this.upgradeModalTarget) {
-      this.closeUpgradeModal()
-    }
+    // Disabled: modal must only close via dedicated close buttons
   }
 
   clearAfterSave() {

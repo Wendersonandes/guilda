@@ -40,10 +40,14 @@ class Relation::Single < Relation
     #
     # @return [Relation::Single]
     def instance
-      @instance ||= first || create!(
-        name: name.demodulize.underscore,
-        permissions: permissions
-      )
+      if @instance&.persisted? && exists?(@instance.id)
+        @instance
+      else
+        @instance = first || create!(
+          name: name.demodulize.underscore,
+          permissions: permissions
+        )
+      end
     end
 
     # The {Permission Permissions} declared by this subclass's +PERMISSIONS+ constant.

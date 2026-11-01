@@ -388,7 +388,6 @@
   <% unless can_publish %>
     <!-- Plan Selection Modal (saves draft first before redirecting to Stripe Checkout) -->
     <div data-project-preview-target="upgradeModal"
-         data-action="click->project-preview#closeUpgradeModalOnBackdrop keydown.esc@window->project-preview#closeUpgradeModal"
          data-testid="upgrade-plans-modal"
          role="dialog"
          aria-modal="true"

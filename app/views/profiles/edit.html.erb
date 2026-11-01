@@ -35,7 +35,7 @@
     <%= f.fields_for :actor do |af| %>
       <%= af.hidden_field :id %>
 
-      <div class="space-y-4">
+      <div id="section-basic-info" class="space-y-4 scroll-mt-20">
         <h2 class="text-sm font-semibold text-charcoal border-b border-stone-border pb-2 flex items-center gap-1.5">
           <i data-lucide="user" aria-hidden="true" class="w-4 h-4 text-zinc-400"></i>
           <span><%= t("profiles.edit.basic_info", default: "Informações básicas") %></span>
@@ -95,7 +95,7 @@
       </div>
     <% end %>
 
-    <div class="border-t border-stone-border pt-4 space-y-4">
+    <div id="section-location" class="border-t border-stone-border pt-4 space-y-4 scroll-mt-20">
       <h2 class="text-sm font-semibold text-charcoal flex items-center gap-1.5 pb-1">
         <i data-lucide="map-pin" aria-hidden="true" class="w-4 h-4 text-zinc-400"></i>
         <span><%= t("profiles.edit.location", default: "Localização") %></span>
@@ -133,7 +133,7 @@
       </div>
     </div>
 
-    <div class="border-t border-stone-border pt-4 space-y-4"
+    <div id="section-occupations" class="border-t border-stone-border pt-4 space-y-4 scroll-mt-20"
          data-controller="occupations"
          data-occupations-counter-template-value="<%= t("profiles.edit.occupations_counter", default: "%{count} de 3 selecionadas") %>">
       <div class="flex items-center justify-between pb-1 flex-wrap gap-2">
@@ -160,6 +160,8 @@
         </div>
       <% end %>
 
+      <%= hidden_field_tag "profile[occupation_list][]", "" %>
+
       <div role="group"
            aria-labelledby="occupations_section_heading"
            aria-describedby="occupations_limit_hint"
@@ -175,7 +177,7 @@
                   },
                   name, nil %>
 
-            <div class="min-h-11 sm:min-h-0 flex items-center px-3.5 py-2 sm:py-1.5 text-sm font-medium rounded-full border border-stone-200 bg-white text-zinc-600 hover:bg-stone-50 peer-checked:bg-charcoal peer-checked:text-white peer-checked:border-charcoal peer-checked:hover:bg-zinc-800 peer-focus-visible:ring-2 peer-focus-visible:ring-charcoal peer-focus-visible:ring-offset-1 transition-all whitespace-nowrap">
+            <div class="min-h-11 sm:min-h-0 flex items-center px-3.5 py-2 sm:py-1.5 text-sm font-medium rounded-full border border-stone-200 bg-white text-zinc-600 hover:bg-stone-50 peer-checked:bg-charcoal peer-checked:text-white peer-checked:border-charcoal peer-checked:hover:bg-zinc-800 group-has-[:checked]:bg-charcoal group-has-[:checked]:text-white group-has-[:checked]:border-charcoal group-has-[:checked]:hover:bg-zinc-800 peer-focus-visible:ring-2 peer-focus-visible:ring-charcoal peer-focus-visible:ring-offset-1 transition-all whitespace-nowrap">
               <%= name %>
             </div>
           </label>
@@ -183,7 +185,7 @@
       </div>
     </div>
 
-    <div class="border-t border-stone-border pt-4 space-y-4">
+    <div id="section-availability" class="border-t border-stone-border pt-4 space-y-4 scroll-mt-20">
       <h2 class="text-sm font-semibold text-charcoal flex items-center gap-1.5 pb-1">
         <i data-lucide="clock" aria-hidden="true" class="w-4 h-4 text-zinc-400"></i>
         <span><%= t("profiles.edit.availability_title", default: "Disponibilidade") %></span>
@@ -197,7 +199,7 @@
       </div>
     </div>
 
-    <div class="border-t border-stone-border pt-4 space-y-4">
+    <div id="section-contact" class="border-t border-stone-border pt-4 space-y-4 scroll-mt-20">
       <h2 class="text-sm font-semibold text-charcoal flex items-center gap-1.5 pb-1">
         <i data-lucide="phone" aria-hidden="true" class="w-4 h-4 text-zinc-400"></i>
         <span><%= t("profiles.edit.contact_info", default: "Informações de contato") %></span>

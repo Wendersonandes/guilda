@@ -433,6 +433,8 @@ module My
       assert_select "[data-testid='professional-upgrade-callout']", count: 1
       assert_select "[data-testid='open-upgrade-modal-button']", count: 1
       assert_select "[data-testid='upgrade-plans-modal']", count: 1
+      assert_select "[data-testid='upgrade-plans-modal'][data-action*='closeUpgradeModalOnBackdrop']", count: 0
+      assert_select "[data-testid='upgrade-plans-modal'] button[data-action*='closeUpgradeModal']", count: 2
       assert_select "[data-testid='modal-subscribe-annual'][value='annual']", count: 1
       assert_select "[data-testid='modal-subscribe-monthly'][value='monthly']", count: 1
       assert_select "div[data-controller='dropdown'] button[aria-haspopup='true']", count: 1

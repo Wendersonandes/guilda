@@ -158,6 +158,32 @@ class ActorTest < ActiveSupport::TestCase
     assert @bob_actor.valid?
   end
 
+  test "suggestions prioritizes profiles in the same city and state" do
+    @alice_actor.reload
+    @alice_actor.connect_to(@bob_actor, as: "follow")
+
+    sp_user = User.create!(email: "paulista@example.com", password: "password123", profile_name: "Paulista")
+    sp_actor = sp_user.current_profile
+    sp_actor.actorable.update_columns(wizard_complete: true, country: "BR", state: "SP", city: "São Paulo")
+
+    rj_user = User.create!(email: "carioca@example.com", password: "password123", profile_name: "Carioca")
+    rj_actor = rj_user.current_profile
+    rj_actor.actorable.update_columns(wizard_complete: true, country: "BR", state: "RJ", city: "Rio de Janeiro")
+
+    # Incomplete profile should never be suggested
+    incomplete_user = User.create!(email: "incomplete@example.com", password: "password123", profile_name: "Incompleto")
+    incomplete_actor = incomplete_user.current_profile
+    incomplete_actor.actorable.update_columns(wizard_complete: false)
+
+    suggestions = @alice_actor.suggestions(1)
+    assert_equal 1, suggestions.size
+    # Same city gets 10 + 5 points, beating RJ's 0 points
+    assert_equal sp_actor, suggestions.first.receiver
+
+    suggested_receivers = @alice_actor.suggestions(5).map(&:receiver)
+    assert_not_includes suggested_receivers, incomplete_actor
+  end
+
   private
 
   def create_group_with_admin(admin_actor)

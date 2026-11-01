@@ -134,6 +134,161 @@ class Profile < ApplicationRecord
     end
   end
 
+  def contractor?
+    wizard_complete? && occupation_list.empty?
+  end
+
+  def onboarding_checklist_for(role = nil)
+    target_role = (role || (contractor? ? :contractor : :professional)).to_sym
+    url_helpers = Rails.application.routes.url_helpers
+    actor_record = actor
+
+    has_location = country.present? && state.present? && city.present?
+    has_avatar = actor_record ? actor_record.avatar.attached? : false
+    has_description = actor_record&.description.present?
+    has_occupations = occupation_list.any?
+    has_bio_and_occupations = has_description && has_occupations
+    has_project = projects.exists?
+    has_contact = mobile.present? || instagram.present? || website.present?
+    has_availability = availability.present?
+    has_followed = actor_record ? actor_record.sent_contacts.active.exists? : false
+
+    if target_role == :contractor
+      sections = [
+        {
+          id: :basic_info,
+          heading: "Informações básicas do perfil",
+          steps: [
+            {
+              id: :location,
+              title: "Localização configurada",
+              description: [ city, state ].reject(&:blank?).join(", ").presence || "Defina sua cidade e estado",
+              completed: has_location,
+              url: url_helpers.edit_my_profile_path(anchor: "section-location"),
+              action_label: "Definir local"
+            },
+            {
+              id: :avatar,
+              title: "Adicionar foto ou logo",
+              description: "Identifique seu perfil ou sua produtora",
+              completed: has_avatar,
+              url: url_helpers.edit_my_profile_path(anchor: "section-basic-info"),
+              action_label: "Adicionar foto"
+            },
+            {
+              id: :presentation,
+              title: "Apresentação da contratante",
+              description: "Descreva os projetos ou produções que você realiza",
+              completed: has_description,
+              url: url_helpers.edit_my_profile_path(anchor: "section-basic-info"),
+              action_label: "Editar bio"
+            },
+            {
+              id: :follow_connections,
+              title: "Conectar com profissionais",
+              description: "Acompanhe profissionais de confiança para suas produções",
+              completed: has_followed,
+              url: url_helpers.profiles_path,
+              action_label: "Explorar catálogo"
+            }
+          ]
+        }
+      ]
+      all_steps = sections.flat_map { |s| s[:steps] }
+      completed_count = all_steps.count { |s| s[:completed] }
+      total_count = all_steps.size
+      {
+        role: :contractor,
+        subtitle: "Conclua a lista de verificação para facilitar a busca e o contato com profissionais.",
+        completed_count: completed_count,
+        total_count: total_count,
+        percentage: total_count.positive? ? ((completed_count.to_f / total_count) * 100).round : 100,
+        sections: sections,
+        steps: all_steps
+      }
+    else
+      sections = [
+        {
+          id: :basic_info,
+          heading: "Informações básicas do perfil",
+          steps: [
+            {
+              id: :avatar,
+              title: "Adicionar foto de perfil",
+              description: "Perfis com foto transmitem maior confiança na contratação",
+              completed: has_avatar,
+              url: url_helpers.edit_my_profile_path(anchor: "section-basic-info"),
+              action_label: "Adicionar foto"
+            },
+            {
+              id: :presentation,
+              title: "Preencher bio e áreas de atuação",
+              description: "Apresente sua trajetória e até 3 especialidades técnicas",
+              completed: has_bio_and_occupations,
+              url: url_helpers.edit_my_profile_path(anchor: has_occupations ? "section-basic-info" : "section-occupations"),
+              action_label: "Completar perfil"
+            },
+            {
+              id: :first_project,
+              title: "Criar seu primeiro projeto",
+              description: "Apresente entregas e trabalhos técnicos realizados",
+              completed: has_project,
+              url: url_helpers.new_my_project_path,
+              action_label: "Publicar projeto"
+            }
+          ]
+        },
+        {
+          id: :how_to_be_hired,
+          heading: "Como ser contratado",
+          steps: [
+            {
+              id: :contact_channels,
+              title: "Adicionar WhatsApp ou site",
+              description: "Permita que contratantes falem direto com você",
+              completed: has_contact,
+              url: url_helpers.edit_my_profile_path(anchor: "section-contact"),
+              action_label: "Adicionar contato"
+            },
+            {
+              id: :availability,
+              title: "Definir sua disponibilidade",
+              description: "Informe se está disponível para freelances ou projetos",
+              completed: has_availability,
+              url: url_helpers.edit_my_profile_path(anchor: "section-availability"),
+              action_label: "Definir status"
+            }
+          ]
+        }
+      ]
+      all_steps = sections.flat_map { |s| s[:steps] }
+      completed_count = all_steps.count { |s| s[:completed] }
+      total_count = all_steps.size
+      {
+        role: :professional,
+        subtitle: "Conclua a lista de verificação para aumentar a visibilidade do seu perfil na Guilda.",
+        completed_count: completed_count,
+        total_count: total_count,
+        percentage: total_count.positive? ? ((completed_count.to_f / total_count) * 100).round : 100,
+        sections: sections,
+        steps: all_steps
+      }
+    end
+  end
+
+  def onboarding_steps(role = nil)
+    onboarding_checklist_for(role)[:steps]
+  end
+
+  def onboarding_completed?(role = nil)
+    return true unless wizard_complete?
+    onboarding_steps(role).all? { |step| step[:completed] }
+  end
+
+  def onboarding_completion_percentage(role = nil)
+    onboarding_checklist_for(role)[:percentage]
+  end
+
   def self.ransackable_attributes(auth_object = nil)
     [ "city", "state" ]
   end

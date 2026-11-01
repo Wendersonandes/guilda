@@ -245,6 +245,41 @@ class ProfileStepsControllerTest < ActionDispatch::IntegrationTest
     assert new_profile.reload.wizard_complete?
   end
 
+  test "user can finish wizard on free mode when choosing finish_free" do
+    sign_in @user
+    @profile.update!(country: "BR", state: "SP", city: "São Paulo")
+
+    put profile_step_path(:occupation), params: {
+      wizard_action: "finish_free",
+      profile: { occupation_list: [ "Produção Cultural" ] }
+    }
+
+    assert_response :see_other
+    assert_redirected_to root_path
+    assert_equal "Perfil configurado com sucesso! Você pode ativar os 30 dias gratuitos da Conta Profissional quando quiser.", flash[:notice]
+    assert @profile.reload.wizard_complete?
+  end
+
+  test "user without prior plan can activate 30 days trial by providing plan_choice at occupation step" do
+    sign_in @user
+    @profile.update!(country: "BR", state: "SP", city: "São Paulo")
+
+    captured_kwargs = {}
+    with_mock_checkout("https://checkout.stripe.com/c/pay_from_wizard_choice", captured_kwargs) do
+      with_stubbed_price("price_annual_mock") do
+        put profile_step_path(:occupation), params: {
+          plan_choice: "annual",
+          profile: { occupation_list: [ "Produção Cultural" ] }
+        }
+        assert_redirected_to "https://checkout.stripe.com/c/pay_from_wizard_choice"
+      end
+    end
+
+    assert_equal "price_annual_mock", captured_kwargs[:line_items]
+    assert_equal({ trial_period_days: 30 }, captured_kwargs[:subscription_data])
+    assert @profile.reload.wizard_complete?
+  end
+
   private
 
   def with_mock_checkout(url, captured_kwargs = {})

@@ -427,13 +427,58 @@ class Actor < ApplicationRecord
   # subject types configured in +SocialStream.suggested_models+. Each suggestion is
   # materialized as a {Contact}.
   #
+  # Suggests contacts to actors this one is not connected to yet, prioritizing professionals
+  # in the same city/state, with shared occupations, and completed profiles.
+  #
   # @param size [Integer] how many suggestions to build.
   # @return [Array<Contact>]
-  def suggestions(size = 1)
-    candidates = Actor.where(actorable_type: SocialStream.suggested_models.map { |m| m.to_s.classify })
-                       .where.not(id: sent_active_contact_ids + [ id ])
-                       .order(Arel.sql("RANDOM()"))
-                       .limit(size)
+  def suggestions(size = 3)
+    excluded_ids = sent_active_contact_ids + [ id ]
+    base = Actor.where(actorable_type: "Profile")
+                .where.not(id: excluded_ids)
+                .joins("INNER JOIN profiles ON profiles.id = actors.actorable_id")
+                .where(profiles: { wizard_complete: true })
+
+    current_prof = actorable.is_a?(Profile) ? actorable : nil
+
+    if current_prof && (current_prof.city.present? || current_prof.state.present? || current_prof.occupations.any?)
+      city_sql = if current_prof.city.present?
+        ActiveRecord::Base.sanitize_sql_array([ "CASE WHEN LOWER(profiles.city) = LOWER(?) THEN 10 ELSE 0 END", current_prof.city ])
+      else
+        "0"
+      end
+
+      state_sql = if current_prof.state.present?
+        ActiveRecord::Base.sanitize_sql_array([ "CASE WHEN LOWER(profiles.state) = LOWER(?) THEN 5 ELSE 0 END", current_prof.state ])
+      else
+        "0"
+      end
+
+      tag_ids = current_prof.occupations.map(&:id)
+      tag_sql = if tag_ids.any?
+        subquery = ActsAsTaggableOn::Tagging.where(
+          taggable_type: "Profile",
+          context: "occupations",
+          tag_id: tag_ids
+        ).select(:taggable_id).to_sql
+        "CASE WHEN profiles.id IN (#{subquery}) THEN 8 ELSE 0 END"
+      else
+        "0"
+      end
+
+      score_sql = "(#{city_sql} + #{state_sql} + #{tag_sql})"
+
+      candidates = base
+                     .includes(actorable: :occupations, avatar_attachment: :blob)
+                     .order(Arel.sql("#{score_sql} DESC, RANDOM()"))
+                     .limit(size)
+    else
+      candidates = base
+                     .includes(actorable: :occupations, avatar_attachment: :blob)
+                     .order(Arel.sql("RANDOM()"))
+                     .limit(size)
+    end
+
     candidates.map { |a| Contact.new(sender: self, receiver: a) }
   end
 

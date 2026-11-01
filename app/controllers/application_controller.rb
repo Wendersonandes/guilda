@@ -46,6 +46,11 @@ class ApplicationController < ActionController::Base
   def store_selected_plan
     return unless controller_name == "registrations"
 
+    if params[:intent] == "contractor"
+      session.delete(:selected_plan)
+      return
+    end
+
     if params[:plan].present?
       if params[:plan] == "none"
         session.delete(:selected_plan)

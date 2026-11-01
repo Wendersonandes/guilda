@@ -73,6 +73,9 @@
         <% end %>
       </div>
     </main>
+    <% unless devise_controller? || controller_name == "profile_steps" %>
+      <%= render "shared/onboarding_checklist" %>
+    <% end %>
     <%= turbo_frame_tag "modal" %>
   </body>
 </html>

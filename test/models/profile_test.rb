@@ -156,4 +156,80 @@ class ProfileTest < ActiveSupport::TestCase
     assert_not profile.valid?
     assert_includes profile.errors[:instagram], "é inválido"
   end
+
+  test "contractor? returns true when wizard is complete and occupation_list is empty" do
+    profile = Profile.new(wizard_complete: true, occupation_list: [])
+    assert profile.contractor?
+
+    profile.occupation_list = [ "Iluminação" ]
+    assert_not profile.contractor?
+
+    profile.wizard_complete = false
+    profile.occupation_list = []
+    assert_not profile.contractor?
+  end
+
+  test "onboarding_checklist_for returns grouped 5-step checklist for professional" do
+    alice = users(:alice)
+    actor = create_profile_for(alice, name: "Alice Profissional")
+    profile = actor.profile
+    profile.update_columns(wizard_complete: true, country: "BR", state: "SP", city: "São Paulo", availability: nil, mobile: nil)
+    profile.occupation_list = [ "Expografia" ]
+    profile.save(validate: false)
+
+    checklist = profile.onboarding_checklist_for(:professional)
+    assert_equal :professional, checklist[:role]
+    assert_equal 5, checklist[:total_count]
+    assert_equal 0, checklist[:completed_count]
+    assert_equal 2, checklist[:sections].size
+    assert_equal :basic_info, checklist[:sections][0][:id]
+    assert_equal :how_to_be_hired, checklist[:sections][1][:id]
+
+    steps = profile.onboarding_steps
+    assert_equal 5, steps.size
+    assert_not steps.find { |s| s[:id] == :avatar }[:completed]
+    assert_not steps.find { |s| s[:id] == :presentation }[:completed]
+    assert_not steps.find { |s| s[:id] == :first_project }[:completed]
+    assert_not steps.find { |s| s[:id] == :contact_channels }[:completed]
+    assert_not steps.find { |s| s[:id] == :availability }[:completed]
+    assert_not profile.onboarding_completed?
+
+    # Complete all 5 professional steps
+    actor.avatar.attach(
+      io: StringIO.new("data"),
+      filename: "avatar.png",
+      content_type: "image/png"
+    )
+    actor.update_columns(description: "Bio profissional completa")
+    Project.create!(profile: profile, title: "Exposição Teste", visibility: :public)
+    profile.update_columns(mobile: "11987654321", availability: "freelance")
+    profile.reload
+    profile.actor.reload
+
+    assert_equal 100, profile.onboarding_completion_percentage
+    assert profile.onboarding_completed?
+  end
+
+  test "onboarding_checklist_for returns 4-step contractor checklist starting at 1/4" do
+    alice = users(:alice)
+    actor = create_profile_for(alice, name: "Alice Contratante")
+    profile = actor.profile
+    profile.update_columns(wizard_complete: true, country: "BR", state: "RJ", city: "Rio de Janeiro")
+    profile.occupation_list = []
+    profile.save(validate: false)
+
+    assert profile.contractor?
+    checklist = profile.onboarding_checklist_for(:contractor)
+    assert_equal :contractor, checklist[:role]
+    assert_equal 4, checklist[:total_count]
+    assert_equal 1, checklist[:completed_count]
+
+    steps = profile.onboarding_steps
+    assert_equal 4, steps.size
+    assert steps.find { |s| s[:id] == :location }[:completed]
+    assert_not steps.find { |s| s[:id] == :avatar }[:completed]
+    assert_not steps.find { |s| s[:id] == :presentation }[:completed]
+    assert_not steps.find { |s| s[:id] == :follow_connections }[:completed]
+    assert_equal 25, profile.onboarding_completion_percentage
+  end
 end

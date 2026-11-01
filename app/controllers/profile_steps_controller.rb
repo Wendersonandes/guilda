@@ -23,6 +23,18 @@ class ProfileStepsController < ApplicationController
       redirect_to root_path, status: :see_other, notice: t("profile_steps.contractor_skip_notice", default: "Perfil configurado com sucesso! Você já pode buscar e contatar profissionais.") and return
     end
 
+    if params[:wizard_action] == "finish_free"
+      @profile.form_step = step
+      if @profile.update(profile_params)
+        session.delete(:selected_plan)
+        @profile.update!(wizard_complete: true)
+        redirect_to finish_wizard_path, status: :see_other, notice: t("profile_steps.free_finish_notice", default: "Perfil configurado com sucesso! Você pode ativar os 30 dias gratuitos da Conta Profissional quando quiser.") and return
+      else
+        setup_location_variables if step == :location
+        render :show, status: :unprocessable_entity and return
+      end
+    end
+
     if params[:wizard_action] == "back" || params[:target_step].present?
       target = params[:target_step].presence&.to_sym
       step_keys = Profile::FORM_STEPS.keys
@@ -103,13 +115,14 @@ class ProfileStepsController < ApplicationController
 
   def complete_wizard_and_redirect
     @profile.update!(wizard_complete: true)
-    plan_id = session.delete(:selected_plan)
+    plan_id = params[:plan_choice].presence || session.delete(:selected_plan)
+    session.delete(:selected_plan)
     plan = Plan.resolve(plan_id) if plan_id.present?
 
     if plan && !current_user.subscribed?
       redirect_to_plan_checkout(plan, fallback_path: pricing_path)
     else
-      redirect_to finish_wizard_path, status: :see_other
+      redirect_to finish_wizard_path, status: :see_other, notice: t("profile_steps.complete_notice", default: "Perfil configurado com sucesso!")
     end
   end
 

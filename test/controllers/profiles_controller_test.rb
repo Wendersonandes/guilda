@@ -308,6 +308,39 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_select "input#profile_instagram[aria-invalid='true']"
   end
 
+  test "preserves and properly structures selected occupations without field_with_errors wrapper on validation failure" do
+    sign_in @user
+
+    patch my_profile_path, params: {
+      profile: {
+        mobile: "123", # invalid format
+        occupation_list: [ "Escrita de Projetos", "Expografia" ]
+      }
+    }
+
+    assert_response :unprocessable_entity
+    assert_select ".field_with_errors", count: 0
+    assert_select "input[name='profile[occupation_list][]'][value='Escrita de Projetos'][checked]"
+    assert_select "input[name='profile[occupation_list][]'][value='Expografia'][checked]"
+    assert_select "label:has(input[value='Escrita de Projetos'][checked]) div[class*='peer-checked:bg-charcoal']"
+  end
+
+  test "preserves selected occupations without field_with_errors wrapper when occupation limit is exceeded" do
+    sign_in @user
+
+    patch my_profile_path, params: {
+      profile: {
+        occupation_list: [ "Escrita de Projetos", "Expografia", "Prestação de Contas", "Transporte de Obras" ]
+      }
+    }
+
+    assert_response :unprocessable_entity
+    assert_select ".field_with_errors", count: 0
+    assert_select "input[name='profile[occupation_list][]'][value='Escrita de Projetos'][checked]"
+    assert_select "label:has(input[value='Escrita de Projetos'][checked]) div[class*='peer-checked:bg-charcoal']"
+    assert_select "div[role='alert']", text: /não pode ter mais do que 3 categorias/
+  end
+
   test "persists a rich text bio" do
     sign_in @user
 
@@ -517,5 +550,57 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_match I18n.t("shared.connection_button.following"), response.body
     assert_no_match "arrow-left-right", response.body
     assert_no_match I18n.t("shared.connection_button.mutual"), response.body
+  end
+
+  test "renders floating onboarding checklist on profiles index when current user onboarding is incomplete" do
+    @actor.actorable.update_columns(wizard_complete: true, mobile: nil, availability: nil)
+    @actor.update_columns(description: nil)
+
+    sign_in @user
+    get profiles_path
+
+    assert_response :success
+    assert_select "#onboarding_activation_card"
+    assert_select "#onboarding_activation_card", text: /Lista de verificação de perfil/
+    assert_select "#onboarding-tab-professional", text: /Sou Profissional/
+    assert_select "#onboarding-tab-contractor", text: /Sou Contratante/
+    assert_select "#onboarding_activation_card", text: /Ativar Conta Profissional/
+    assert_select "button[data-action='click->onboarding-widget#openPricingModal']"
+    assert_select "[data-testid='onboarding-pricing-modal']"
+    assert_select "[data-testid='onboarding-pricing-modal'] button[data-action='click->onboarding-widget#closePricingModal']", count: 2
+    assert_select "[data-testid='onboarding-pricing-modal'] form[action='#{checkout_path(plan: :annual)}']"
+    assert_select "[data-testid='onboarding-pricing-modal'] form[action='#{checkout_path(plan: :monthly)}']"
+  end
+
+  test "renders floating onboarding checklist on own profile show when onboarding is incomplete" do
+    @actor.actorable.update_columns(wizard_complete: true, mobile: nil, availability: nil)
+    @actor.update_columns(description: nil)
+
+    sign_in @user
+    get profile_path(@actor)
+
+    assert_response :success
+    assert_select "#onboarding_activation_card"
+  end
+
+  test "does not render onboarding checklist when signed out or when onboarding is complete" do
+    get profiles_path
+    assert_response :success
+    assert_select "#onboarding_activation_card", count: 0
+
+    # Complete Alice's professional profile (all 5 steps)
+    @actor.avatar.attach(
+      io: StringIO.new("data"),
+      filename: "avatar.png",
+      content_type: "image/png"
+    )
+    @actor.actorable.update_columns(wizard_complete: true, mobile: "11987654321", availability: "freelance")
+    @actor.update_columns(description: "Bio completa")
+    Project.create!(profile: @actor.profile, title: "Projeto Teste", visibility: :public)
+
+    sign_in @user
+    get profiles_path
+    assert_response :success
+    assert_select "#onboarding_activation_card", count: 0
   end
 end

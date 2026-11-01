@@ -32,6 +32,14 @@
         <%= sanitize(actor.description) %>
       </div>
     </div>
+  <% elsif own_profile %>
+    <div class="pt-3.5 border-t border-stone-100">
+      <%= link_to edit_my_profile_path(anchor: "section-basic-info"),
+                  class: "inline-flex items-center gap-2 text-xs text-zinc-500 hover:text-charcoal transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-charcoal rounded-sm" do %>
+        <i data-lucide="file-text" class="w-3.5 h-3.5 text-zinc-400" aria-hidden="true"></i>
+        <span><%= t(".add_bio", default: "Adicionar apresentação") %></span>
+      <% end %>
+    </div>
   <% end %>
 
   <!-- 3. Atuação (Ocupações) -->
@@ -53,7 +61,7 @@
   <% end %>
 
   <!-- 4. Disponibilidade & Localização -->
-  <% if profile.availability.present? || profile.city.present? || profile.state.present? %>
+  <% if profile.availability.present? || profile.city.present? || profile.state.present? || own_profile %>
     <div class="space-y-2 pt-3.5 border-t border-stone-100 text-xs">
       <% if profile.availability.present? %>
         <div class="flex items-center gap-2">
@@ -62,6 +70,12 @@
             <%= profile.availability_label %>
           </span>
         </div>
+      <% elsif own_profile && !profile.contractor? %>
+        <%= link_to edit_my_profile_path(anchor: "section-availability"),
+                    class: "inline-flex items-center gap-2 text-zinc-500 hover:text-charcoal transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-charcoal rounded-sm" do %>
+          <i data-lucide="calendar-clock" class="w-3.5 h-3.5 text-zinc-400 flex-shrink-0" aria-hidden="true"></i>
+          <span><%= t(".set_availability", default: "Definir disponibilidade") %></span>
+        <% end %>
       <% end %>
 
       <% if profile.city.present? || profile.state.present? %>
