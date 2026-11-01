@@ -502,4 +502,20 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_no_match I18n.t("shared.sidebar_pending_contacts.title"), response.body
     assert_no_match "sidebar_pending_contacts", response.body
   end
+
+  test "does not show mutual badge on profile when connection is reciprocal" do
+    bob_user = users(:bob)
+    bob_actor = create_profile_for(bob_user, name: "Bob")
+    @actor.connect_to(bob_actor, as: :follower)
+    bob_actor.connect_to(@actor, as: :follower)
+    assert @actor.mutual_with?(bob_actor)
+
+    sign_in @user
+    get profile_path(bob_actor)
+
+    assert_response :success
+    assert_match I18n.t("shared.connection_button.following"), response.body
+    assert_no_match "arrow-left-right", response.body
+    assert_no_match I18n.t("shared.connection_button.mutual"), response.body
+  end
 end

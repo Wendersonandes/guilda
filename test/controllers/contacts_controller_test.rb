@@ -159,16 +159,15 @@ class ContactsControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[href='#{profiles_path}'][data-turbo-action='advance'][data-turbo-frame='_top']", text: /Explorar profissionais/
   end
 
-  test "renders mutual connection badge when connection is reciprocal" do
+  test "does not render mutual connection badge even when connection is reciprocal" do
     @alice.connect_to(@bob, as: :follower)
+    @bob.connect_to(@alice, as: :follower)
+    assert @alice.contact_to(@bob).mutual?
+
     get contacts_path
     assert_response :success
     assert_select "span[title='#{I18n.t('contacts.index.mutual_badge_title')}']", count: 0
-
-    @bob.connect_to(@alice, as: :follower)
-    get contacts_path
-    assert_response :success
-    assert_select "span[title='#{I18n.t('contacts.index.mutual_badge_title')}']", text: /Mútuo/
+    assert_select "span", text: /Mútuo/, count: 0
   end
 
   test "displays explicit unfollow button with text and confirmation prompt" do
