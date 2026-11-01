@@ -8,7 +8,9 @@ export default class extends Controller {
     "titleInput", "galleryInput", "coverIndexInput", "coverImageIdInput", "imageOrderInput", "thumbnails", "galleryEmpty",
     "galleryInstructions", "slotCount", "submitButton", "dropzone", "galleryError",
     "titleText", "about", "aboutSection", "coverContainer", "coverPlaceholder",
-    "gallery", "gallerySection"
+    "gallery", "gallerySection",
+    "visibilityInput", "mainSubmitButton", "submitButtonText", "mainIconPublic", "mainIconDraft", "publicCheckIcon", "draftCheckIcon",
+    "afterSaveInput", "upgradeModal", "modalDraftReady", "modalDraftIncomplete", "modalDraftUntouched"
   ]
 
   static values = {
@@ -70,7 +72,7 @@ export default class extends Controller {
     this.updateSubmitState()
   }
 
-  // Keeps the submit button disabled until title and at least one gallery image
+  // Keeps the submit button(s) disabled until title and at least one gallery image
   // are filled in (the fields the server requires). Description is optional.
   updateSubmitState() {
     if (!this.hasSubmitButtonTarget) return
@@ -78,20 +80,49 @@ export default class extends Controller {
     const titleFilled = (this.titleInputTarget.value || "").trim() !== ""
     const totalImages = (this.existingImagesCountValue || 0) + this.files.length
     const galleryFilled = totalImages > 0
+    const disabled = !(titleFilled && galleryFilled)
 
-    this.submitButtonTarget.disabled = !(titleFilled && galleryFilled)
+    this.submitButtonTargets.forEach((btn) => {
+      btn.disabled = disabled
+    })
   }
 
   visibilityChanged() {
     if (!this.hasSubmitButtonTarget) return
 
-    const input = this.element.querySelector("input[name='project[visibility]']:checked") ||
-                  this.element.querySelector("input[name='project[visibility]']")
+    const input = this.hasVisibilityInputTarget
+      ? this.visibilityInputTarget
+      : (this.element.querySelector("input[name='project[visibility]']:checked") ||
+         this.element.querySelector("input[name='project[visibility]']"))
     const isDraft = input ? input.value === "draft" : false
-    const publishText = this.submitButtonTarget.dataset.publishText || "Publicar projeto"
-    const draftText = this.submitButtonTarget.dataset.draftText || "Salvar como rascunho"
+    const mainBtn = this.hasMainSubmitButtonTarget ? this.mainSubmitButtonTarget : this.submitButtonTarget
+    const publishText = mainBtn.dataset.publishText || "Publicar projeto"
+    const draftText = mainBtn.dataset.draftText || "Salvar como rascunho"
 
-    this.submitButtonTarget.value = isDraft ? draftText : publishText
+    if (this.hasSubmitButtonTextTarget) {
+      this.submitButtonTextTarget.textContent = isDraft ? draftText : publishText
+    } else if (mainBtn.tagName === "INPUT") {
+      mainBtn.value = isDraft ? draftText : publishText
+    }
+
+    if (this.hasMainIconPublicTarget && this.hasMainIconDraftTarget) {
+      this.mainIconPublicTarget.classList.toggle("hidden", isDraft)
+      this.mainIconDraftTarget.classList.toggle("hidden", !isDraft)
+    }
+
+    if (this.hasPublicCheckIconTarget && this.hasDraftCheckIconTarget) {
+      this.publicCheckIconTarget.classList.toggle("hidden", isDraft)
+      this.draftCheckIconTarget.classList.toggle("hidden", !isDraft)
+    }
+  }
+
+  selectVisibilityAndSubmit(event) {
+    const visibility = event.currentTarget.dataset.visibility
+    if (visibility && this.hasVisibilityInputTarget) {
+      this.visibilityInputTarget.value = visibility
+    }
+    this.clearAfterSave()
+    this.visibilityChanged()
   }
 
   galleryChanged() {
@@ -467,7 +498,112 @@ export default class extends Controller {
     this.urls.clear()
   }
 
+  openUpgradeModal(event) {
+    if (event) event.preventDefault()
+    if (!this.hasUpgradeModalTarget) return
+
+    this.updateUpgradeModalStatus()
+    this.upgradeModalTarget.classList.remove("hidden")
+    if (window.initLucide) window.initLucide()
+  }
+
+  closeUpgradeModal(event) {
+    if (event) event.preventDefault()
+    if (!this.hasUpgradeModalTarget) return
+
+    this.upgradeModalTarget.classList.add("hidden")
+    this.clearAfterSave()
+  }
+
+  closeUpgradeModalOnBackdrop(event) {
+    if (event.target === this.upgradeModalTarget) {
+      this.closeUpgradeModal()
+    }
+  }
+
+  clearAfterSave() {
+    if (this.hasAfterSaveInputTarget) {
+      this.afterSaveInputTarget.value = ""
+    }
+    if (this.form) {
+      delete this.form.dataset.turbo
+    }
+    if (this.hasTitleInputTarget) {
+      this.titleInputTarget.setAttribute("required", "required")
+    }
+  }
+
+  isUntouchedNew() {
+    const titleFilled = (this.titleInputTarget.value || "").trim() !== ""
+    const aboutFilled = this.editor ? !this.blankHtml(this.editor.value) : false
+    const totalImages = (this.existingImagesCountValue || 0) + this.files.length
+    const isPersisted = (this.existingImagesCountValue || 0) > 0
+
+    return !isPersisted && !titleFilled && !aboutFilled && totalImages === 0
+  }
+
+  updateUpgradeModalStatus() {
+    const titleFilled = (this.titleInputTarget.value || "").trim() !== ""
+    const totalImages = (this.existingImagesCountValue || 0) + this.files.length
+    const galleryFilled = totalImages > 0
+    const isReady = titleFilled && galleryFilled
+    const isUntouched = this.isUntouchedNew()
+
+    if (this.hasModalDraftReadyTarget) {
+      this.modalDraftReadyTarget.classList.toggle("hidden", !isReady)
+    }
+    if (this.hasModalDraftUntouchedTarget) {
+      this.modalDraftUntouchedTarget.classList.toggle("hidden", !isUntouched)
+    }
+    if (this.hasModalDraftIncompleteTarget) {
+      this.modalDraftIncompleteTarget.classList.toggle("hidden", isReady || isUntouched)
+    }
+  }
+
+  selectPlanAndSubmit(event) {
+    event.preventDefault()
+    const plan = event.currentTarget.dataset.plan
+    if (!plan || !this.form) return
+
+    const titleFilled = (this.titleInputTarget.value || "").trim() !== ""
+    const totalImages = (this.existingImagesCountValue || 0) + this.files.length
+    const galleryFilled = totalImages > 0
+    const untouched = this.isUntouchedNew()
+
+    // If the user has started filling out the project (has unsaved work)
+    // but hasn't completed both Title and at least 1 Image, prompt them to complete it
+    // so their draft can be saved safely before redirecting to Stripe.
+    if (!untouched && (!titleFilled || !galleryFilled)) {
+      this.closeUpgradeModal()
+      if (!titleFilled) {
+        this.titleInputTarget.focus()
+        this.titleInputTarget.reportValidity?.()
+      } else if (!galleryFilled) {
+        this.showGalleryError()
+      }
+      return
+    }
+
+    if (this.hasAfterSaveInputTarget) {
+      this.afterSaveInputTarget.value = plan
+    }
+
+    // External redirect to Stripe Checkout requires full page navigation (no Turbo fetch CORS)
+    this.form.dataset.turbo = "false"
+
+    if (untouched && this.hasTitleInputTarget) {
+      this.titleInputTarget.removeAttribute("required")
+    }
+
+    this.form.requestSubmit()
+  }
+
   validateSubmission(event) {
+    const isUpgradeRedirect = this.hasAfterSaveInputTarget && this.afterSaveInputTarget.value !== ""
+    if (isUpgradeRedirect && this.isUntouchedNew()) {
+      return
+    }
+
     const totalImages = (this.existingImagesCountValue || 0) + this.files.length
     if (totalImages === 0) {
       event.preventDefault()

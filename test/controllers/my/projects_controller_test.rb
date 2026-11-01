@@ -70,10 +70,13 @@ module My
       assert_select "[data-single-project-form]"
       assert_select "[data-project-preview-target='titleText']"
       assert_select "label[data-controller='dropzone'] input[type=file][name='project[gallery_signed_ids][]'][multiple]"
-      assert_select "input[type=radio][name='project[visibility]'][value='public'][checked]"
-      assert_select "input[type=radio][name='project[visibility]'][value='draft']"
-      assert_select "input[type=submit][value='#{I18n.t("my.projects.wizard.publish")}']", count: 1
-      assert_select "input[type=submit][data-project-preview-target='submitButton'][disabled]"
+      assert_select "input[type=hidden][name='project[visibility]'][value='public']"
+      assert_select "input[type=radio][name='project[visibility]']", count: 0
+      assert_select "button[type=submit][data-project-preview-target~='mainSubmitButton'][disabled]"
+      assert_select "[data-project-preview-target='submitButtonText']", text: I18n.t("my.projects.wizard.publish")
+      assert_select "button[data-dropdown-target='button']"
+      assert_select "button[data-visibility='public']", text: /#{Regexp.escape(I18n.t("my.projects.wizard.publish"))}/
+      assert_select "button[data-visibility='draft']", text: /#{Regexp.escape(I18n.t("my.projects.wizard.save_draft"))}/
       assert_select "[class*='lg:overflow-y-auto']", count: 2
       assert_select "a[href='#{my_projects_path}']", text: I18n.t("my.projects.new.cancel"), count: 1
     end
@@ -83,9 +86,8 @@ module My
 
       assert_response :unprocessable_entity
       assert_select "[data-single-project-form]"
-      assert_select "input[type=radio][value='draft'][checked]"
-      assert_select "input[type=radio][value='public'][checked]", count: 0
-      assert_select "input[type=submit][value='#{I18n.t("my.projects.wizard.save_draft")}']", count: 1
+      assert_select "input[type=hidden][name='project[visibility]'][value='draft']"
+      assert_select "[data-project-preview-target='submitButtonText']", text: I18n.t("my.projects.wizard.save_draft")
     end
 
     test "renders new form without visibility options and with save draft button when actor cannot publish" do
@@ -134,9 +136,21 @@ module My
       assert_select "label[data-controller='dropzone'] input[type=file][name='project[gallery_signed_ids][]'][multiple]"
       assert_select "div.grid.grid-cols-12", count: 0
       assert_select "[class*='lg:overflow-y-auto']", count: 2
-      assert_select "input[type=submit][value='#{I18n.t("my.projects.edit.save_changes")}']", count: 1
-      assert_select "input[type=submit][data-project-preview-target='submitButton']:not([disabled])", count: 1
+      assert_select "button[type=submit][data-project-preview-target~='mainSubmitButton']:not([disabled])", count: 1
+      assert_select "[data-project-preview-target='submitButtonText']", text: I18n.t("my.projects.edit.save_changes")
+      assert_select "input[type=hidden][name='project[visibility]'][value='public']"
       assert_select "a[data-turbo-method='delete']", count: 0
+    end
+
+    test "renders the edit form for draft project with draft status preselected" do
+      project = @alice.actorable.projects.create!(title: "Meu Rascunho", about: "<p>Sobre</p>", visibility: :draft)
+      project.project_images.create!(image: image_blob("img-1.png"))
+
+      get edit_my_project_path(project)
+
+      assert_response :success
+      assert_select "input[type=hidden][name='project[visibility]'][value='draft']"
+      assert_select "[data-project-preview-target='submitButtonText']", text: I18n.t("my.projects.wizard.save_draft")
     end
 
     test "renders delete link for existing images when project has multiple images" do
@@ -407,6 +421,114 @@ module My
       assert_equal I18n.t("flash.project_image_removed"), flash[:notice]
     end
 
+    test "renders professional upgrade callout, split button and plans modal when actor cannot publish" do
+      bob_user = users(:bob)
+      bob_actor = create_profile_for(bob_user, name: "Bob", role: "member")
+      bob_user.update!(current_profile: bob_actor)
+      sign_in bob_user
+
+      get new_my_project_path
+
+      assert_response :success
+      assert_select "[data-testid='professional-upgrade-callout']", count: 1
+      assert_select "[data-testid='open-upgrade-modal-button']", count: 1
+      assert_select "[data-testid='upgrade-plans-modal']", count: 1
+      assert_select "[data-testid='modal-subscribe-annual'][value='annual']", count: 1
+      assert_select "[data-testid='modal-subscribe-monthly'][value='monthly']", count: 1
+      assert_select "div[data-controller='dropdown'] button[aria-haspopup='true']", count: 1
+    end
+
+    test "does not render professional upgrade callout or modal when actor can publish" do
+      get new_my_project_path
+
+      assert_response :success
+      assert_select "[data-testid='professional-upgrade-callout']", count: 0
+      assert_select "[data-testid='upgrade-plans-modal']", count: 0
+    end
+
+    test "saves project as draft and redirects to stripe checkout when after_save plan is selected" do
+      bob_user = users(:bob)
+      bob_actor = create_profile_for(bob_user, name: "Bob", role: "member")
+      bob_user.update!(current_profile: bob_actor)
+      sign_in bob_user
+
+      signed_id = image_blob("rascunho-upgrade.png").signed_id
+
+      with_mock_checkout("https://checkout.stripe.com/c/pay_test_annual") do
+        with_stubbed_price("price_mock_annual") do
+          assert_difference("Project.count", 1) do
+            assert_difference("ProjectImage.count", 1) do
+              post my_projects_path, params: {
+                after_save: "annual",
+                project: {
+                  title: "Projeto Salvo Antes do Upgrade",
+                  visibility: "draft",
+                  about: "<p>Meu trabalho seguro</p>",
+                  gallery_signed_ids: [ signed_id ]
+                }
+              }
+            end
+          end
+
+          assert_redirected_to "https://checkout.stripe.com/c/pay_test_annual"
+        end
+      end
+
+      saved_project = Project.find_by(title: "Projeto Salvo Antes do Upgrade")
+      assert_not_nil saved_project
+      assert_predicate saved_project, :visibility_draft?
+      assert_equal 1, saved_project.project_images.count
+    end
+
+    test "redirects directly to stripe checkout without creating empty project when form is untouched and after_save plan is selected" do
+      bob_user = users(:bob)
+      bob_actor = create_profile_for(bob_user, name: "Bob", role: "member")
+      bob_user.update!(current_profile: bob_actor)
+      sign_in bob_user
+
+      with_mock_checkout("https://checkout.stripe.com/c/pay_test_monthly") do
+        with_stubbed_price("price_mock_monthly") do
+          assert_no_difference("Project.count") do
+            post my_projects_path, params: {
+              after_save: "monthly",
+              project: {
+                title: "",
+                visibility: "draft",
+                about: ""
+              }
+            }
+          end
+
+          assert_redirected_to "https://checkout.stripe.com/c/pay_test_monthly"
+        end
+      end
+    end
+
+    test "updates existing draft project and redirects to stripe checkout when after_save plan is selected" do
+      bob_user = users(:bob)
+      bob_actor = create_profile_for(bob_user, name: "Bob", role: "member")
+      bob_user.update!(current_profile: bob_actor)
+      project = bob_actor.actorable.projects.create!(title: "Rascunho Inicial", about: "<p>Sobre</p>", visibility: :draft)
+      project.project_images.create!(image: image_blob("img-1.png"))
+      sign_in bob_user
+
+      with_mock_checkout("https://checkout.stripe.com/c/pay_test_edit_upgrade") do
+        with_stubbed_price("price_mock_annual") do
+          patch my_project_path(project), params: {
+            after_save: "annual",
+            project: {
+              title: "Rascunho Editado Antes do Upgrade",
+              visibility: "draft"
+            }
+          }
+
+          assert_redirected_to "https://checkout.stripe.com/c/pay_test_edit_upgrade"
+        end
+      end
+
+      assert_equal "Rascunho Editado Antes do Upgrade", project.reload.title
+    end
+
     private
 
     def image_blob(filename)
@@ -416,6 +538,23 @@ module My
         content_type: "image/png",
         identify: false
       )
+    end
+
+    def with_mock_checkout(url)
+      original_method = Pay::Stripe::Customer.instance_method(:checkout)
+      mock_session = Struct.new(:url).new(url)
+      Pay::Stripe::Customer.define_method(:checkout) { |**_kwargs| mock_session }
+      yield
+    ensure
+      Pay::Stripe::Customer.define_method(:checkout, original_method)
+    end
+
+    def with_stubbed_price(price_id)
+      original_method = Plan.instance_method(:stripe_price_id)
+      Plan.define_method(:stripe_price_id) { price_id }
+      yield
+    ensure
+      Plan.define_method(:stripe_price_id, original_method)
     end
   end
 end

@@ -52,7 +52,7 @@ class ProfilesController < ApplicationController
     end
 
     @actor = Actor.where(actorable_type: "Profile")
-                  .includes(avatar_attachment: :blob, cover_image_attachment: :blob, actorable: :occupations)
+                  .includes(:actorable, avatar_attachment: :blob, cover_image_attachment: :blob)
                   .find_by!(slug: params[:id])
     @profile = @actor.actorable
     authorize @actor

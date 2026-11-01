@@ -29,6 +29,11 @@ module My
       @project = current_profile.projects.build(project_attributes)
       authorize @project
 
+      if upgrade_plan && untouched_project_submission?
+        redirect_to_plan_checkout(upgrade_plan, fallback_path: new_my_project_path)
+        return
+      end
+
       @project.valid?
       @project.errors.add(:gallery, :blank) if gallery_signed_ids.blank?
       if @project.visibility_public? && !current_actor.can?(:publish, :project)
@@ -37,7 +42,7 @@ module My
 
       if @project.errors.empty? && @project.save
         ingest_gallery
-        redirect_to my_projects_path, notice: t("flash.project_created")
+        redirect_after_save(default_notice: t("flash.project_created"))
       else
         render :new, status: :unprocessable_entity
       end
@@ -61,7 +66,7 @@ module My
 
       if @project.update(project_attributes)
         ingest_gallery
-        redirect_to my_projects_path, notice: t("flash.project_updated")
+        redirect_after_save(default_notice: t("flash.project_updated"))
       else
         render :edit, status: :unprocessable_entity
       end
@@ -120,6 +125,26 @@ module My
 
     def cover_index
       project_params[:cover_index].presence&.to_i
+    end
+
+    def upgrade_plan
+      Plan.resolve(params[:after_save]) if params[:after_save].present?
+    end
+
+    def untouched_project_submission?
+      project_attributes[:title].blank? &&
+        ActionText::Content.new(project_attributes[:about]).to_plain_text.blank? &&
+        gallery_signed_ids.blank?
+    end
+
+    def redirect_after_save(default_notice:)
+      if upgrade_plan
+        redirect_to_plan_checkout(upgrade_plan, fallback_path: my_projects_path)
+      elsif params[:after_save] == "pricing"
+        redirect_to pricing_path, notice: t("flash.project_saved_for_upgrade")
+      else
+        redirect_to my_projects_path, notice: default_notice
+      end
     end
 
     def ingest_gallery
