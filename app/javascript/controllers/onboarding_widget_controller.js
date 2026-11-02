@@ -6,12 +6,20 @@ export default class extends Controller {
     activeTab: { type: String, default: "professional" },
     defaultCollapsed: { type: Boolean, default: true },
     forceCollapsed: { type: Boolean, default: false },
-    actorId: { type: String, default: "default" }
+    actorId: { type: String, default: "default" },
+    coolDownDays: { type: Number, default: 3 }
   }
 
   connect() {
-    // 1. Clean up any stale dismissed key so the onboarding checklist is never lost or flashes away
-    this.removeStorage(this.dismissedStorageKey)
+    // 1. Check if the widget was dismissed by user within the cooldown period
+    if (this.isDismissed()) {
+      if (this.hasCardWrapperTarget) {
+        this.cardWrapperTarget.classList.add("hidden")
+      } else {
+        this.element.classList.add("hidden")
+      }
+      return
+    }
 
     // 2. Check saved role/tab preference
     const savedRole = this.readStorage(this.roleStorageKey)
@@ -56,11 +64,15 @@ export default class extends Controller {
   }
 
   dismiss() {
-    if (this.hasCardWrapperTarget) {
-      this.cardWrapperTarget.classList.add("hidden")
-    } else {
-      this.element.classList.add("hidden")
-    }
+    const coolDownMs = this.coolDownDaysValue * 24 * 60 * 60 * 1000
+    const dismissedUntil = Date.now() + coolDownMs
+    this.writeStorage(this.dismissedStorageKey, dismissedUntil.toString())
+
+    const target = this.hasCardWrapperTarget ? this.cardWrapperTarget : this.element
+    target.classList.add("opacity-0", "translate-y-2", "pointer-events-none")
+    setTimeout(() => {
+      target.classList.add("hidden")
+    }, 200)
   }
 
   openPricingModal(event) {
@@ -112,7 +124,20 @@ export default class extends Controller {
   }
 
   isDismissed() {
-    return this.readStorage(this.dismissedStorageKey) === "true"
+    const dismissedVal = this.readStorage(this.dismissedStorageKey)
+    if (!dismissedVal) return false
+
+    const expiry = parseInt(dismissedVal, 10)
+    if (!isNaN(expiry)) {
+      if (Date.now() < expiry) {
+        return true
+      }
+      // Cooldown expired: remove key so it can be dismissed again with a fresh cooldown
+      this.removeStorage(this.dismissedStorageKey)
+      return false
+    }
+
+    return dismissedVal === "true"
   }
 
   get dismissedStorageKey() {
