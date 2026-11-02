@@ -561,12 +561,15 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_select "#onboarding_activation_card"
+    assert_select "#onboarding_activation_card[data-onboarding-widget-target='cardWrapper']"
     assert_select "#onboarding_activation_card", text: /Lista de verificação de perfil/
     assert_select "#onboarding-tab-professional", text: /Sou Profissional/
     assert_select "#onboarding-tab-contractor", text: /Sou Contratante/
     assert_select "#onboarding_activation_card", text: /Ativar Conta Profissional/
     assert_select "button[data-action='click->onboarding-widget#openPricingModal']"
     assert_select "[data-testid='onboarding-pricing-modal']"
+    assert_select "[data-testid='onboarding-pricing-modal'].fixed.inset-0.z-\\[60\\]", count: 1
+    assert_select "#onboarding_activation_card [data-testid='onboarding-pricing-modal']", count: 0
     assert_select "[data-testid='onboarding-pricing-modal'] button[data-action='click->onboarding-widget#closePricingModal']", count: 2
     assert_select "[data-testid='onboarding-pricing-modal'] form[action='#{checkout_path(plan: :annual)}']"
     assert_select "[data-testid='onboarding-pricing-modal'] form[action='#{checkout_path(plan: :monthly)}']"

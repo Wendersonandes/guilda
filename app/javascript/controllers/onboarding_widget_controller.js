@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["card", "pill", "tab", "panel", "pillFraction", "pricingModal"]
+  static targets = ["cardWrapper", "card", "pill", "tab", "panel", "pillFraction", "pillCircle", "pricingModal"]
   static values = {
     activeTab: { type: String, default: "professional" },
     defaultCollapsed: { type: Boolean, default: true },
@@ -10,11 +10,8 @@ export default class extends Controller {
   }
 
   connect() {
-    // 1. Check if the widget was dismissed by user
-    if (this.isDismissed()) {
-      this.element.classList.add("hidden")
-      return
-    }
+    // 1. Clean up any stale dismissed key so the onboarding checklist is never lost or flashes away
+    this.removeStorage(this.dismissedStorageKey)
 
     // 2. Check saved role/tab preference
     const savedRole = this.readStorage(this.roleStorageKey)
@@ -59,11 +56,11 @@ export default class extends Controller {
   }
 
   dismiss() {
-    this.writeStorage(this.dismissedStorageKey, "true")
-    this.element.classList.add("opacity-0", "translate-y-2", "pointer-events-none")
-    setTimeout(() => {
+    if (this.hasCardWrapperTarget) {
+      this.cardWrapperTarget.classList.add("hidden")
+    } else {
       this.element.classList.add("hidden")
-    }, 200)
+    }
   }
 
   openPricingModal(event) {
@@ -96,8 +93,13 @@ export default class extends Controller {
     this.panelTargets.forEach((panel) => {
       const isActive = panel.dataset.role === role
       panel.classList.toggle("hidden", !isActive)
-      if (isActive && this.hasPillFractionTarget && panel.dataset.fraction) {
-        this.pillFractionTarget.textContent = panel.dataset.fraction
+      if (isActive) {
+        if (this.hasPillFractionTarget && panel.dataset.fraction) {
+          this.pillFractionTarget.textContent = panel.dataset.fraction
+        }
+        if (this.hasPillCircleTarget && panel.dataset.dashOffset) {
+          this.pillCircleTarget.setAttribute("stroke-dashoffset", panel.dataset.dashOffset)
+        }
       }
     })
   }
@@ -144,6 +146,19 @@ export default class extends Controller {
       } catch {
         // Ignore storage restrictions
       }
+    }
+  }
+
+  removeStorage(key) {
+    try {
+      window.localStorage.removeItem(key)
+    } catch {
+      // Ignore storage restrictions
+    }
+    try {
+      window.sessionStorage.removeItem(key)
+    } catch {
+      // Ignore storage restrictions
     }
   }
 }

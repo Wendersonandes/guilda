@@ -79,10 +79,6 @@
             <i data-lucide="check" class="w-4 h-4 text-brand shrink-0" aria-hidden="true"></i>
             <span>Link profissional limpo para propostas</span>
           </li>
-          <li class="flex items-center gap-2">
-            <i data-lucide="check" class="w-4 h-4 text-brand shrink-0" aria-hidden="true"></i>
-            <span>Inicia somente após os 30 dias grátis</span>
-          </li>
         </ul>
       </div>
       <div>
@@ -93,7 +89,7 @@
             <% end %>
           <% else %>
             <%= button_to checkout_path(plan: :annual), method: :post, data: { turbo: false }, class: "w-full min-h-11 inline-flex items-center justify-center text-center bg-brand hover:bg-brand-hover text-white py-2.5 px-4 rounded-lg font-medium text-sm transition-colors shadow-xs cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2" do %>
-              Assinar Plano Anual (30 dias grátis)
+              Testar Plano Anual por 30 dias
             <% end %>
           <% end %>
         <% else %>
@@ -128,10 +124,6 @@
             <i data-lucide="check" class="w-4 h-4 text-zinc-500 shrink-0" aria-hidden="true"></i>
             <span>Presença no diretório de busca</span>
           </li>
-          <li class="flex items-center gap-2">
-            <i data-lucide="check" class="w-4 h-4 text-zinc-500 shrink-0" aria-hidden="true"></i>
-            <span>Inicia somente após os 30 dias grátis</span>
-          </li>
         </ul>
       </div>
       <div>
@@ -142,7 +134,7 @@
             <% end %>
           <% else %>
             <%= button_to checkout_path(plan: :monthly), method: :post, data: { turbo: false }, class: "w-full min-h-11 inline-flex items-center justify-center text-center bg-white hover:bg-stone-50 text-charcoal border border-stone-border py-2.5 px-4 rounded-lg font-medium text-sm transition-colors cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2" do %>
-              Assinar Plano Mensal
+              Testar Plano Mensal por 30 dias
             <% end %>
           <% end %>
         <% else %>

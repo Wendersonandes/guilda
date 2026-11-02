@@ -51,7 +51,7 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "title", text: /Planos e Preços — Guilda/
     assert_select "a[href=?]", account_path
-    assert_select "button", text: /Assinar Plano Anual/
-    assert_select "button", text: /Assinar Plano Mensal/
+    assert_select "button", text: /Testar Plano Anual/
+    assert_select "button", text: /Testar Plano Mensal/
   end
 end
