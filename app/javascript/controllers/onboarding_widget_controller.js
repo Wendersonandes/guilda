@@ -11,6 +11,13 @@ export default class extends Controller {
   }
 
   connect() {
+    this.handleBeforeCache = () => {
+      if (this.hasCardWrapperTarget) {
+        this.cardWrapperTarget.classList.add("hidden")
+      }
+    }
+    document.addEventListener("turbo:before-cache", this.handleBeforeCache)
+
     // 1. Check if the widget was dismissed by user within the cooldown period
     if (this.isDismissed()) {
       if (this.hasCardWrapperTarget) {
@@ -21,18 +28,34 @@ export default class extends Controller {
       return
     }
 
-    // 2. Check saved role/tab preference
+    // 2. If not dismissed or cooldown expired, reveal the widget
+    if (this.hasCardWrapperTarget) {
+      this.cardWrapperTarget.classList.remove("hidden", "opacity-0", "translate-y-2", "pointer-events-none")
+    } else {
+      this.element.classList.remove("hidden", "opacity-0", "translate-y-2", "pointer-events-none")
+    }
+
+    // 3. Check saved role/tab preference
     const savedRole = this.readStorage(this.roleStorageKey)
     if (savedRole === "professional" || savedRole === "contractor") {
       this.activeTabValue = savedRole
     }
     this.applyTab(this.activeTabValue)
 
-    // 3. Check status: start closed by default; only expand if user previously explicitly opened it
+    // 4. Check status: start closed by default; only expand if user previously explicitly opened it
     const savedCollapsed = this.readStorage(this.collapsedStorageKey)
     const shouldExpand = !this.forceCollapsedValue && savedCollapsed === "false"
 
     this.applyCollapse(!shouldExpand)
+  }
+
+  disconnect() {
+    if (this.handleBeforeCache) {
+      document.removeEventListener("turbo:before-cache", this.handleBeforeCache)
+    }
+    if (this.hasCardWrapperTarget) {
+      this.cardWrapperTarget.classList.add("hidden")
+    }
   }
 
   switchTab(event) {

@@ -393,12 +393,12 @@
          aria-modal="true"
          aria-labelledby="upgrade-modal-title"
          class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4 bg-charcoal/60 backdrop-blur-xs">
-      <div class="bg-white rounded-xl border border-stone-border shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-7 space-y-5">
+      <div class="bg-white rounded-xl border border-stone-border shadow-md max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-7 space-y-5">
         <!-- Modal Header -->
         <div class="flex items-start justify-between gap-4">
           <div class="space-y-1.5">
-            <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-brand bg-brand/10 px-2.5 py-0.5 rounded-full">
-              <i data-lucide="sparkles" class="w-3 h-3" aria-hidden="true"></i>
+            <span class="inline-flex items-center gap-1.5 text-[11px] font-medium tracking-wide text-zinc-800 bg-stone-100 border border-stone-200 px-2.5 py-0.5 rounded-full">
+              <i data-lucide="sparkles" class="w-3 h-3 text-brand" aria-hidden="true"></i>
               <span><%= t("#{scope}.upgrade_modal_badge") %></span>
             </span>
             <h2 id="upgrade-modal-title" class="font-serif text-xl sm:text-2xl font-bold text-charcoal">
@@ -411,7 +411,7 @@
           <button type="button"
                   data-action="click->project-preview#closeUpgradeModal"
                   aria-label="<%= t('common.close', default: 'Fechar') %>"
-                  class="p-1.5 rounded-lg text-zinc-400 hover:text-charcoal hover:bg-stone-100 transition-colors cursor-pointer flex-shrink-0">
+                  class="w-11 h-11 -mr-2 -mt-2 rounded-lg flex items-center justify-center text-zinc-500 hover:text-charcoal hover:bg-stone-100 transition-colors cursor-pointer flex-shrink-0 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-charcoal">
             <i data-lucide="x" class="w-5 h-5" aria-hidden="true"></i>
           </button>
         </div>
@@ -438,7 +438,7 @@
         <!-- Plans Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-stretch pt-1">
           <!-- Annual Plan (Recommended) -->
-          <div class="p-5 bg-white border-2 border-brand rounded-xl flex flex-col justify-between space-y-5 relative shadow-xs">
+          <div class="p-5 bg-white border border-brand rounded-xl flex flex-col justify-between space-y-5 relative shadow-xs">
             <div class="absolute -top-2.5 left-4 bg-brand text-white text-[10px] uppercase tracking-wider px-2.5 py-0.5 rounded-full font-semibold">
               Melhor Custo-Benefício
             </div>
@@ -526,11 +526,11 @@
         </div>
 
         <!-- Modal Footer -->
-        <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-stone-100 text-xs text-zinc-500">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-stone-200 text-xs text-zinc-500">
           <span><%= t("#{scope}.upgrade_modal_cancel_anytime") %></span>
           <button type="button"
                   data-action="click->project-preview#closeUpgradeModal"
-                  class="font-medium text-zinc-600 hover:text-charcoal transition-colors cursor-pointer py-1 px-2 rounded focus:outline-none focus:ring-2 focus:ring-charcoal">
+                  class="min-h-10 sm:min-h-9 inline-flex items-center font-medium text-xs text-zinc-600 hover:text-charcoal transition-colors cursor-pointer py-2 px-3 rounded-lg focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-charcoal">
             <%= t("#{scope}.upgrade_modal_continue_free") %>
           </button>
         </div>

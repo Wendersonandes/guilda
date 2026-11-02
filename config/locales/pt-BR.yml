@@ -222,7 +222,7 @@ pt-BR:
         upgrade_modal_untouched: "Escolha seu plano para iniciar seus 30 dias grátis no ambiente seguro da Stripe."
         upgrade_modal_annual_cta: "Salvar rascunho e testar Anual"
         upgrade_modal_monthly_cta: "Salvar rascunho e testar Mensal"
-        upgrade_modal_cancel_anytime: "Primeiros 30 dias gratuitos. Primeira cobrança apenas a partir do 31º dia. Cancele quando quiser."
+        upgrade_modal_cancel_anytime: "A primeira cobrança acontece apenas a partir do 31º dia. Cancele quando quiser."
         upgrade_modal_continue_free: "Continuar criando no gratuito"
       single_form:
         edit_later: "Você poderá editar tudo depois."
