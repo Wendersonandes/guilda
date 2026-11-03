@@ -368,7 +368,7 @@ pt-BR:
   groups:
     index:
       title: "Grupos"
-      subtitle: "Explore ou participe de comunidades"
+      subtitle: "Conheça e participe de comunidades"
       new: "Novo grupo"
       loading: "Carregando mais grupos..."
       empty_title: "Ainda sem grupos"
@@ -426,7 +426,7 @@ pt-BR:
       empty_subtitle: "Tente refinar os filtros aplicados para localizar quem procura."
       no_contacts_title: "Você ainda não segue nenhum profissional"
       no_contacts_subtitle: "Siga profissionais e prestadores de serviço da cultura para acompanhar seus trabalhos e atualizações no feed."
-      explore_profiles: "Explorar profissionais"
+      explore_profiles: "Buscar profissionais"
       pending_section_title: "Seguidores"
       mutual_badge: "Mútuo"
       mutual_badge_title: "Vocês se seguem mutuamente"
@@ -517,7 +517,7 @@ pt-BR:
   actors:
     index:
       title: "Pessoas e Grupos"
-      subtitle: "Explore perfis e comunidades na plataforma"
+      subtitle: "Conheça perfis e comunidades na plataforma"
       load_more: "Carregar mais"
       empty_title: "Ainda sem perfis"
       empty_subtitle: "Perfis e grupos aparecerão aqui assim que forem criados."

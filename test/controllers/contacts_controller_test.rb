@@ -153,10 +153,10 @@ class ContactsControllerTest < ActionDispatch::IntegrationTest
     assert_select "a[href='#{contacts_path}'][data-turbo-action='advance'][data-turbo-frame='_top']", text: /Limpar todos os filtros/
   end
 
-  test "explore profiles link in empty state includes turbo advance and top attributes" do
+  test "browse profiles link in empty state includes turbo advance and top attributes" do
     get contacts_path
     assert_response :success
-    assert_select "a[href='#{profiles_path}'][data-turbo-action='advance'][data-turbo-frame='_top']", text: /Explorar profissionais/
+    assert_select "a[href='#{profiles_path}'][data-turbo-action='advance'][data-turbo-frame='_top']", text: /Buscar profissionais/
   end
 
   test "does not render mutual connection badge even when connection is reciprocal" do

@@ -189,7 +189,7 @@ class Profile < ApplicationRecord
               description: "Acompanhe profissionais de confiança para suas produções",
               completed: has_followed,
               url: url_helpers.profiles_path,
-              action_label: "Explorar catálogo"
+              action_label: "Buscar no catálogo"
             }
           ]
         }
