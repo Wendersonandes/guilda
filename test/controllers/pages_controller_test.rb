@@ -9,10 +9,11 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     @user.reload
   end
 
-  test "guest user should get the profiles directory at root" do
+  test "guest user should get landing page at root" do
     get root_url
     assert_response :success
-    assert_select "h1", text: "Profissionais e Fornecedores"
+    assert_select "title", text: /Guilda — Rede e Diretório de Profissionais da Cultura/
+    assert_select "h1", text: /Para quem constrói a cultura nacional com as próprias mãos/
   end
 
   test "guest user should get landing page at about path" do

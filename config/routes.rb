@@ -110,8 +110,17 @@ Rails.application.routes.draw do
   # Health + Root
   get "up" => "rails/health#show", as: :rails_health_check
 
-  # The profiles directory is the application root for every visitor (public).
-  root to: "profiles#index"
+  # Root route:
+  # - Authenticated users land on the profiles directory.
+  # - Unauthenticated visitors land on the landing page (about).
+  authenticated :user do
+    root to: "profiles#index", as: :authenticated_root
+  end
+
+  unauthenticated do
+    root to: "pages#landing"
+  end
+
   get "/about", to: "pages#landing", as: :about
   get "/pricing", to: "pages#pricing", as: :pricing
 end
