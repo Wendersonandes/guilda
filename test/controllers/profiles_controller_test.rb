@@ -229,6 +229,22 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_select "aside turbo-frame#sidebar_suggestions", count: 1
   end
 
+  test "profile edit form orders sections to mirror the presentation view" do
+    sign_in @user
+
+    get edit_my_profile_path
+    assert_response :success
+
+    section_ids = css_select("form[action='#{my_profile_path}'] div[id^='section-']").map { |el| el["id"] }
+    assert_equal [
+      "section-basic-info",
+      "section-occupations",
+      "section-availability",
+      "section-location",
+      "section-contact"
+    ], section_ids
+  end
+
   test "profile edit form uses direct upload for the image fields" do
     sign_in @user
 

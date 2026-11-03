@@ -32,6 +32,7 @@
       </div>
     <% end %>
 
+    <!-- 1. Informações básicas (Fotos, Nome, Bio) - Espelha o topo e apresentação do perfil -->
     <%= f.fields_for :actor do |af| %>
       <%= af.hidden_field :id %>
 
@@ -41,38 +42,8 @@
           <span><%= t("profiles.edit.basic_info", default: "Informações básicas") %></span>
         </h2>
 
-        <div class="space-y-1">
-          <%= af.label :name, t("profiles.edit.name", default: "Nome"), class: "block text-sm font-medium text-zinc-700" %>
-          <%= af.text_field :name, autocomplete: "name",
-                aria: { invalid: @profile.actor&.errors&.[](:name)&.any? },
-                class: "w-full min-h-11 rounded-lg border #{ @profile.actor&.errors&.[](:name)&.any? ? 'border-red-400 focus:ring-red-400' : 'border-stone-300 focus:ring-charcoal focus:border-charcoal' } px-3 py-2.5 text-sm bg-white text-charcoal placeholder:text-zinc-500 focus:outline-none focus:ring-1 transition-shadow" %>
-          <% if @profile.actor&.errors&.[](:name)&.any? %>
-            <p class="text-xs text-red-500 mt-1"><%= @profile.actor.errors[:name].first %></p>
-          <% end %>
-        </div>
-
-        <div class="space-y-1">
-          <%= af.label :email, t("profiles.edit.email", default: "E-mail"), class: "block text-sm font-medium text-zinc-700" %>
-          <%= af.email_field :email, autocomplete: "email",
-                aria: { invalid: @profile.actor&.errors&.[](:email)&.any? },
-                class: "w-full min-h-11 rounded-lg border #{ @profile.actor&.errors&.[](:email)&.any? ? 'border-red-400 focus:ring-red-400' : 'border-stone-300 focus:ring-charcoal focus:border-charcoal' } px-3 py-2.5 text-sm bg-white text-charcoal placeholder:text-zinc-500 focus:outline-none focus:ring-1 transition-shadow" %>
-          <% if @profile.actor&.errors&.[](:email)&.any? %>
-            <p class="text-xs text-red-500 mt-1"><%= @profile.actor.errors[:email].first %></p>
-          <% end %>
-        </div>
-
-        <div class="space-y-1">
-          <%= af.label :description, t("profiles.edit.bio", default: "Bio"), id: "profile_description_label", class: "block text-sm font-medium text-zinc-700" %>
-          <lexxy-editor id="profile_actor_attributes_description"
-                        name="profile[actor_attributes][description]"
-                        value="<%= @profile.description %>"
-                        preset="bio"
-                        placeholder="<%= t("profiles.edit.bio_placeholder", default: "Fale um pouco sobre você...") %>"
-                        aria-labelledby="profile_description_label"
-                        class="profile-bio-editor lexxy-content block w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-charcoal"></lexxy-editor>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+        <!-- Avatar & Capa no topo da seção, correspondendo à apresentação visual -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-1">
           <!-- Avatar Upload -->
           <%= render "shared/image_upload_field",
                 form: af,
@@ -92,47 +63,31 @@
                 label: t("profiles.edit.cover_image", default: "Imagem de capa"),
                 preview_classes: "w-12 h-8 rounded" %>
         </div>
+
+        <div class="space-y-1">
+          <%= af.label :name, t("profiles.edit.name", default: "Nome"), class: "block text-sm font-medium text-zinc-700" %>
+          <%= af.text_field :name, autocomplete: "name",
+                aria: { invalid: @profile.actor&.errors&.[](:name)&.any? },
+                class: "w-full min-h-11 rounded-lg border #{ @profile.actor&.errors&.[](:name)&.any? ? 'border-red-400 focus:ring-red-400' : 'border-stone-300 focus:ring-charcoal focus:border-charcoal' } px-3 py-2.5 text-sm bg-white text-charcoal placeholder:text-zinc-500 focus:outline-none focus:ring-1 transition-shadow" %>
+          <% if @profile.actor&.errors&.[](:name)&.any? %>
+            <p class="text-xs text-red-500 mt-1"><%= @profile.actor.errors[:name].first %></p>
+          <% end %>
+        </div>
+
+        <div class="space-y-1">
+          <%= af.label :description, t("profiles.edit.bio", default: "Bio"), id: "profile_description_label", class: "block text-sm font-medium text-zinc-700" %>
+          <lexxy-editor id="profile_actor_attributes_description"
+                        name="profile[actor_attributes][description]"
+                        value="<%= @profile.description %>"
+                        preset="bio"
+                        placeholder="<%= t("profiles.edit.bio_placeholder", default: "Fale um pouco sobre você...") %>"
+                        aria-labelledby="profile_description_label"
+                        class="profile-bio-editor lexxy-content block w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-charcoal"></lexxy-editor>
+        </div>
       </div>
     <% end %>
 
-    <div id="section-location" class="border-t border-stone-border pt-4 space-y-4 scroll-mt-20">
-      <h2 class="text-sm font-semibold text-charcoal flex items-center gap-1.5 pb-1">
-        <i data-lucide="map-pin" aria-hidden="true" class="w-4 h-4 text-zinc-400"></i>
-        <span><%= t("profiles.edit.location", default: "Localização") %></span>
-      </h2>
-      <div data-controller="location"
-           data-location-select-text-value="<%= t("profiles.edit.select", default: "Selecione") %>"
-           data-location-loading-text-value="<%= t("profiles.edit.loading_cities", default: "Carregando cidades...") %>"
-           data-location-error-text-value="<%= t("profiles.edit.error_cities", default: "Erro ao carregar cidades") %>"
-           class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <%= f.hidden_field :country, value: @profile.country.presence || "BR", data: { location_target: "country" } %>
-        <div class="space-y-1">
-          <%= f.label :state, t("profiles.edit.state", default: "Estado"), class: "block text-sm font-medium text-zinc-700" %>
-          <%= f.select :state, @states || [], { include_blank: t("profiles.edit.select", default: "Selecione"), selected: state_code_for(@profile.state) }, {
-            autocomplete: "address-level1",
-            aria: { invalid: @profile.errors[:state].any? },
-            data: { location_target: "state", action: "change->location#stateChanged" },
-            class: "w-full min-h-11 rounded-lg border #{ @profile.errors[:state].any? ? 'border-red-400 focus:ring-red-400' : 'border-stone-300 focus:ring-charcoal focus:border-charcoal' } px-3 py-2.5 text-sm bg-white text-charcoal focus:outline-none focus:ring-1"
-          } %>
-          <% if @profile.errors[:state].any? %>
-            <p class="text-xs text-red-500 mt-1"><%= @profile.errors[:state].first %></p>
-          <% end %>
-        </div>
-        <div class="space-y-1">
-          <%= f.label :city, t("profiles.edit.city", default: "Cidade"), class: "block text-sm font-medium text-zinc-700" %>
-          <%= f.select :city, @cities || [], { include_blank: t("profiles.edit.select", default: "Selecione") }, {
-            autocomplete: "address-level2",
-            aria: { invalid: @profile.errors[:city].any? },
-            data: { location_target: "city" },
-            class: "w-full min-h-11 rounded-lg border #{ @profile.errors[:city].any? ? 'border-red-400 focus:ring-red-400' : 'border-stone-300 focus:ring-charcoal focus:border-charcoal' } px-3 py-2.5 text-sm bg-white text-charcoal focus:outline-none focus:ring-1"
-          } %>
-          <% if @profile.errors[:city].any? %>
-            <p class="text-xs text-red-500 mt-1"><%= @profile.errors[:city].first %></p>
-          <% end %>
-        </div>
-      </div>
-    </div>
-
+    <!-- 2. Categorias Profissionais (Atuação) - Imediatamente após a Bio -->
     <div id="section-occupations" class="border-t border-stone-border pt-4 space-y-4 scroll-mt-20"
          data-controller="occupations"
          data-occupations-counter-template-value="<%= t("profiles.edit.occupations_counter", default: "%{count} de 3 selecionadas") %>">
@@ -185,6 +140,7 @@
       </div>
     </div>
 
+    <!-- 3. Disponibilidade - Segue a ordem da seção Disponibilidade & Localização -->
     <div id="section-availability" class="border-t border-stone-border pt-4 space-y-4 scroll-mt-20">
       <h2 class="text-sm font-semibold text-charcoal flex items-center gap-1.5 pb-1">
         <i data-lucide="clock" aria-hidden="true" class="w-4 h-4 text-zinc-400"></i>
@@ -199,12 +155,64 @@
       </div>
     </div>
 
+    <!-- 4. Localização (Estado e Cidade) -->
+    <div id="section-location" class="border-t border-stone-border pt-4 space-y-4 scroll-mt-20">
+      <h2 class="text-sm font-semibold text-charcoal flex items-center gap-1.5 pb-1">
+        <i data-lucide="map-pin" aria-hidden="true" class="w-4 h-4 text-zinc-400"></i>
+        <span><%= t("profiles.edit.location", default: "Localização") %></span>
+      </h2>
+      <div data-controller="location"
+           data-location-select-text-value="<%= t("profiles.edit.select", default: "Selecione") %>"
+           data-location-loading-text-value="<%= t("profiles.edit.loading_cities", default: "Carregando cidades...") %>"
+           data-location-error-text-value="<%= t("profiles.edit.error_cities", default: "Erro ao carregar cidades") %>"
+           class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <%= f.hidden_field :country, value: @profile.country.presence || "BR", data: { location_target: "country" } %>
+        <div class="space-y-1">
+          <%= f.label :state, t("profiles.edit.state", default: "Estado"), class: "block text-sm font-medium text-zinc-700" %>
+          <%= f.select :state, @states || [], { include_blank: t("profiles.edit.select", default: "Selecione"), selected: state_code_for(@profile.state) }, {
+            autocomplete: "address-level1",
+            aria: { invalid: @profile.errors[:state].any? },
+            data: { location_target: "state", action: "change->location#stateChanged" },
+            class: "w-full min-h-11 rounded-lg border #{ @profile.errors[:state].any? ? 'border-red-400 focus:ring-red-400' : 'border-stone-300 focus:ring-charcoal focus:border-charcoal' } px-3 py-2.5 text-sm bg-white text-charcoal focus:outline-none focus:ring-1"
+          } %>
+          <% if @profile.errors[:state].any? %>
+            <p class="text-xs text-red-500 mt-1"><%= @profile.errors[:state].first %></p>
+          <% end %>
+        </div>
+        <div class="space-y-1">
+          <%= f.label :city, t("profiles.edit.city", default: "Cidade"), class: "block text-sm font-medium text-zinc-700" %>
+          <%= f.select :city, @cities || [], { include_blank: t("profiles.edit.select", default: "Selecione") }, {
+            autocomplete: "address-level2",
+            aria: { invalid: @profile.errors[:city].any? },
+            data: { location_target: "city" },
+            class: "w-full min-h-11 rounded-lg border #{ @profile.errors[:city].any? ? 'border-red-400 focus:ring-red-400' : 'border-stone-300 focus:ring-charcoal focus:border-charcoal' } px-3 py-2.5 text-sm bg-white text-charcoal focus:outline-none focus:ring-1"
+          } %>
+          <% if @profile.errors[:city].any? %>
+            <p class="text-xs text-red-500 mt-1"><%= @profile.errors[:city].first %></p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. Informações de contato (E-mail, Celular, Site, Instagram) - Espelha Canais de Contato Direto -->
     <div id="section-contact" class="border-t border-stone-border pt-4 space-y-4 scroll-mt-20">
       <h2 class="text-sm font-semibold text-charcoal flex items-center gap-1.5 pb-1">
         <i data-lucide="phone" aria-hidden="true" class="w-4 h-4 text-zinc-400"></i>
         <span><%= t("profiles.edit.contact_info", default: "Informações de contato") %></span>
       </h2>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <%= f.fields_for :actor do |af| %>
+          <div class="space-y-1">
+            <%= af.label :email, t("profiles.edit.email", default: "E-mail"), class: "block text-sm font-medium text-zinc-700" %>
+            <%= af.email_field :email, autocomplete: "email",
+                  aria: { invalid: @profile.actor&.errors&.[](:email)&.any? },
+                  class: "w-full min-h-11 rounded-lg border #{ @profile.actor&.errors&.[](:email)&.any? ? 'border-red-400 focus:ring-red-400' : 'border-stone-300 focus:ring-charcoal focus:border-charcoal' } px-3 py-2.5 text-sm bg-white text-charcoal placeholder:text-zinc-500 focus:outline-none focus:ring-1 transition-shadow" %>
+            <% if @profile.actor&.errors&.[](:email)&.any? %>
+              <p class="text-xs text-red-500 mt-1"><%= @profile.actor.errors[:email].first %></p>
+            <% end %>
+          </div>
+        <% end %>
+
         <div class="space-y-1">
           <%= f.label :mobile, t("profiles.edit.mobile", default: "Celular"), class: "block text-sm font-medium text-zinc-700" %>
           <%= f.telephone_field :mobile, value: br_phone_display(@profile.mobile), placeholder: "(11) 98765-4321",
@@ -216,6 +224,17 @@
             <p class="text-xs text-red-500 mt-1"><%= @profile.errors[:mobile].first %></p>
           <% end %>
         </div>
+
+        <div class="space-y-1">
+          <%= f.label :website, t("profiles.edit.website", default: "Site"), class: "block text-sm font-medium text-zinc-700" %>
+          <%= f.url_field :website, placeholder: "https://seusite.com.br", autocomplete: "url",
+                aria: { invalid: @profile.errors[:website].any? },
+                class: "w-full min-h-11 rounded-lg border #{ @profile.errors[:website].any? ? 'border-red-400 focus:ring-red-400' : 'border-stone-300 focus:ring-charcoal focus:border-charcoal' } px-3 py-2.5 text-sm bg-white text-charcoal placeholder:text-zinc-500 focus:outline-none focus:ring-1 transition-shadow" %>
+          <% if @profile.errors[:website].any? %>
+            <p class="text-xs text-red-500 mt-1"><%= @profile.errors[:website].first %></p>
+          <% end %>
+        </div>
+
         <div class="space-y-1">
           <%= f.label :instagram, t("profiles.edit.instagram", default: "Instagram"), class: "block text-sm font-medium text-zinc-700" %>
           <%= f.text_field :instagram,
@@ -226,15 +245,6 @@
           <p id="profile_instagram_hint" class="text-xs text-zinc-500 font-medium"><%= t(".instagram_hint") %></p>
           <% if @profile.errors[:instagram].any? %>
             <p class="text-xs text-red-500 mt-1"><%= @profile.errors[:instagram].first %></p>
-          <% end %>
-        </div>
-        <div class="col-span-1 sm:col-span-2 space-y-1">
-          <%= f.label :website, t("profiles.edit.website", default: "Site"), class: "block text-sm font-medium text-zinc-700" %>
-          <%= f.url_field :website, placeholder: "https://seusite.com.br", autocomplete: "url",
-                aria: { invalid: @profile.errors[:website].any? },
-                class: "w-full min-h-11 rounded-lg border #{ @profile.errors[:website].any? ? 'border-red-400 focus:ring-red-400' : 'border-stone-300 focus:ring-charcoal focus:border-charcoal' } px-3 py-2.5 text-sm bg-white text-charcoal placeholder:text-zinc-500 focus:outline-none focus:ring-1 transition-shadow" %>
-          <% if @profile.errors[:website].any? %>
-            <p class="text-xs text-red-500 mt-1"><%= @profile.errors[:website].first %></p>
           <% end %>
         </div>
       </div>
