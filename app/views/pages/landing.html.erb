@@ -1,40 +1,45 @@
 <% content_for :no_sidebar, true %>
-<% content_for :title, "Guilda — Rede e Diretório de Profissionais da Cultura" %>
+<% content_for :title, "Guilda — Portfólio e Diretório para Profissionais da Cultura" %>
 
 <div class="py-8 sm:py-16 space-y-16 sm:space-y-24">
   
-  <!-- Hero Section -->
+  <!-- Seção 1: Hero (Acima da Dobra — Foco 100% no Profissional) -->
   <section class="text-center space-y-6 pt-4">
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-stone-100 text-charcoal text-xs font-semibold uppercase tracking-widest">
+      Para profissionais e fornecedores do setor cultural
+    </div>
+
     <h1 class="font-serif text-4xl sm:text-6xl text-charcoal font-bold tracking-tight leading-tight max-w-4xl mx-auto">
-      Para quem constrói a cultura nacional com as próprias mãos
+      Apresente os projetos que você construiu e seja encontrado por quem contrata na cultura
     </h1>
     
     <p class="text-base sm:text-xl text-zinc-600 max-w-2xl mx-auto font-sans leading-relaxed">
-      A plataforma de portfólio e conexão para trabalhadores e prestadores de serviço da cultura no Brasil. Apresente seu ofício com seriedade, seja encontrado por contratantes de todo o país e crie estratégias para se remunerar melhor.
+      A Guilda reúne produtores, designers, expógrafos, montadores, redatores de projetos, fotógrafos e especialistas do setor cultural em um diretório nacional. Organize seu portfólio técnico em minutos e receba contatos diretos de artistas, galerias, museus e outras produtoras.
     </p>
 
     <div class="flex flex-col sm:flex-row justify-center items-center gap-3 pt-4">
       <%= link_to new_user_registration_path(plan: :trial), class: "w-full sm:w-auto min-h-11 inline-flex items-center justify-center gap-2 bg-brand hover:bg-brand-hover text-white px-6 py-3 rounded-lg font-medium transition-colors shadow-xs text-base cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2" do %>
         <i data-lucide="user-plus" class="w-5 h-5" aria-hidden="true"></i>
-        <span>Cadastrar meu portfólio</span>
+        <span>Publicar meu portfólio (30 dias grátis)</span>
       <% end %>
       <%= link_to profiles_path, class: "w-full sm:w-auto min-h-11 inline-flex items-center justify-center gap-2 bg-white hover:bg-stone-50 text-charcoal border border-stone-border px-6 py-3 rounded-lg font-medium transition-colors text-base cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2" do %>
         <i data-lucide="search" class="w-5 h-5" aria-hidden="true"></i>
-        <span>Buscar profissionais</span>
+        <span>Explorar diretório de profissionais</span>
       <% end %>
     </div>
 
     <p class="text-xs text-zinc-500 font-sans">
-      30 dias de teste gratuito para prestadores • Acesso livre e gratuito para quem contrata
+      30 dias gratuitos para testar todas as ferramentas • Cancele quando quiser • Busca gratuita para contratantes
     </p>
   </section>
 
-  <!-- Stats Grid -->
+  <!-- Seção 2: Barra de Credibilidade / Foco do Diretório (Stats Grid) -->
   <section class="border-y border-stone-border py-8 bg-white/50 rounded-xl">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center divide-y md:divide-y-0 md:divide-x divide-stone-border">
       <div class="space-y-1 py-4 md:py-0">
         <div class="font-serif text-3xl sm:text-4xl font-bold text-charcoal">9+</div>
-        <div class="text-xs uppercase tracking-widest text-zinc-500 font-semibold">Categorias Ativas</div>
+        <div class="text-xs uppercase tracking-widest text-zinc-500 font-semibold">Especialidades Técnicas</div>
+        <p class="text-xs text-zinc-500">Categorias estruturadas da cadeia produtiva cultural</p>
       </div>
       <div class="space-y-1 py-4 md:py-0">
         <div class="font-serif text-3xl sm:text-4xl font-bold text-charcoal">
@@ -43,91 +48,246 @@
         <div class="text-xs uppercase tracking-widest text-zinc-500 font-semibold">
           <%= @profiles_count > 0 ? "Profissionais no Diretório" : "Alcance em Todo o País" %>
         </div>
+        <p class="text-xs text-zinc-500">Visibilidade em todas as regiões do Brasil</p>
       </div>
       <div class="space-y-1 py-4 md:py-0">
         <div class="font-serif text-3xl sm:text-4xl font-bold text-charcoal">100%</div>
-        <div class="text-xs uppercase tracking-widest text-zinc-500 font-semibold">Foco na Produção Cultural</div>
+        <div class="text-xs uppercase tracking-widest text-zinc-500 font-semibold">Contato Direto</div>
+        <p class="text-xs text-zinc-500">Orçamentos no seu WhatsApp e e-mail, sem comissão</p>
       </div>
     </div>
   </section>
 
-  <!-- Two-Column Audiences -->
-  <section class="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12">
-    <!-- Trabalhadores & Prestadores de Serviço (Foco Principal) -->
-    <div class="p-8 bg-white border border-stone-border rounded-xl flex flex-col justify-between space-y-6">
-      <div class="space-y-4">
-        <h2 class="font-serif text-2xl sm:text-3xl font-bold text-charcoal">Apresente seu ofício com o rigor que ele merece</h2>
-        <p class="text-sm sm:text-base text-zinc-600 leading-relaxed">
-          As ferramentas de portfólio da Guilda foram desenhadas para valorizar a atuação prática de quem realiza a cultura. Organize suas entregas técnicas com padrão editorial de galeria e seja encontrado por quem tem projetos e orçamentos para executar.
-        </p>
-        <ul class="space-y-2.5 pt-2">
-          <li class="flex items-start gap-2.5 text-sm text-zinc-700">
-            <i data-lucide="check" class="w-4 h-4 text-zinc-500 mt-0.5 shrink-0" aria-hidden="true"></i>
-            <span>Dossiê visual estruturado que destaca seu papel técnico e o escopo de cada entrega</span>
-          </li>
-          <li class="flex items-start gap-2.5 text-sm text-zinc-700">
-            <i data-lucide="check" class="w-4 h-4 text-zinc-500 mt-0.5 shrink-0" aria-hidden="true"></i>
-            <span>Presença no diretório nacional filtrado por cidade, estado e especialidade</span>
-          </li>
-          <li class="flex items-start gap-2.5 text-sm text-zinc-700">
-            <i data-lucide="check" class="w-4 h-4 text-zinc-500 mt-0.5 shrink-0" aria-hidden="true"></i>
-            <span>Canais diretos de contato (WhatsApp com mensagem personalizada, e-mail e telefone)</span>
-          </li>
-          <li class="flex items-start gap-2.5 text-sm text-zinc-700">
-            <i data-lucide="check" class="w-4 h-4 text-zinc-500 mt-0.5 shrink-0" aria-hidden="true"></i>
-            <span>30 dias gratuitos para montar seu portfólio e experimentar sem compromisso</span>
-          </li>
-        </ul>
-      </div>
-      <div class="pt-4">
-        <%= link_to new_user_registration_path(plan: :trial), class: "min-h-11 inline-flex items-center gap-1.5 text-sm font-semibold text-brand hover:text-brand-hover transition-colors group focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 rounded" do %>
-          <span>Criar portfólio (30 dias grátis)</span>
-          <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform" aria-hidden="true"></i>
-        <% end %>
-      </div>
+  <!-- Seção 3: O Problema Real vs. A Proposta da Guilda -->
+  <section class="space-y-10">
+    <div class="max-w-2xl mx-auto text-center space-y-3">
+      <h2 class="font-serif text-3xl sm:text-4xl font-bold text-charcoal leading-tight">
+        Chega de perder bons projetos porque seu portfólio está espalhado
+      </h2>
+      <p class="text-sm sm:text-base text-zinc-600 leading-relaxed">
+        Quem vive do ofício cultural costuma depender das mesmas indicações locais. Quando surge um edital, uma exposição ou uma produção fora do seu círculo imediato, um PDF antigo no Google Drive ou um perfil no Instagram dão pouco contexto sobre a sua capacidade técnica.
+      </p>
     </div>
 
-    <!-- Artistas, Produtores & Contratantes -->
-    <div class="p-8 bg-white border border-stone-border rounded-xl flex flex-col justify-between space-y-6">
-      <div class="space-y-4">
-        <h2 class="font-serif text-2xl sm:text-3xl font-bold text-charcoal">Monte equipes técnicas qualificadas em poucos cliques</h2>
-        <p class="text-sm sm:text-base text-zinc-600 leading-relaxed">
-          Artistas, produtores executivos, curadores, coletivos e instituições culturais encontram fornecedores especializados com histórico comprovado para viabilizar espetáculos, livros, exposições e editais públicos.
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="p-6 sm:p-8 bg-white border border-stone-border rounded-xl space-y-4">
+        <div class="w-10 h-10 rounded-lg bg-gallery flex items-center justify-center text-charcoal">
+          <i data-lucide="folder-kanban" class="w-5 h-5" aria-hidden="true"></i>
+        </div>
+        <h3 class="font-serif text-xl font-bold text-charcoal leading-snug">
+          Projetos onde sua função fica clara
+        </h3>
+        <p class="text-sm text-zinc-600 leading-relaxed">
+          Publique cada exposição, espetáculo, catálogo, transporte de acervo ou edital em que você trabalhou. Adicione até 10 fotos por projeto, escolha a capa e descreva o ano, o local e exatamente o que você executou.
         </p>
-        <ul class="space-y-2.5 pt-2">
-          <li class="flex items-start gap-2.5 text-sm text-zinc-700">
-            <i data-lucide="check" class="w-4 h-4 text-zinc-500 mt-0.5 shrink-0" aria-hidden="true"></i>
-            <span>Acesso livre e 100% gratuito para pesquisar e contatar profissionais</span>
-          </li>
-          <li class="flex items-start gap-2.5 text-sm text-zinc-700">
-            <i data-lucide="check" class="w-4 h-4 text-zinc-500 mt-0.5 shrink-0" aria-hidden="true"></i>
-            <span>Busca especializada por localização geográfica (cidade/estado) e disponibilidade</span>
-          </li>
-          <li class="flex items-start gap-2.5 text-sm text-zinc-700">
-            <i data-lucide="check" class="w-4 h-4 text-zinc-500 mt-0.5 shrink-0" aria-hidden="true"></i>
-            <span>Histórico visual e técnico de projetos reais executados antes de fechar a contratação</span>
-          </li>
-          <li class="flex items-start gap-2.5 text-sm text-zinc-700">
-            <i data-lucide="check" class="w-4 h-4 text-zinc-500 mt-0.5 shrink-0" aria-hidden="true"></i>
-            <span>Contato sem intermediários: converse diretamente com quem vai executar o serviço</span>
-          </li>
-        </ul>
       </div>
-      <div class="pt-4">
-        <%= link_to profiles_path, class: "min-h-11 inline-flex items-center gap-1.5 text-sm font-semibold text-brand hover:text-brand-hover transition-colors group focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 rounded" do %>
-          <span>Buscar prestadores de serviço</span>
-          <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform" aria-hidden="true"></i>
-        <% end %>
+
+      <div class="p-6 sm:p-8 bg-white border border-stone-border rounded-xl space-y-4">
+        <div class="w-10 h-10 rounded-lg bg-gallery flex items-center justify-center text-charcoal">
+          <i data-lucide="map-pin" class="w-5 h-5" aria-hidden="true"></i>
+        </div>
+        <h3 class="font-serif text-xl font-bold text-charcoal leading-snug">
+          Diretório filtrado por quem tem demanda real
+        </h3>
+        <p class="text-sm text-zinc-600 leading-relaxed">
+          Enquanto redes sociais misturam tudo, na Guilda seu perfil aparece quando um contratante filtra por estado, cidade, categoria de atuação e disponibilidade (Freelance ou Tempo Integral).
+        </p>
+      </div>
+
+      <div class="p-6 sm:p-8 bg-white border border-stone-border rounded-xl space-y-4">
+        <div class="w-10 h-10 rounded-lg bg-gallery flex items-center justify-center text-charcoal">
+          <i data-lucide="message-circle" class="w-5 h-5" aria-hidden="true"></i>
+        </div>
+        <h3 class="font-serif text-xl font-bold text-charcoal leading-snug">
+          Contato direto no seu WhatsApp e e-mail
+        </h3>
+        <p class="text-sm text-zinc-600 leading-relaxed">
+          Artistas, curadores, galerias, museus e produtores entram em contato com você em um clique, sem intermediários e sem taxas sobre o valor do seu cachê ou serviço.
+        </p>
       </div>
     </div>
   </section>
 
-  <!-- Occupations Grid -->
+  <!-- Seção 4: Casos de Uso — Como os Profissionais Usam a Guilda no Dia a Dia -->
+  <section class="p-8 sm:p-12 bg-white border border-stone-border rounded-xl space-y-8">
+    <div class="max-w-2xl space-y-3">
+      <div class="text-xs uppercase tracking-widest text-brand font-semibold">Para o seu momento profissional</div>
+      <h2 class="font-serif text-3xl sm:text-4xl font-bold text-charcoal leading-tight">
+        Uma ferramenta de trabalho para expandir sua atuação na cultura
+      </h2>
+      <p class="text-sm sm:text-base text-zinc-600 leading-relaxed">
+        Na Guilda, você posiciona seu serviço para novos contratantes e também encontra especialistas quando precisa montar ou complementar uma entrega técnica.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 pt-2">
+      <div class="flex items-start gap-4">
+        <div class="w-10 h-10 rounded-lg bg-gallery flex items-center justify-center text-charcoal shrink-0 mt-0.5">
+          <i data-lucide="trending-up" class="w-5 h-5" aria-hidden="true"></i>
+        </div>
+        <div class="space-y-1.5">
+          <h3 class="font-serif font-bold text-lg text-charcoal">Expandir sua clientela além da rede atual</h3>
+          <p class="text-sm text-zinc-600 leading-relaxed">
+            Você já presta serviço para artistas, galerias ou instituições, mas quer ser descoberto por novos contratantes de outras cidades, estados e linguagens culturais durante o ano inteiro.
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-start gap-4">
+        <div class="w-10 h-10 rounded-lg bg-gallery flex items-center justify-center text-charcoal shrink-0 mt-0.5">
+          <i data-lucide="compass" class="w-5 h-5" aria-hidden="true"></i>
+        </div>
+        <div class="space-y-1.5">
+          <h3 class="font-serif font-bold text-lg text-charcoal">Atender produções nacionais na sua região</h3>
+          <p class="text-sm text-zinc-600 leading-relaxed">
+            Produtoras e instituições com projetos executados em múltiplas localidades usam o diretório para contratar produtores locais, montadores e fornecedores técnicos na sua cidade.
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-start gap-4">
+        <div class="w-10 h-10 rounded-lg bg-gallery flex items-center justify-center text-charcoal shrink-0 mt-0.5">
+          <i data-lucide="camera" class="w-5 h-5" aria-hidden="true"></i>
+        </div>
+        <div class="space-y-1.5">
+          <h3 class="font-serif font-bold text-lg text-charcoal">Contratar profissionais para demandas pontuais</h3>
+          <p class="text-sm text-zinc-600 leading-relaxed">
+            Precisa encontrar um fotógrafo para registrar a montagem de uma exposição ou um especialista para uma produção pontual? Busque colegas no diretório por cidade e disponibilidade imediata.
+          </p>
+        </div>
+      </div>
+
+      <div class="flex items-start gap-4">
+        <div class="w-10 h-10 rounded-lg bg-gallery flex items-center justify-center text-charcoal shrink-0 mt-0.5">
+          <i data-lucide="award" class="w-5 h-5" aria-hidden="true"></i>
+        </div>
+        <div class="space-y-1.5">
+          <h3 class="font-serif font-bold text-lg text-charcoal">Fortalecer sua reputação e ser recomendado na comunidade</h3>
+          <p class="text-sm text-zinc-600 leading-relaxed">
+            Ao publicar seu histórico de projetos realizados, conectar-se com outros profissionais e receber interações na plataforma, seu trabalho ganha respaldo para novas indicações no setor.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Seção 5: A Demanda Real — Quem está procurando por você na Guilda -->
+  <section class="space-y-8">
+    <div class="max-w-2xl mx-auto text-center space-y-3">
+      <div class="text-xs uppercase tracking-widest text-zinc-500 font-semibold">Demanda ativa e gratuita para quem contrata</div>
+      <h2 class="font-serif text-3xl sm:text-4xl font-bold text-charcoal leading-tight">
+        O que artistas, galerias, museus e produtoras buscam aqui
+      </h2>
+      <p class="text-sm sm:text-base text-zinc-600 leading-relaxed">
+        Quem aprova um projeto ou prepara uma exposição tem prazos curtos e precisa de fornecedores confiáveis. Ao manter seu portfólio publicado, você fica visível para demandas reais como estas:
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="p-6 bg-white border border-stone-border rounded-xl space-y-3">
+        <div class="flex items-center gap-2.5 text-charcoal font-serif font-bold text-base">
+          <i data-lucide="users" class="w-4 h-4 text-brand shrink-0" aria-hidden="true"></i>
+          <h3>Equipes para editais em outro estado</h3>
+        </div>
+        <p class="text-xs sm:text-sm text-zinc-600 leading-relaxed">
+          Um artista foi aprovado em um edital fora do seu estado de origem e precisa montar uma equipe técnica local de confiança em uma região onde ainda não conhece profissionais.
+        </p>
+      </div>
+
+      <div class="p-6 bg-white border border-stone-border rounded-xl space-y-3">
+        <div class="flex items-center gap-2.5 text-charcoal font-serif font-bold text-base">
+          <i data-lucide="file-text" class="w-4 h-4 text-brand shrink-0" aria-hidden="true"></i>
+          <h3>Escrita e formatação para editais</h3>
+        </div>
+        <p class="text-xs sm:text-sm text-zinc-600 leading-relaxed">
+          Um artista tem o rascunho da proposta artística, mas precisa contratar um profissional com tempo e expertise técnica para estruturar o projeto seguindo todas as exigências do edital.
+        </p>
+      </div>
+
+      <div class="p-6 bg-white border border-stone-border rounded-xl space-y-3">
+        <div class="flex items-center gap-2.5 text-charcoal font-serif font-bold text-base">
+          <i data-lucide="file-check" class="w-4 h-4 text-brand shrink-0" aria-hidden="true"></i>
+          <h3>Cartas de Anuência para inscrição</h3>
+        </div>
+        <p class="text-xs sm:text-sm text-zinc-600 leading-relaxed">
+          Proponentes precisam fechar a ficha técnica com profissionais qualificados e obter Cartas de Anuência dentro do prazo para cumprir os requisitos de inscrição em Editais Públicos.
+        </p>
+      </div>
+
+      <div class="p-6 bg-white border border-stone-border rounded-xl space-y-3">
+        <div class="flex items-center gap-2.5 text-charcoal font-serif font-bold text-base">
+          <i data-lucide="palette" class="w-4 h-4 text-brand shrink-0" aria-hidden="true"></i>
+          <h3>Design de folder e foto de currículo</h3>
+        </div>
+        <p class="text-xs sm:text-sm text-zinc-600 leading-relaxed">
+          Artistas e curadores buscam um designer gráfico para criar o folder de uma nova exposição ou um fotógrafo profissional para atualizar as fotos de seu currículo e portfólio.
+        </p>
+      </div>
+
+      <div class="p-6 bg-white border border-stone-border rounded-xl space-y-3">
+        <div class="flex items-center gap-2.5 text-charcoal font-serif font-bold text-base">
+          <i data-lucide="box" class="w-4 h-4 text-brand shrink-0" aria-hidden="true"></i>
+          <h3>Renderização 3D e expografia</h3>
+        </div>
+        <p class="text-xs sm:text-sm text-zinc-600 leading-relaxed">
+          Artistas, galerias e instituições procuram arquitetos, expógrafos e projetistas para criar a renderização em 3D e o desenho técnico de seus novos projetos expositivos.
+        </p>
+      </div>
+
+      <div class="p-6 bg-white border border-stone-border rounded-xl space-y-3">
+        <div class="flex items-center gap-2.5 text-charcoal font-serif font-bold text-base">
+          <i data-lucide="truck" class="w-4 h-4 text-brand shrink-0" aria-hidden="true"></i>
+          <h3>Transporte especializado de arte</h3>
+        </div>
+        <p class="text-xs sm:text-sm text-zinc-600 leading-relaxed">
+          Artistas e galerias precisam transportar obras entre cidades ou espaços expositivos e fazem questão de contratar fornecedores com experiência comprovada em transporte de arte.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Seção 6: Como Funciona (3 Passos Simples) -->
+  <section class="p-8 sm:p-12 bg-white border border-stone-border rounded-xl space-y-8">
+    <div class="text-center max-w-xl mx-auto space-y-2">
+      <h2 class="font-serif text-3xl font-bold text-charcoal">Seu dossiê profissional no ar em minutos</h2>
+      <p class="text-sm sm:text-base text-zinc-600">
+        Construa uma apresentação à altura do que você entrega com as próprias mãos.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 pt-2 divide-y md:divide-y-0 md:divide-x divide-stone-border">
+      <div class="space-y-3 md:pr-6 py-4 md:py-0">
+        <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-charcoal text-white text-xs font-bold">1</span>
+        <h3 class="font-serif font-bold text-lg text-charcoal">Configure seu perfil técnico</h3>
+        <p class="text-xs sm:text-sm text-zinc-600 leading-relaxed">
+          Informe sua cidade e estado, sua disponibilidade para novos trabalhos e escolha até 3 categorias principais de atuação para manter seu posicionamento preciso.
+        </p>
+      </div>
+
+      <div class="space-y-3 md:px-6 py-4 md:py-0">
+        <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-charcoal text-white text-xs font-bold">2</span>
+        <h3 class="font-serif font-bold text-lg text-charcoal">Publique os projetos em que trabalhou</h3>
+        <p class="text-xs sm:text-sm text-zinc-600 leading-relaxed">
+          Monte a galeria de cada projeto com fotos da entrega ou da montagem e descreva sua função técnica, o ano e o escopo realizado.
+        </p>
+      </div>
+
+      <div class="space-y-3 md:pl-6 py-4 md:py-0">
+        <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-charcoal text-white text-xs font-bold">3</span>
+        <h3 class="font-serif font-bold text-lg text-charcoal">Compartilhe seu link e receba contatos</h3>
+        <p class="text-xs sm:text-sm text-zinc-600 leading-relaxed">
+          Envie o endereço limpo do seu dossiê em propostas e editais, e fique disponível no diretório para ser chamado diretamente no WhatsApp ou e-mail.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Seção 7: Especialidades do Diretório (@occupations) -->
   <section class="space-y-8">
     <div class="text-center space-y-3">
-      <h2 class="font-serif text-3xl sm:text-4xl font-bold text-charcoal">Encontre o profissional exato para o seu projeto</h2>
+      <h2 class="font-serif text-3xl sm:text-4xl font-bold text-charcoal">Onde o seu ofício se encaixa no diretório</h2>
       <p class="text-sm sm:text-base text-zinc-500 max-w-xl mx-auto">
-        A Guilda reúne quem planeja, estrutura, monta e viabiliza a realização cultural em todo o Brasil.
+        Cada profissional escolhe até 3 categorias de atuação para garantir buscas diretas e sem ruído para quem contrata.
       </p>
     </div>
 
@@ -147,56 +307,61 @@
     </div>
   </section>
 
-  <!-- Real Use Cases -->
-  <section class="p-8 sm:p-12 bg-white border border-stone-border rounded-xl space-y-8">
-    <div class="space-y-3">
-      <h2 class="font-serif text-3xl font-bold text-charcoal">Feito para a rotina prática de quem produz cultura</h2>
-      <p class="text-sm sm:text-base text-zinc-600 max-w-2xl leading-relaxed">
-        Cada espetáculo, livro, filme, exposição ou festival depende de profissionais técnicos comprometidos. Conheça as situações mais comuns resolvidas na plataforma:
-      </p>
+  <!-- Seção 8: Preços e Transparência -->
+  <%= render "pages/pricing" %>
+
+  <!-- Perguntas Frequentes (Objeções do Profissional) -->
+  <section class="max-w-4xl mx-auto space-y-8">
+    <div class="text-center space-y-2">
+      <h2 class="font-serif text-2xl sm:text-3xl font-bold text-charcoal">Perguntas frequentes de quem publica seu portfólio</h2>
+      <p class="text-sm text-zinc-600">Tudo o que você precisa saber antes de iniciar seus 30 dias gratuitos.</p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2 divide-y md:divide-y-0 md:divide-x divide-stone-border">
-      <div class="space-y-2 md:pr-4 py-4 md:py-0">
-        <h3 class="font-serif font-bold text-base text-charcoal">Circulação e equipes regionais</h3>
+    <div class="grid grid-cols-1 gap-4">
+      <div class="p-6 bg-white border border-stone-border rounded-xl space-y-2">
+        <h3 class="font-serif font-bold text-base sm:text-lg text-charcoal">
+          Meu trabalho é escrita de projetos, produção ou prestação de contas. Como mostro isso num portfólio?
+        </h3>
         <p class="text-xs sm:text-sm text-zinc-600 leading-relaxed">
-          Companhias, artistas ou produtoras com projetos aprovados para circular em outro estado contratam montadores, técnicos de som e luz, expógrafos e produtores locais de confiança, economizando diárias e logística.
+          Na Guilda, cada projeto destaca a sua participação técnica na entrega. Você pode usar o registro visual da exposição, espetáculo, catálogo ou ação cultural viabilizada e descrever na ficha do projeto exatamente como sua escrita, produção executiva ou gestão financeira tornou aquela obra real.
         </p>
       </div>
-      <div class="space-y-2 md:px-6 py-4 md:py-0">
-        <h3 class="font-serif font-bold text-base text-charcoal">Editais e prestação de contas</h3>
+
+      <div class="p-6 bg-white border border-stone-border rounded-xl space-y-2">
+        <h3 class="font-serif font-bold text-base sm:text-lg text-charcoal">
+          Já divulgo meu trabalho no Instagram. Qual a vantagem de estar na Guilda?
+        </h3>
         <p class="text-xs sm:text-sm text-zinc-600 leading-relaxed">
-          Artistas e coletivos contratam especialistas para elaboração de propostas em editais (Rouanet, ProAC, PNAB, LPG), organização contábil, prestação de contas rigorosa e emissão rápida de Cartas de Anuência.
+          O Instagram exige postagens frequentes e não permite que um artista ou produtora de outro estado encontre você filtrando por especialidade técnica e cidade. Na Guilda, seu dossiê fica organizado o ano inteiro para quem já está com projeto em andamento buscando quem contratar.
         </p>
       </div>
-      <div class="space-y-2 md:pl-6 py-4 md:py-0">
-        <h3 class="font-serif font-bold text-base text-charcoal">Serviços técnicos e conservação</h3>
+
+      <div class="p-6 bg-white border border-stone-border rounded-xl space-y-2">
+        <h3 class="font-serif font-bold text-base sm:text-lg text-charcoal">
+          A Guilda cobra comissão sobre os orçamentos ou serviços que eu fechar?
+        </h3>
         <p class="text-xs sm:text-sm text-zinc-600 leading-relaxed">
-          Contratação de diagramação e revisão editorial, finalização audiovisual, conservação e restauração de patrimônio, transporte especializado de acervo (Fine Art) e registro fotográfico de alta fidelidade.
+          Nenhuma comissão. A negociação e o pagamento acontecem diretamente entre você e quem contrata, pelo seu WhatsApp, telefone ou e-mail. Você conta com 30 dias gratuitos para testar todas as ferramentas e, após esse período, mantém seu perfil público ativo por R$ 30/mês ou R$ 300/ano.
         </p>
       </div>
     </div>
   </section>
 
-  <!-- Pricing Section (CRO / Transparency) -->
-  <%= render "pages/pricing" %>
-
-
-  <!-- CTA Banner (Dark Gallery Block) -->
+  <!-- Seção 9: CTA Banner (Dark Gallery Block) -->
   <section class="bg-charcoal text-white rounded-2xl p-8 sm:p-16 text-center space-y-6 border border-zinc-800">
     <div class="space-y-6">
       <h2 class="font-serif text-3xl sm:text-4xl font-bold tracking-tight max-w-xl mx-auto leading-tight">
-        Construa a cultura nacional com as próprias mãos
+        Valorize os projetos que você constrói com as próprias mãos
       </h2>
       <p class="text-zinc-400 text-sm sm:text-base max-w-lg mx-auto leading-relaxed">
-        Crie seu portfólio profissional hoje com 30 dias de teste gratuito e conecte-se com contratantes de todo o Brasil.
+        Comece seus 30 dias gratuitos, publique os projetos em que você trabalhou e coloque seu contato direto ao alcance de artistas, galerias, museus e produtoras de todo o país.
       </p>
       <div class="flex flex-col sm:flex-row justify-center items-center gap-3 pt-4">
         <%= link_to new_user_registration_path(plan: :trial), class: "w-full sm:w-auto min-h-11 inline-flex items-center justify-center bg-brand hover:bg-brand-hover text-white px-6 py-3 rounded-lg font-medium transition-colors text-base cursor-pointer shadow-xs focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-charcoal" do %>
-          Cadastrar meu portfólio (30 dias grátis)
+          Publicar meu portfólio (30 dias grátis)
         <% end %>
         <%= link_to profiles_path, class: "w-full sm:w-auto min-h-11 inline-flex items-center justify-center bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700 hover:border-zinc-600 px-6 py-3 rounded-lg font-medium transition-colors text-base cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-charcoal" do %>
-          Buscar profissionais
+          Explorar diretório de profissionais
         <% end %>
       </div>
     </div>
