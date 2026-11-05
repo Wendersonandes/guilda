@@ -13,14 +13,14 @@ class PagesControllerTest < ActionDispatch::IntegrationTest
     get root_url
     assert_response :success
     assert_select "title", text: /Guilda — Portfólio e Diretório para Profissionais da Cultura/
-    assert_select "h1", text: /Apresente os projetos que você construiu e seja encontrado por quem contrata na cultura/
+    assert_select "h1", text: /Mostre seu trabalho e seja encontrado por quem contrata na cultura/
   end
 
   test "guest user should get landing page at about path" do
     get about_url
     assert_response :success
     assert_select "title", text: /Guilda — Portfólio e Diretório para Profissionais da Cultura/
-    assert_select "h1", text: /Apresente os projetos que você construiu e seja encontrado por quem contrata na cultura/
+    assert_select "h1", text: /Mostre seu trabalho e seja encontrado por quem contrata na cultura/
     assert_select "h2", text: /Uma ferramenta de trabalho para expandir sua atuação na cultura/
     assert_select "h2", text: /O que artistas, galerias, museus e produtoras buscam aqui/
     assert_select "a[href=?]", new_user_registration_path(plan: :trial)
