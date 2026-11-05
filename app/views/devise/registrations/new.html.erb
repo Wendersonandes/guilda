@@ -9,32 +9,10 @@
      data-signup-intent-selected-plan-value="<%= active_plan&.id || 'annual' %>"
      data-signup-intent-intent-value="<%= current_intent %>">
 
-  <!-- Multi-Step Journey Indicator (Signup Skill: Continuity & Effort Clarity) -->
-  <nav aria-label="Etapas do cadastro" class="flex items-center justify-center gap-2 text-xs font-medium text-zinc-500">
-    <span class="inline-flex items-center gap-1.5 text-brand font-semibold">
-      <span class="w-5 h-5 rounded-full bg-brand text-white inline-flex items-center justify-center text-[11px] font-bold">1</span>
-      <span>Conta</span>
-    </span>
-    <span class="w-6 h-px bg-stone-300" aria-hidden="true"></span>
-    <span class="inline-flex items-center gap-1.5 text-zinc-400">
-      <span class="w-5 h-5 rounded-full bg-stone-100 text-zinc-400 border border-stone-200 inline-flex items-center justify-center text-[11px] font-bold">2</span>
-      <span>Perfil</span>
-    </span>
-    <span class="w-6 h-px bg-stone-300" aria-hidden="true"></span>
-    <span class="inline-flex items-center gap-1.5 text-zinc-400">
-      <span class="w-5 h-5 rounded-full bg-stone-100 text-zinc-400 border border-stone-200 inline-flex items-center justify-center text-[11px] font-bold">3</span>
-      <span data-signup-intent-target="submitNote" class="<%= 'hidden' if is_contractor %>">Ativação (30 dias grátis)</span>
-      <span class="<%= 'hidden' unless is_contractor %>">Buscar no Catálogo</span>
-    </span>
-  </nav>
-
-  <div class="text-center">
-    <div class="w-12 h-12 bg-stone-100 text-brand rounded-full flex items-center justify-center mx-auto mb-3 border border-stone-border shadow-xs">
-      <i data-lucide="user-plus" class="w-6 h-6" aria-hidden="true"></i>
-    </div>
+  <div class="text-center space-y-1">
     <h1 class="text-2xl font-serif font-bold text-charcoal tracking-tight"><%= t("auth.registrations.new.title") %></h1>
-    <p class="text-sm text-zinc-500 mt-1">
-      Junte-se à comunidade técnica de trabalhadores e prestadores de serviço da cultura.
+    <p class="text-sm text-zinc-500">
+      <%= t("auth.registrations.new.subtitle") %>
     </p>
   </div>
 
@@ -43,25 +21,25 @@
     <div class="space-y-1.5">
       <span class="block text-xs font-semibold uppercase tracking-wider text-zinc-500">Como você usará a Guilda?</span>
       <div class="grid grid-cols-2 p-1 bg-stone-100 rounded-lg gap-1 border border-stone-200" role="tablist" aria-label="Modalidade de conta">
-        <a href="<%= url_for(intent: :professional, plan: (active_plan&.id || :annual)) %>"
-           role="tab"
-           aria-selected="<%= !is_contractor %>"
-           data-signup-intent-target="tabProfessional"
-           data-action="click->signup-intent#selectProfessional"
-           class="flex items-center justify-center gap-1.5 py-2 px-3 rounded-md text-xs font-semibold transition-all cursor-pointer <%= !is_contractor ? 'bg-charcoal text-white shadow-xs' : 'text-zinc-600 hover:text-charcoal bg-transparent' %>">
+        <button type="button"
+                role="tab"
+                aria-selected="<%= !is_contractor %>"
+                data-signup-intent-target="tabProfessional"
+                data-action="click->signup-intent#selectProfessional"
+                class="flex items-center justify-center gap-1.5 py-2 px-3 rounded-md text-xs font-semibold transition-all cursor-pointer <%= !is_contractor ? 'bg-charcoal text-white shadow-xs' : 'text-zinc-600 hover:text-charcoal bg-transparent' %>">
           <i data-lucide="briefcase" class="w-3.5 h-3.5 shrink-0" aria-hidden="true"></i>
           <span><%= t("auth.registrations.new.tab_professional") %></span>
-        </a>
+        </button>
 
-        <a href="<%= url_for(intent: :contractor, plan: :none) %>"
-           role="tab"
-           aria-selected="<%= is_contractor %>"
-           data-signup-intent-target="tabContractor"
-           data-action="click->signup-intent#selectContractor"
-           class="flex items-center justify-center gap-1.5 py-2 px-3 rounded-md text-xs font-semibold transition-all cursor-pointer <%= is_contractor ? 'bg-charcoal text-white shadow-xs' : 'text-zinc-600 hover:text-charcoal bg-transparent' %>">
+        <button type="button"
+                role="tab"
+                aria-selected="<%= is_contractor %>"
+                data-signup-intent-target="tabContractor"
+                data-action="click->signup-intent#selectContractor"
+                class="flex items-center justify-center gap-1.5 py-2 px-3 rounded-md text-xs font-semibold transition-all cursor-pointer <%= is_contractor ? 'bg-charcoal text-white shadow-xs' : 'text-zinc-600 hover:text-charcoal bg-transparent' %>">
           <i data-lucide="search" class="w-3.5 h-3.5 shrink-0" aria-hidden="true"></i>
           <span><%= t("auth.registrations.new.tab_contractor") %></span>
-        </a>
+        </button>
       </div>
     </div>
 
@@ -81,15 +59,15 @@
       <ul class="text-xs text-zinc-600 space-y-1.5 leading-relaxed">
         <li class="flex items-start gap-1.5">
           <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" aria-hidden="true"></i>
-          <span>Destaque nas buscas de profissionais por cidade e até 3 especialidades.</span>
+          <span>Destaque nas buscas por profissionais.</span>
         </li>
         <li class="flex items-start gap-1.5">
           <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" aria-hidden="true"></i>
-          <span>Portfólio técnico com ficha técnica e galeria de imagens para comprovar seu ofício.</span>
+          <span>Apresente seu portfólio com galeria de imagens.</span>
         </li>
         <li class="flex items-start gap-1.5">
           <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" aria-hidden="true"></i>
-          <span>Botão de contato direto no WhatsApp e redes sem taxa de intermediação.</span>
+          <span>Contato direto: sem taxa de intermediação.</span>
         </li>
       </ul>
 
@@ -104,26 +82,34 @@
           <% current_plan_id = active_plan&.id || "annual" %>
 
           <button type="button"
-                  data-signup-intent-target="planOption"
+                  role="radio"
+                  aria-checked="<%= current_plan_id == 'annual' %>"
+                  data-signup-intent-target="planOption planAnnual"
                   data-plan-id="annual"
-                  data-action="click->signup-intent#choosePlan"
+                  data-action="click->signup-intent#selectAnnual"
                   class="relative flex flex-col p-2.5 rounded-lg border text-left transition-colors bg-white cursor-pointer <%= current_plan_id == 'annual' ? 'border-brand ring-1 ring-brand' : 'border-stone-200 hover:border-stone-300' %>">
             <div class="flex items-center justify-between">
               <span class="text-xs font-bold text-charcoal">Anual</span>
-              <i data-lucide="check" data-check-icon class="w-3.5 h-3.5 text-brand shrink-0 <%= 'hidden' unless current_plan_id == 'annual' %>" aria-hidden="true"></i>
+              <span data-check-icon data-signup-intent-target="checkAnnual" class="<%= 'hidden' unless current_plan_id == 'annual' %>">
+                <i data-lucide="check" class="w-3.5 h-3.5 text-brand shrink-0" aria-hidden="true"></i>
+              </span>
             </div>
             <span class="text-[11px] text-zinc-600 mt-0.5">R$ 300/ano <span class="text-brand font-medium">(R$ 25/mês)</span></span>
             <span class="text-[10px] text-emerald-700 font-medium mt-1">Economia de R$ 60</span>
           </button>
 
           <button type="button"
-                  data-signup-intent-target="planOption"
+                  role="radio"
+                  aria-checked="<%= current_plan_id == 'monthly' %>"
+                  data-signup-intent-target="planOption planMonthly"
                   data-plan-id="monthly"
-                  data-action="click->signup-intent#choosePlan"
+                  data-action="click->signup-intent#selectMonthly"
                   class="relative flex flex-col p-2.5 rounded-lg border text-left transition-colors bg-white cursor-pointer <%= current_plan_id == 'monthly' ? 'border-brand ring-1 ring-brand' : 'border-stone-200 hover:border-stone-300' %>">
             <div class="flex items-center justify-between">
               <span class="text-xs font-bold text-charcoal">Mensal</span>
-              <i data-lucide="check" data-check-icon class="w-3.5 h-3.5 text-brand shrink-0 <%= 'hidden' unless current_plan_id == 'monthly' %>" aria-hidden="true"></i>
+              <span data-check-icon data-signup-intent-target="checkMonthly" class="<%= 'hidden' unless current_plan_id == 'monthly' %>">
+                <i data-lucide="check" class="w-3.5 h-3.5 text-brand shrink-0" aria-hidden="true"></i>
+              </span>
             </div>
             <span class="text-[11px] text-zinc-600 mt-0.5">R$ 30/mês</span>
             <span class="text-[10px] text-zinc-500 mt-1">Sem fidelidade</span>
@@ -162,65 +148,44 @@
     </div>
 
     <!-- 1-Click Fast Track: Google OAuth -->
-    <%= render "devise/shared/omniauth_buttons", text: "Cadastrar com o Google", plan: (is_contractor ? "none" : (active_plan&.id || "annual")) %>
+    <%= render "devise/shared/omniauth_buttons",
+               text: "Cadastrar com o Google",
+               plan: (is_contractor ? "none" : (active_plan&.id || "annual")),
+               intent: current_intent %>
 
-    <!-- Email & Password Form -->
-    <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
-      <%= render "devise/shared/error_messages", resource: resource %>
-      <%= hidden_field_tag :plan, (is_contractor ? "none" : (active_plan&.id || "annual")), data: { signup_intent_target: "planInput" } %>
+    <p data-signup-intent-target="submitNote" class="text-[11px] text-center text-zinc-500 <%= 'hidden' if is_contractor %>">
+      Após configurar seu perfil, você ativará seus 30 dias gratuitos no ambiente seguro do Stripe. Cancele quando quiser antes do fim do período sem nenhuma cobrança.
+    </p>
 
-      <div class="space-y-4">
-        <div class="space-y-1">
-          <label for="user_profile_name" data-signup-intent-target="nameLabel" class="block text-sm font-medium text-zinc-700">
-            <%= is_contractor ? t("auth.registrations.new.display_name_contractor") : t("auth.registrations.new.display_name") %>
-          </label>
-          <%= f.text_field :profile_name,
-                autofocus: true,
-                autocomplete: "name",
-                placeholder: (is_contractor ? t("auth.registrations.new.display_name_placeholder_contractor") : t("auth.registrations.new.display_name_placeholder")),
-                data: { signup_intent_target: "nameInput" },
-                class: "w-full min-h-11 rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal transition-shadow" %>
+    <% if Flipper.enabled?(:password_authentication) %>
+      <!-- Development & Test Fallback Form -->
+      <details class="pt-2 text-xs border-t border-stone-100">
+        <summary class="cursor-pointer text-zinc-400 hover:text-zinc-600 py-1 select-none text-center">
+          Ou cadastrar com e-mail e senha (ambiente local/testes)
+        </summary>
+        <div class="pt-3">
+          <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+            <%= render "devise/shared/error_messages", resource: resource %>
+            <%= hidden_field_tag :plan, (is_contractor ? "none" : (active_plan&.id || "annual")), data: { signup_intent_target: "planInput" } %>
+
+            <div class="space-y-3">
+              <div>
+                <%= f.label :profile_name, "Nome do Perfil", class: "block font-medium text-zinc-700 mb-1" %>
+                <%= f.text_field :profile_name, placeholder: "Seu nome ou nome artístico", class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-xs bg-white text-charcoal" %>
+              </div>
+              <div>
+                <%= f.label :email, "E-mail", class: "block font-medium text-zinc-700 mb-1" %>
+                <%= f.email_field :email, placeholder: "seu@email.com", class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-xs bg-white text-charcoal" %>
+              </div>
+              <div>
+                <%= f.label :password, "Senha", class: "block font-medium text-zinc-700 mb-1" %>
+                <%= f.password_field :password, placeholder: "••••••••", class: "w-full rounded-lg border border-stone-300 px-3 py-2 text-xs bg-white text-charcoal" %>
+              </div>
+              <%= f.submit "Criar conta com senha", class: "w-full bg-charcoal hover:bg-zinc-800 text-white rounded-lg py-2 text-xs font-medium cursor-pointer shadow-xs" %>
+            </div>
+          <% end %>
         </div>
-
-        <div class="space-y-1">
-          <%= f.label :email, class: "block text-sm font-medium text-zinc-700" %>
-          <%= f.email_field :email,
-                autocomplete: "email",
-                placeholder: t("auth.registrations.new.email_placeholder"),
-                class: "w-full min-h-11 rounded-lg border border-stone-300 px-3 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal transition-shadow" %>
-        </div>
-
-        <div class="space-y-1" data-controller="password-visibility">
-          <div class="flex items-center justify-between">
-            <%= f.label :password, class: "block text-sm font-medium text-zinc-700" %>
-            <% if @minimum_password_length %>
-              <span class="text-[11px] text-zinc-400"><%= t("auth.registrations.new.password_minimum", count: @minimum_password_length) %></span>
-            <% end %>
-          </div>
-          <div class="relative">
-            <%= f.password_field :password,
-                  autocomplete: "new-password",
-                  placeholder: "••••••••",
-                  data: { password_visibility_target: "input" },
-                  class: "w-full min-h-11 rounded-lg border border-stone-300 pl-3 pr-10 py-2 text-sm bg-white text-charcoal placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-charcoal focus:border-charcoal transition-shadow" %>
-            <button type="button"
-                    data-action="click->password-visibility#toggle"
-                    aria-label="Ver senha"
-                    title="Ver senha"
-                    class="absolute inset-y-0 right-0 pr-3 flex items-center text-zinc-400 hover:text-zinc-600 cursor-pointer transition-colors bg-transparent border-0">
-              <i data-lucide="eye" data-password-visibility-target="icon" class="w-4 h-4" aria-hidden="true"></i>
-            </button>
-          </div>
-        </div>
-
-        <%= f.submit (is_contractor ? t("auth.registrations.new.submit_contractor") : t("auth.registrations.new.submit_with_plan")),
-              data: { signup_intent_target: "submitButton" },
-              class: "w-full min-h-11 bg-charcoal hover:bg-zinc-800 text-white rounded-lg px-4 py-2.5 text-sm font-medium transition-colors cursor-pointer mt-2" %>
-
-        <p data-signup-intent-target="submitNote" class="text-[11px] text-center text-zinc-500 <%= 'hidden' if is_contractor %>">
-          Após configurar seu perfil, você ativará seus 30 dias gratuitos no ambiente seguro do Stripe. Cancele quando quiser antes do fim do período sem nenhuma cobrança.
-        </p>
-      </div>
+      </details>
     <% end %>
 
     <%= render "devise/shared/links" %>

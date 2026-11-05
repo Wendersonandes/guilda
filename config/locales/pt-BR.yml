@@ -620,8 +620,8 @@ pt-BR:
         submit: "Entrar"
     registrations:
       new:
-        title: "Crie sua conta"
-        subtitle: "Comece a usar a Guilda hoje"
+        title: "Crie sua conta na Guilda"
+        subtitle: "Um catálogo de trabalhadores e prestadores de serviço da cultura."
         tab_professional: "Sou Profissional"
         tab_contractor: "Sou Contratante"
         role_professional_desc: "Quero divulgar meu trabalho"

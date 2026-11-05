@@ -54,4 +54,34 @@ class Users::OmniauthCallbacksControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to root_path
     assert_not_nil flash[:alert]
   end
+
+  test "stores selected plan and signup intent in session from omniauth params" do
+    OmniAuth.config.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new(
+      provider: "google_oauth2",
+      uid: "112233",
+      info: {
+        email: "prof_plan@example.com",
+        name: "Professional Plan User"
+      }
+    )
+
+    post user_google_oauth2_omniauth_callback_path, params: { plan: "annual", intent: "professional" }
+    assert_equal "annual", session[:selected_plan]
+    assert_equal "professional", session[:signup_intent]
+  end
+
+  test "clears selected plan when contractor intent is passed" do
+    OmniAuth.config.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new(
+      provider: "google_oauth2",
+      uid: "445566",
+      info: {
+        email: "contractor_plan@example.com",
+        name: "Contractor Plan User"
+      }
+    )
+
+    post user_google_oauth2_omniauth_callback_path, params: { plan: "none", intent: "contractor" }
+    assert_nil session[:selected_plan]
+    assert_equal "contractor", session[:signup_intent]
+  end
 end

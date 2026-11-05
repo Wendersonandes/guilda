@@ -1,11 +1,17 @@
 class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   def google_oauth2
-    if (plan_param = request.env.dig("omniauth.params", "plan")).present?
+    plan_param = request.env.dig("omniauth.params", "plan").presence || params[:plan].presence
+    if plan_param.present?
       if plan_param == "none"
         session.delete(:selected_plan)
       elsif (plan = Plan.resolve(plan_param))
         session[:selected_plan] = plan.id
       end
+    end
+
+    intent_param = request.env.dig("omniauth.params", "intent").presence || params[:intent].presence
+    if intent_param.present?
+      session[:signup_intent] = intent_param
     end
 
     @user = User.from_omniauth(request.env["omniauth.auth"])

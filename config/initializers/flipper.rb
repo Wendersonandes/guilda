@@ -24,7 +24,8 @@ module FeatureFlags
     follow_objects: "Follow (bell) on activity objects and profiles",
     notifications: "Notification center and badge",
     suggestions: "Suggested profiles in the right sidebar",
-    projects: "Profile project portfolio"
+    projects: "Profile project portfolio",
+    password_authentication: "Email and password authentication (development and test environments)"
   }.freeze
 
   # @return [Array<Symbol>] the names of every registered feature flag.
@@ -57,6 +58,7 @@ Rails.application.config.after_initialize do
   # missing right before we create it.
   Flipper::Adapters::Strict.with_sync_mode do
     FeatureFlags.names.each { |name| Flipper.add(name) }
+    Flipper.enable(:password_authentication) if Rails.env.development?
   end
 rescue ActiveRecord::ActiveRecordError
   nil

@@ -9,9 +9,14 @@ export default class extends Controller {
     "panelContractor",
     "planInput",
     "planOption",
+    "planAnnual",
+    "planMonthly",
+    "checkAnnual",
+    "checkMonthly",
     "submitButton",
     "submitNote",
     "googlePlanParam",
+    "googleIntentParam",
     "nameLabel",
     "nameInput"
   ]
@@ -46,14 +51,29 @@ export default class extends Controller {
     this.setIntent("contractor")
   }
 
+  selectAnnual(event) {
+    if (event) event.preventDefault()
+    this.selectPlan("annual")
+  }
+
+  selectMonthly(event) {
+    if (event) event.preventDefault()
+    this.selectPlan("monthly")
+  }
+
   choosePlan(event) {
     if (event) event.preventDefault()
-    const planId = event.currentTarget.dataset.planId
+    const target = event.currentTarget.closest("[data-plan-id]") || event.target?.closest("[data-plan-id]") || event.currentTarget
+    const planId = target?.getAttribute("data-plan-id") || target?.dataset?.planId
     if (planId) {
-      this.selectedPlanValue = planId
-      this.updatePlanOptionsUI()
-      this.updateFormFields()
+      this.selectPlan(planId)
     }
+  }
+
+  selectPlan(planId) {
+    this.selectedPlanValue = planId
+    this.updatePlanOptionsUI()
+    this.updateFormFields()
   }
 
   setIntent(intent) {
@@ -114,22 +134,44 @@ export default class extends Controller {
   }
 
   updatePlanOptionsUI() {
-    if (!this.hasPlanOptionTargets) return
+    const isAnnual = this.selectedPlanValue === "annual"
 
-    this.planOptionTargets.forEach(card => {
-      const isSelected = card.dataset.planId === this.selectedPlanValue
-      const checkIcon = card.querySelector("[data-check-icon]")
+    if (this.hasPlanAnnualTarget) {
+      this.setCardSelected(this.planAnnualTarget, isAnnual)
+    }
+    if (this.hasPlanMonthlyTarget) {
+      this.setCardSelected(this.planMonthlyTarget, !isAnnual)
+    }
 
-      if (isSelected) {
-        card.classList.add("border-brand", "ring-1", "ring-brand")
-        card.classList.remove("border-stone-200")
-        if (checkIcon) checkIcon.classList.remove("hidden")
-      } else {
-        card.classList.remove("border-brand", "ring-1", "ring-brand")
-        card.classList.add("border-stone-200")
-        if (checkIcon) checkIcon.classList.add("hidden")
-      }
-    })
+    if (this.hasCheckAnnualTarget) {
+      this.checkAnnualTarget.classList.toggle("hidden", !isAnnual)
+    }
+    if (this.hasCheckMonthlyTarget) {
+      this.checkMonthlyTarget.classList.toggle("hidden", isAnnual)
+    }
+
+    if (this.hasPlanOptionTargets) {
+      this.planOptionTargets.forEach(card => {
+        const cardPlanId = card.getAttribute("data-plan-id") || card.dataset.planId
+        const isSelected = cardPlanId === this.selectedPlanValue
+        this.setCardSelected(card, isSelected)
+        const checkIcon = card.querySelector("[data-check-icon]")
+        if (checkIcon) checkIcon.classList.toggle("hidden", !isSelected)
+      })
+    }
+  }
+
+  setCardSelected(card, isSelected) {
+    if (!card) return
+    if (isSelected) {
+      card.classList.remove("border-stone-200", "hover:border-stone-300")
+      card.classList.add("border-brand", "ring-1", "ring-brand")
+      card.setAttribute("aria-checked", "true")
+    } else {
+      card.classList.remove("border-brand", "ring-1", "ring-brand")
+      card.classList.add("border-stone-200", "hover:border-stone-300")
+      card.setAttribute("aria-checked", "false")
+    }
   }
 
   updateFormFields() {
@@ -142,6 +184,10 @@ export default class extends Controller {
 
     if (this.hasGooglePlanParamTarget) {
       this.googlePlanParamTarget.value = effectivePlan
+    }
+
+    if (this.hasGoogleIntentParamTarget) {
+      this.googleIntentParamTarget.value = this.intentValue
     }
   }
 }
