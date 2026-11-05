@@ -33,8 +33,8 @@ class PlanTest < ActiveSupport::TestCase
     assert_nil Plan.find(:invalid)
   end
 
-  test "Plan.resolve maps trial to monthly and resolves annual and monthly" do
-    assert_equal "monthly", Plan.resolve(:trial).id
+  test "Plan.resolve maps trial to annual and resolves annual and monthly" do
+    assert_equal "annual", Plan.resolve(:trial).id
     assert_equal "monthly", Plan.resolve(:monthly).id
     assert_equal "annual", Plan.resolve(:annual).id
     assert_nil Plan.resolve(:invalid)

@@ -16,6 +16,22 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
     assert_select "button", text: /Cadastrar com o Google/
   end
 
+  test "plan=trial selects annual plan by default" do
+    get new_user_registration_path(plan: :trial)
+    assert_response :success
+    assert_select "button[data-plan-id='annual'][aria-checked='true']"
+    assert_select "button[data-plan-id='monthly'][aria-checked='false']"
+    assert_equal "annual", session[:selected_plan]
+  end
+
+  test "plan=monthly selects monthly plan" do
+    get new_user_registration_path(plan: :monthly)
+    assert_response :success
+    assert_select "button[data-plan-id='annual'][aria-checked='false']"
+    assert_select "button[data-plan-id='monthly'][aria-checked='true']"
+    assert_equal "monthly", session[:selected_plan]
+  end
+
   test "blocks direct email/password registration when password_authentication is disabled" do
     Flipper.disable(:password_authentication)
 

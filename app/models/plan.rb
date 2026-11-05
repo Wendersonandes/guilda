@@ -35,12 +35,12 @@ class Plan
     new(config)
   end
 
-  # Resolves a plan parameter from signup/pricing links, mapping "trial" to the monthly plan
-  # (which includes the 30-day free trial without long-term commitment).
+  # Resolves a plan parameter from signup/pricing links, mapping "trial" to the annual plan
+  # (which includes the 30-day free trial and is the recommended default plan).
   def self.resolve(plan_id)
     return nil if plan_id.blank?
 
-    normalized = plan_id.to_s == "trial" ? "monthly" : plan_id.to_s
+    normalized = plan_id.to_s == "trial" ? "annual" : plan_id.to_s
     find(normalized)
   end
 

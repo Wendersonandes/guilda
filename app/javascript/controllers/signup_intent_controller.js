@@ -36,6 +36,8 @@ export default class extends Controller {
     } else {
       if (planParam === "monthly" || planParam === "annual") {
         this.selectedPlanValue = planParam
+      } else if (planParam === "trial") {
+        this.selectedPlanValue = "annual"
       }
       this.setIntent("professional")
     }
