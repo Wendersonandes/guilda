@@ -131,35 +131,11 @@
               <% end %>
 
               <div class="flex items-center gap-3 ml-auto">
-                <% if step == Profile::FORM_STEPS.keys.last && active_plan %>
-                  <%= f.button "Começar na conta gratuita",
-                               type: "submit",
-                               name: "wizard_action",
-                               value: "finish_free",
-                               data: { turbo: false },
-                               class: "text-xs text-zinc-500 hover:text-charcoal transition-colors bg-transparent border-0 cursor-pointer p-0 underline" %>
-                <% end %>
-
                 <% final_label = active_plan ? "Finalizar e ir para o checkout" : "Finalizar cadastro" %>
                 <%= f.submit step == Profile::FORM_STEPS.keys.last ? final_label : "Continuar",
                              data: step == Profile::FORM_STEPS.keys.last ? { turbo: false } : {},
                              class: "min-h-11 sm:min-h-0 inline-flex items-center justify-center bg-charcoal hover:bg-zinc-800 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors cursor-pointer focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-charcoal focus-visible:ring-offset-1 shadow-xs" %>
               </div>
-            </div>
-          <% end %>
-
-          <% if step == :occupation %>
-            <!-- Contractor Quick Exit (Signup CRO: Avoid trapping clients in technical categories) -->
-            <div class="pt-3 text-center border-t border-stone-100">
-              <%= button_to wizard_path,
-                            method: :put,
-                            params: { wizard_action: "skip_occupations" },
-                            form: { data: { turbo_frame: "_top" } },
-                            data: { turbo_frame: "_top" },
-                            form_class: "inline",
-                            class: "text-xs text-zinc-500 hover:text-brand transition-colors bg-transparent border-0 cursor-pointer p-0 underline font-medium" do %>
-                Não presto serviços — quero apenas buscar e contratar profissionais →
-              <% end %>
             </div>
           <% end %>
         </div>

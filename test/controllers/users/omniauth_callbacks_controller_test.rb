@@ -67,10 +67,13 @@ class Users::OmniauthCallbacksControllerTest < ActionDispatch::IntegrationTest
 
     post user_google_oauth2_omniauth_callback_path, params: { plan: "annual", intent: "professional" }
     assert_equal "annual", session[:selected_plan]
-    assert_equal "professional", session[:signup_intent]
+    assert_redirected_to profile_step_path(:location)
+
+    new_user = User.find_by(email: "prof_plan@example.com")
+    assert_not new_user.profiles.last.wizard_complete?
   end
 
-  test "clears selected plan when contractor intent is passed" do
+  test "contractor signup bypasses wizard, marks wizard complete and redirects to profiles" do
     OmniAuth.config.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new(
       provider: "google_oauth2",
       uid: "445566",
@@ -82,6 +85,11 @@ class Users::OmniauthCallbacksControllerTest < ActionDispatch::IntegrationTest
 
     post user_google_oauth2_omniauth_callback_path, params: { plan: "none", intent: "contractor" }
     assert_nil session[:selected_plan]
-    assert_equal "contractor", session[:signup_intent]
+    assert_redirected_to profiles_path
+    assert_equal "Conta criada com sucesso! Explore o catálogo de profissionais.", flash[:notice]
+    assert_equal true, session[:open_onboarding]
+
+    new_user = User.find_by(email: "contractor_plan@example.com")
+    assert new_user.profiles.last.wizard_complete?
   end
 end

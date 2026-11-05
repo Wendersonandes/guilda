@@ -3,6 +3,7 @@
 <% profile = current_actor.actorable %>
 <% return unless profile.wizard_complete? && !profile.onboarding_completed? %>
 <%
+  auto_expand = session.delete(:open_onboarding) || (params[:onboarding] == "open")
   default_role = profile.contractor? ? "contractor" : "professional"
   prof_checklist = profile.onboarding_checklist_for(:professional)
   cont_checklist = profile.onboarding_checklist_for(:contractor)
@@ -17,7 +18,7 @@
 
 <div data-controller="onboarding-widget"
      data-onboarding-widget-active-tab-value="<%= default_role %>"
-     data-onboarding-widget-default-collapsed-value="true"
+     data-onboarding-widget-default-collapsed-value="<%= auto_expand ? 'false' : 'true' %>"
      data-onboarding-widget-force-collapsed-value="<%= form_context %>"
      data-onboarding-widget-actor-id-value="<%= current_actor.id %>"
      data-onboarding-widget-cool-down-days-value="3">

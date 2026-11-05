@@ -131,8 +131,8 @@ class ProfileStepsControllerTest < ActionDispatch::IntegrationTest
 
     assert_select "span[data-occupations-target='counter']"
     assert_select "input[type='hidden'][name='profile[occupation_list][]']"
-    assert_select "div[role='group'][aria-labelledby='occupations_section_heading']"
-    assert_select "form[data-turbo-frame='_top'] button[data-turbo-frame='_top']", text: /Não presto serviços — quero apenas buscar e contratar profissionais/
+    assert_select "button[data-turbo-frame='_top']", text: /Não presto serviços/, count: 0
+    assert_select "button", text: /Começar na conta gratuita/, count: 0
   end
 
   test "persists occupation selection when clicking back button" do

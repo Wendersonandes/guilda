@@ -8,6 +8,7 @@ export default class extends Controller {
     "panelProfessional",
     "panelContractor",
     "planInput",
+    "intentInput",
     "planOption",
     "planAnnual",
     "planMonthly",
@@ -182,6 +183,10 @@ export default class extends Controller {
 
     if (this.hasPlanInputTarget) {
       this.planInputTarget.value = effectivePlan
+    }
+
+    if (this.hasIntentInputTarget) {
+      this.intentInputTarget.value = this.intentValue
     }
 
     if (this.hasGooglePlanParamTarget) {

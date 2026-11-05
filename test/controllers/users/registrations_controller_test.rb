@@ -50,20 +50,46 @@ class Users::RegistrationsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "O cadastro com e-mail e senha está temporariamente indisponível. Utilize o cadastro rápido com o Google.", flash[:alert]
   end
 
-  test "allows email/password registration when password_authentication is enabled" do
+  test "allows email/password registration as professional and redirects to wizard" do
     Flipper.enable(:password_authentication)
 
     assert_difference "User.count", 1 do
       post user_registration_path, params: {
+        plan: "annual",
+        intent: "professional",
         user: {
-          profile_name: "Test User",
-          email: "test_enabled@example.com",
+          profile_name: "Test Professional",
+          email: "test_prof@example.com",
           password: "password123",
           password_confirmation: "password123"
         }
       }
     end
 
-    assert_response :redirect
+    assert_redirected_to profile_step_path(:location)
+    user = User.find_by(email: "test_prof@example.com")
+    assert_not user.profiles.last.wizard_complete?
+  end
+
+  test "allows email/password registration as contractor and redirects directly to profiles" do
+    Flipper.enable(:password_authentication)
+
+    assert_difference "User.count", 1 do
+      post user_registration_path, params: {
+        plan: "none",
+        intent: "contractor",
+        user: {
+          profile_name: "Test Contractor",
+          email: "test_cont@example.com",
+          password: "password123",
+          password_confirmation: "password123"
+        }
+      }
+    end
+
+    assert_redirected_to profiles_path
+    assert_equal true, session[:open_onboarding]
+    user = User.find_by(email: "test_cont@example.com")
+    assert user.profiles.last.wizard_complete?
   end
 end

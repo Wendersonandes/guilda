@@ -41,10 +41,25 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  # Redirects incomplete profiles to their current wizard step upon signing in.
+  def after_sign_in_path_for(resource)
+    stored_location = stored_location_for(resource)
+    return stored_location if stored_location.present?
+
+    profile = resource.respond_to?(:profiles) ? resource.profiles.last : nil
+    if profile && !profile.wizard_complete?
+      profile_step_path(profile.current_step)
+    else
+      super
+    end
+  end
+
   # Persists the selected subscription plan in the user's session during registration
   # so that after completing the onboarding wizard, the user is sent to the Stripe Checkout.
   def store_selected_plan
     return unless controller_name == "registrations"
+
+    session[:signup_intent] = params[:intent] if params[:intent].present?
 
     if params[:intent] == "contractor"
       session.delete(:selected_plan)

@@ -42,9 +42,12 @@ export default class extends Controller {
     }
     this.applyTab(this.activeTabValue)
 
-    // 4. Check status: start closed by default; only expand if user previously explicitly opened it
+    // 4. Check status: if defaultCollapsedValue is false (e.g. initial onboarding presentation), expand.
+    // Otherwise, respect saved preference in localStorage, or start collapsed.
     const savedCollapsed = this.readStorage(this.collapsedStorageKey)
-    const shouldExpand = !this.forceCollapsedValue && savedCollapsed === "false"
+    const shouldExpand = !this.forceCollapsedValue && (
+      !this.defaultCollapsedValue || savedCollapsed === "false"
+    )
 
     this.applyCollapse(!shouldExpand)
   }
