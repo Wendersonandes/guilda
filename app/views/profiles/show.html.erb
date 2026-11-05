@@ -181,25 +181,165 @@
           </div>
         <% else %>
           <!-- Empty State for Projects -->
-          <div class="bg-white rounded-lg border border-stone-border p-8 sm:p-12 text-center space-y-3">
-            <div class="w-12 h-12 bg-stone-50 rounded-full flex items-center justify-center mx-auto border border-stone-200/60 text-zinc-500" aria-hidden="true">
-              <i data-lucide="briefcase" class="w-5 h-5" aria-hidden="true"></i>
-            </div>
-            <h3 class="text-base font-serif font-bold text-charcoal">
-              <%= own_profile ? t(".no_projects_owner_title") : t(".no_projects_visitor_title") %>
-            </h3>
-            <p class="text-sm text-muted max-w-sm mx-auto leading-relaxed">
-              <%= own_profile ? t(".no_projects_owner_subtitle") : t(".no_projects_visitor_subtitle") %>
-            </p>
-            <% if own_profile %>
-              <div class="pt-2">
-                <%= link_to new_my_project_path, class: "min-h-11 sm:min-h-0 inline-flex items-center gap-1.5 text-xs bg-charcoal text-white hover:bg-zinc-800 font-medium px-4 py-2.5 sm:py-2 rounded-lg transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-charcoal focus-visible:ring-offset-2" do %>
-                  <i data-lucide="plus" class="w-3.5 h-3.5" aria-hidden="true"></i>
-                  <span><%= t(".no_projects_owner_cta") %></span>
-                <% end %>
+          <% if own_profile && current_user && !current_user.subscribed? %>
+            <div data-controller="pricing-modal"
+                 data-action="keydown.esc@window->pricing-modal#closeWithKeyboard"
+                 class="space-y-4">
+              <div class="bg-white rounded-lg border border-stone-border p-8 sm:p-12 text-center space-y-4" data-testid="portfolio-upgrade-callout">
+                <div class="w-12 h-12 bg-brand/10 rounded-full flex items-center justify-center mx-auto border border-brand/20 text-brand" aria-hidden="true">
+                  <i data-lucide="sparkles" class="w-5 h-5"></i>
+                </div>
+                <div class="space-y-2 max-w-xl mx-auto">
+                  <h3 class="text-base sm:text-lg font-serif font-bold text-charcoal leading-snug">
+                    <%= t(".no_projects_owner_title") %>
+                  </h3>
+                  <p class="text-xs sm:text-sm text-muted leading-relaxed">
+                    <%= t(".no_projects_owner_subtitle") %>
+                  </p>
+                </div>
+                <div class="pt-2 flex justify-center">
+                  <button type="button"
+                          data-action="click->pricing-modal#open"
+                          data-testid="open-pricing-modal-button"
+                          class="min-h-11 sm:min-h-0 inline-flex items-center gap-1.5 text-xs bg-brand hover:bg-brand-hover text-white font-medium px-4 py-2.5 sm:py-2 rounded-lg transition-colors cursor-pointer shadow-xs focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2">
+                    <i data-lucide="sparkles" class="w-3.5 h-3.5" aria-hidden="true"></i>
+                    <span><%= t(".no_projects_upgrade_cta") %></span>
+                  </button>
+                </div>
               </div>
-            <% end %>
-          </div>
+
+              <!-- Pricing Modal in upgrade-plans-modal style -->
+              <div data-pricing-modal-target="modal"
+                   data-testid="upgrade-plans-modal"
+                   role="dialog"
+                   aria-modal="true"
+                   aria-labelledby="upgrade-modal-title"
+                   class="hidden fixed inset-0 z-[60] flex items-center justify-center p-4 bg-charcoal/60 backdrop-blur-xs">
+                <div class="bg-white rounded-xl border border-stone-border shadow-md max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-7 space-y-5 text-left">
+                  <!-- Modal Header -->
+                  <div class="flex items-start justify-between gap-4">
+                    <div class="space-y-1.5">
+                      <h2 id="upgrade-modal-title" class="font-serif text-xl sm:text-2xl font-bold text-charcoal">
+                        <%= t("my.projects.wizard.upgrade_modal_title") %>
+                      </h2>
+                      <p class="text-xs sm:text-sm text-zinc-600 leading-relaxed">
+                        <%= t("my.projects.wizard.upgrade_modal_subtitle") %>
+                      </p>
+                    </div>
+                    <button type="button"
+                            data-action="click->pricing-modal#close"
+                            aria-label="<%= t('common.close', default: 'Fechar') %>"
+                            class="w-11 h-11 -mr-2 -mt-2 rounded-lg flex items-center justify-center text-zinc-500 hover:text-charcoal hover:bg-stone-100 transition-colors cursor-pointer flex-shrink-0 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-charcoal">
+                      <i data-lucide="x" class="w-5 h-5" aria-hidden="true"></i>
+                    </button>
+                  </div>
+
+                  <!-- Plans Grid -->
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-stretch pt-1">
+                    <!-- Annual Plan (Recommended) -->
+                    <div class="p-5 bg-white border border-brand rounded-xl flex flex-col justify-between space-y-5 relative shadow-xs">
+                      <div class="absolute -top-2.5 left-4 bg-brand text-white text-[10px] uppercase tracking-wider px-2.5 py-0.5 rounded-full font-semibold">
+                        Melhor Custo-Benefício
+                      </div>
+                      <div class="space-y-3">
+                        <div>
+                          <div class="text-[11px] uppercase tracking-wider text-brand font-semibold">Assinatura Anual</div>
+                          <h3 class="font-serif text-lg font-bold text-charcoal">Profissional Anual</h3>
+                        </div>
+                        <div class="space-y-0.5">
+                          <div class="flex items-baseline gap-1">
+                            <span class="font-serif text-3xl font-bold text-charcoal">R$ 300</span>
+                            <span class="text-xs text-zinc-500">/ano</span>
+                          </div>
+                          <span class="text-[11px] text-brand font-medium block">Equivalente a R$ 25/mês (economize 2 meses)</span>
+                        </div>
+                        <ul class="space-y-1.5 pt-1 text-xs text-zinc-700">
+                          <li class="flex items-center gap-2">
+                            <i data-lucide="check" class="w-3.5 h-3.5 text-brand shrink-0" aria-hidden="true"></i>
+                            <span>Portfólio público permanente</span>
+                          </li>
+                          <li class="flex items-center gap-2">
+                            <i data-lucide="check" class="w-3.5 h-3.5 text-brand shrink-0" aria-hidden="true"></i>
+                            <span>Destaque contínuo nas buscas regionais</span>
+                          </li>
+                          <li class="flex items-center gap-2">
+                            <i data-lucide="check" class="w-3.5 h-3.5 text-brand shrink-0" aria-hidden="true"></i>
+                            <span>Link profissional limpo para propostas</span>
+                          </li>
+                        </ul>
+                      </div>
+
+                      <%= button_to checkout_path(plan: :annual), method: :post, data: { turbo: false, testid: "modal-subscribe-annual" }, class: "w-full min-h-11 inline-flex items-center justify-center gap-1.5 text-center bg-brand hover:bg-brand-hover text-white py-2.5 px-4 rounded-lg font-medium text-xs sm:text-sm transition-colors shadow-xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand focus:ring-offset-2" do %>
+                        <span>Testar Plano Anual por 30 dias</span>
+                        <i data-lucide="arrow-right" class="w-3.5 h-3.5" aria-hidden="true"></i>
+                      <% end %>
+                    </div>
+
+                    <!-- Monthly Plan -->
+                    <div class="p-5 bg-white border border-stone-border rounded-xl flex flex-col justify-between space-y-5">
+                      <div class="space-y-3">
+                        <div>
+                          <div class="text-[11px] uppercase tracking-wider text-zinc-500 font-semibold">Assinatura Mensal</div>
+                          <h3 class="font-serif text-lg font-bold text-charcoal">Profissional Mensal</h3>
+                        </div>
+                        <div class="space-y-0.5">
+                          <div class="flex items-baseline gap-1">
+                            <span class="font-serif text-3xl font-bold text-charcoal">R$ 30</span>
+                            <span class="text-xs text-zinc-500">/mês</span>
+                          </div>
+                          <span class="text-[11px] text-zinc-500 block">Cobrança mês a mês sem fidelidade</span>
+                        </div>
+                        <ul class="space-y-1.5 pt-1 text-xs text-zinc-700">
+                          <li class="flex items-center gap-2">
+                            <i data-lucide="check" class="w-3.5 h-3.5 text-zinc-500 shrink-0" aria-hidden="true"></i>
+                            <span>Todas as ferramentas de portfólio</span>
+                          </li>
+                          <li class="flex items-center gap-2">
+                            <i data-lucide="check" class="w-3.5 h-3.5 text-zinc-500 shrink-0" aria-hidden="true"></i>
+                            <span>Presença no diretório de busca</span>
+                          </li>
+                          <li class="flex items-center gap-2">
+                            <i data-lucide="check" class="w-3.5 h-3.5 text-zinc-500 shrink-0" aria-hidden="true"></i>
+                            <span>Canais de contato direto disponíveis</span>
+                          </li>
+                        </ul>
+                      </div>
+
+                      <%= button_to checkout_path(plan: :monthly), method: :post, data: { turbo: false, testid: "modal-subscribe-monthly" }, class: "w-full min-h-11 inline-flex items-center justify-center gap-1.5 text-center bg-charcoal hover:bg-zinc-800 text-white py-2.5 px-4 rounded-lg font-medium text-xs sm:text-sm transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-charcoal focus:ring-offset-2" do %>
+                        <span>Testar Plano Mensal por 30 dias</span>
+                        <i data-lucide="arrow-right" class="w-3.5 h-3.5" aria-hidden="true"></i>
+                      <% end %>
+                    </div>
+                  </div>
+
+                  <!-- Modal Footer -->
+                  <div class="pt-3 border-t border-stone-200 text-center text-xs text-zinc-500">
+                    <span>A primeira cobrança acontece apenas a partir do 31º dia. Cancele quando quiser.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% else %>
+            <div class="bg-white rounded-lg border border-stone-border p-8 sm:p-12 text-center space-y-3">
+              <div class="w-12 h-12 bg-stone-50 rounded-full flex items-center justify-center mx-auto border border-stone-200/60 text-zinc-500" aria-hidden="true">
+                <i data-lucide="briefcase" class="w-5 h-5" aria-hidden="true"></i>
+              </div>
+              <h3 class="text-base font-serif font-bold text-charcoal">
+                <%= own_profile ? t(".no_projects_owner_subscribed_title") : t(".no_projects_visitor_title") %>
+              </h3>
+              <p class="text-sm text-muted max-w-sm mx-auto leading-relaxed">
+                <%= own_profile ? t(".no_projects_owner_subtitle") : t(".no_projects_visitor_subtitle") %>
+              </p>
+              <% if own_profile %>
+                <div class="pt-2">
+                  <%= link_to new_my_project_path, class: "min-h-11 sm:min-h-0 inline-flex items-center gap-1.5 text-xs bg-charcoal text-white hover:bg-zinc-800 font-medium px-4 py-2.5 sm:py-2 rounded-lg transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-charcoal focus-visible:ring-offset-2" do %>
+                    <i data-lucide="plus" class="w-3.5 h-3.5" aria-hidden="true"></i>
+                    <span><%= t(".no_projects_owner_cta") %></span>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
         <% end %>
       </section>
     <% end %>

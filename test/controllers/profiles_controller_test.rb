@@ -585,8 +585,10 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_select "button[data-action='click->onboarding-widget#openPricingModal']"
     assert_select "[data-testid='onboarding-pricing-modal']"
     assert_select "[data-testid='onboarding-pricing-modal'].fixed.inset-0.z-\\[60\\]", count: 1
-    assert_select "#onboarding_activation_card [data-testid='onboarding-pricing-modal']", count: 0
-    assert_select "[data-testid='onboarding-pricing-modal'] button[data-action='click->onboarding-widget#closePricingModal']", count: 2
+    assert_select "[data-testid='onboarding-pricing-modal'] button[data-action='click->onboarding-widget#closePricingModal']", count: 1
+    assert_select "#onboarding-pricing-modal-title", text: /Tenha uma conta profissional e amplie o alcance do seu trabalho/
+    assert_select "[data-testid='onboarding-pricing-modal'] .rounded-full", text: /Conta Profissional/, count: 0
+    assert_select "[data-testid='onboarding-pricing-modal']", text: /Continuar na conta gratuita/, count: 0
     assert_select "[data-testid='onboarding-pricing-modal'] form[action='#{checkout_path(plan: :annual)}']"
     assert_select "[data-testid='onboarding-pricing-modal'] form[action='#{checkout_path(plan: :monthly)}']"
   end
@@ -621,5 +623,31 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     get profiles_path
     assert_response :success
     assert_select "#onboarding_activation_card", count: 0
+  end
+
+  test "renders portfolio upgrade callout and pricing modal on own profile when unsubscribed and without projects" do
+    sign_in @user
+    get profile_path(@actor)
+
+    assert_response :success
+    assert_select "[data-testid='portfolio-upgrade-callout']", count: 1
+    assert_select "[data-testid='portfolio-upgrade-callout'] h3", text: /Seus projetos ainda não estão visíveis na Guilda/
+    assert_select "[data-testid='portfolio-upgrade-callout'] p", text: /Com a conta profissional, seu portfólio fica público/
+    assert_select "[data-testid='open-pricing-modal-button']", count: 1
+    assert_select "[data-testid='portfolio-upgrade-callout'] a", count: 0
+    assert_select "[data-testid='upgrade-plans-modal']", count: 1
+    assert_select "[data-testid='upgrade-plans-modal'] form[action='#{checkout_path(plan: :annual)}']", count: 1
+    assert_select "[data-testid='upgrade-plans-modal'] form[action='#{checkout_path(plan: :monthly)}']", count: 1
+  end
+
+  test "renders visitor empty state when visitor views a profile without public projects" do
+    bob_user = users(:bob)
+    bob_actor = create_profile_for(bob_user, name: "Bob")
+
+    get profile_path(bob_actor)
+
+    assert_response :success
+    assert_select "[data-testid='portfolio-upgrade-callout']", count: 0
+    assert_select "h3", text: I18n.t("profiles.show.no_projects_visitor_title")
   end
 end
