@@ -468,6 +468,7 @@ pt-BR:
       new_project_card_subtitle: "Publique um projeto, serviço técnico ou produção de bastidores no seu portfólio."
       image_count:
         one: "1 imagem no projeto"
+        other: "%{count} imagens no projeto"
       no_projects_owner_title: "Seus projetos ainda não estão visíveis na Guilda."
       no_projects_owner_subtitle: "Com a conta profissional, seu portfólio fica público para que artistas, produtores e contratantes encontrem seu trabalho e entrem em contato direto."
       no_projects_owner_cta: "Adicionar primeiro projeto"

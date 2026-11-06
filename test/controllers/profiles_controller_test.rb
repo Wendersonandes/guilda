@@ -650,4 +650,26 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-testid='portfolio-upgrade-callout']", count: 0
     assert_select "h3", text: I18n.t("profiles.show.no_projects_visitor_title")
   end
+
+  test "renders project with multiple images without pluralization error" do
+    project = @actor.actorable.projects.create!(title: "Projeto com fotos", visibility: :public)
+    7.times do |i|
+      project.project_images.create!(image: image_blob("img-#{i}.png"))
+    end
+
+    get profile_path(@actor)
+    assert_response :success
+    assert_match "7 imagens no projeto", response.body
+  end
+
+  private
+
+  def image_blob(filename)
+    ActiveStorage::Blob.create_and_upload!(
+      io: StringIO.new("fake-image-#{filename}"),
+      filename: filename,
+      content_type: "image/png",
+      identify: false
+    )
+  end
 end
