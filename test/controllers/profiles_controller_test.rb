@@ -663,6 +663,41 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_match "7 imagens no projeto", response.body
   end
 
+  test "navbar renders fallback initial when user has no avatar attached" do
+    sign_in @user
+    get profiles_path
+
+    assert_response :success
+    assert_select "button[data-dropdown-target='button']" do
+      assert_select "img", count: 0
+      assert_select "span", text: @actor.name.first.upcase
+    end
+    assert_select "[data-mobile-menu-target='menu']" do
+      assert_select "img", count: 0
+      assert_select "span", text: @actor.name.first.upcase
+    end
+  end
+
+  test "navbar renders avatar image when user has avatar attached and does not fallback to initial" do
+    @actor.avatar.attach(
+      io: StringIO.new("fake-avatar-data"),
+      filename: "avatar.png",
+      content_type: "image/png"
+    )
+    sign_in @user
+    get profiles_path
+
+    assert_response :success
+    assert_select "button[data-dropdown-target='button']" do
+      assert_select "img", count: 1
+      assert_select "span", text: @actor.name.first.upcase, count: 0
+    end
+    assert_select "[data-mobile-menu-target='menu']" do
+      assert_select "img", count: 1
+      assert_select "span", text: @actor.name.first.upcase, count: 0
+    end
+  end
+
   private
 
   def image_blob(filename)

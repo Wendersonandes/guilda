@@ -74,8 +74,12 @@
                     aria-haspopup="menu"
                     aria-expanded="false"
                     class="flex items-center gap-1.5 text-sm font-semibold text-charcoal hover:text-brand transition-colors cursor-pointer bg-transparent border-0 p-0">
-              <div class="w-6 h-6 rounded-full bg-stone-100 flex items-center justify-center text-charcoal text-xs font-bold border border-stone-border">
-                <%= current_actor.name.first.upcase %>
+              <div class="w-6 h-6 rounded-full bg-stone-100 flex items-center justify-center text-charcoal text-xs font-bold border border-stone-border overflow-hidden flex-shrink-0">
+                <% if current_actor.avatar.attached? %>
+                  <%= image_tag current_actor.avatar.variant(:thumb), alt: "", class: "w-full h-full object-cover" %>
+                <% else %>
+                  <span><%= current_actor.name.first.upcase %></span>
+                <% end %>
               </div>
               <span class="max-w-[120px] truncate"><%= current_actor.name %></span>
               <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-zinc-400"></i>
@@ -185,8 +189,12 @@
     <% if user_signed_in? %>
       <% if current_actor %>
         <%= link_to public_path_for(current_actor), class: "flex items-center gap-2 text-sm font-semibold text-charcoal hover:text-brand py-1 transition-colors" do %>
-          <div class="w-6 h-6 rounded-full bg-stone-100 flex items-center justify-center text-charcoal text-xs font-bold border border-stone-border">
-            <%= current_actor.name.first.upcase %>
+          <div class="w-6 h-6 rounded-full bg-stone-100 flex items-center justify-center text-charcoal text-xs font-bold border border-stone-border overflow-hidden flex-shrink-0">
+            <% if current_actor.avatar.attached? %>
+              <%= image_tag current_actor.avatar.variant(:thumb), alt: "", class: "w-full h-full object-cover" %>
+            <% else %>
+              <span><%= current_actor.name.first.upcase %></span>
+            <% end %>
           </div>
           <span><%= current_actor.name %></span>
         <% end %>

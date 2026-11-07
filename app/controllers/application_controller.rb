@@ -132,7 +132,7 @@ class ApplicationController < ActionController::Base
     @current_actor ||= begin
       actor = current_user&.current_profile
       if actor
-        ActiveRecord::Associations::Preloader.new(records: [ actor ], associations: :actorable).call
+        ActiveRecord::Associations::Preloader.new(records: [ actor ], associations: [ :actorable, { avatar_attachment: :blob } ]).call
         if actor.actorable.is_a?(Profile)
           actor.actorable.user = current_user
         end
