@@ -328,7 +328,7 @@ pt-BR:
       title: "Categorias Profissionais"
       limit_hint: "Selecione entre 1 e 3 áreas de atuação"
       counter: "%{count} de 3 selecionadas"
-      limit_warning: "Você já selecionou o limite máximo de 3 categorias."
+      limit_warning: "Limite de 3 categorias atingido. Clique em uma categoria já selecionada para mudar ou excluir."
       presence_error: "Selecione pelo menos 1 categoria profissional."
 
   # === Comments ===============================================================
@@ -498,7 +498,7 @@ pt-BR:
       address: "Endereço"
       occupations_title: "Categorias Profissionais"
       occupations_limit_hint: "Selecione até 3 áreas de atuação"
-      occupations_limit_warning: "Você já selecionou o limite máximo de 3 categorias."
+      occupations_limit_warning: "Limite de 3 categorias atingido. Clique em uma categoria já selecionada para mudar ou excluir."
       occupations_counter: "%{count} de 3 selecionadas"
       availability_title: "Disponibilidade"
       availability_label: "Disponibilidade para contratação"

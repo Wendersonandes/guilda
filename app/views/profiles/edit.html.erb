@@ -106,8 +106,9 @@
         </div>
       </div>
 
-      <div data-occupations-target="warning" role="alert" aria-live="assertive" class="hidden rounded-lg bg-red-50 p-3 text-sm text-red-600 border border-red-100 transition-all">
-        <%= t("profiles.edit.occupations_limit_warning", default: "Você já selecionou o limite máximo de 3 categorias.") %>
+      <div data-occupations-target="warning" role="alert" aria-live="assertive" class="hidden rounded-lg bg-red-50 p-3 text-sm text-red-700 border border-red-200/80 transition-all flex items-center gap-2">
+        <i data-lucide="info" class="w-4 h-4 text-red-500 shrink-0" aria-hidden="true"></i>
+        <span><%= t("profiles.edit.occupations_limit_warning", default: "Limite de 3 categorias atingido. Clique em uma categoria já selecionada para mudar ou excluir.") %></span>
       </div>
       <% if @profile.errors[:occupation_list].any? %>
         <div role="alert" class="rounded-lg bg-red-50 p-3 text-sm text-red-600 border border-red-100">

@@ -261,6 +261,7 @@ class ProfilesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "div[role='group'][aria-labelledby='occupations_section_heading'][aria-describedby='occupations_limit_hint']"
     assert_select "span[data-occupations-target='counter']"
+    assert_select "div[data-occupations-target='warning']", text: /Limite de 3 categorias atingido.*Clique em uma categoria já selecionada para mudar ou excluir/m
     assert_select "lexxy-editor#profile_actor_attributes_description[aria-labelledby='profile_description_label']"
   end
 

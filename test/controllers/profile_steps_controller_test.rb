@@ -58,6 +58,7 @@ class ProfileStepsControllerTest < ActionDispatch::IntegrationTest
 
     get profile_step_path(:occupation)
     assert_response :success
+    assert_select "div[data-occupations-target='warning']", text: /Limite de 3 categorias atingido.*Clique em uma categoria já selecionada para mudar ou excluir/m
   end
 
   test "should update occupation and finish wizard" do
